@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "431376911075",
+    "project_id": "com-example-app5",
+    "storage_bucket": "com-example-app5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:431376911075:android:b3908f35fc335346e453d6",
+        "android_client_info": {
+          "package_name": "com.example.rinoFirstIos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdw6M2i_4XGwmjCSXa3KiXg6O1frX6vfE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

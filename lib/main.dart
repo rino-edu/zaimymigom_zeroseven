@@ -1,37 +1,90 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
+import 'package:provider/provider.dart';
+import 'package:zaimymigom_zeroseven/utils/theme.dart';
+import 'services/firebase_service.dart';
+import 'services/app_mode_service.dart';
+import 'services/appmetrica_service.dart';
+import 'services/settings_service.dart';
+import 'views/loans/loans_screen.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
+
+  // Инициализация AppMetrica
+  await AppMetricaService.initialize();
+
+  // Инициализация Firebase
+  final firebaseService = FirebaseService();
+  await firebaseService.initialize();
+
+  // Определение режима работы
+  final appModeService = AppModeService();
+  await appModeService.determineAppMode();
+
+  // Загрузка настроек
+  final settingsService = SettingsService();
+  await settingsService.loadSettings();
+
+
+  runApp(
+    EasyLocalization(
+      supportedLocales: const [Locale('en'), Locale('ru')],
+      path: 'assets/locales',
+      fallbackLocale: const Locale('en'),
+      child: ChangeNotifierProvider.value(
+        value: settingsService,
+        child: const MyApp(),
+      ),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    final settings = context.watch<SettingsService>();
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      title: 'ПОМЕНЯТЬ',
+      // Локализация
+      locale: context.locale,
+      supportedLocales: context.supportedLocales,
+      localizationsDelegates: context.localizationDelegates,
+      // Темы
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: settings.themeMode,
+      debugShowCheckedModeBanner: false,
+      home: const AppModeWrapper(),
     );
+  }
+}
+
+class AppModeWrapper extends StatelessWidget {
+  const AppModeWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final appMode = AppModeService().currentMode;
+    final settings = context.watch<SettingsService>();
+    // Если режим еще не определен (теоретически), показываем лоадер
+    if (appMode == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    // В боевом режиме — сразу LoansScreen c боевыми офферами
+    if (appMode == AppMode.combat) {
+      return const LoansScreen();
+    }
+
+    // В небоевом режиме — если онбординг не пройден, сначала онбординг
+/*    if (!settings.onboardingCompleted) {
+      return const OnboardingScreen();
+    }*/
+    return const MyHomePage(title: 'Flutter Demo Home Page');
   }
 }
 

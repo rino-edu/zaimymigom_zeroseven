@@ -1,4 +1,4 @@
-package com.example.zaimymigom_zeroseven
+package com.example.rinoFirstIos
 
 import io.flutter.embedding.android.FlutterActivity
 
