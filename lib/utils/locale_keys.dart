@@ -213,6 +213,10 @@ class LocaleKeys {
   static const settingsResetConfirmTitle = 'settings.reset_confirm_title';
   static const settingsResetConfirmMessage = 'settings.reset_confirm_message';
   static const settingsResetSuccess = 'settings.reset_success';
+  static const settingsResetPersonalData = 'settings.reset_personal_data';
+  static const settingsResetPersonalConfirmTitle = 'settings.reset_personal_confirm_title';
+  static const settingsResetPersonalConfirmMessage = 'settings.reset_personal_confirm_message';
+  static const settingsResetPersonalSuccess = 'settings.reset_personal_success';
   static const settingsPersonalData = 'settings.personal_data';
   static const settingsPersonalDataDescription = 'settings.personal_data_description';
   static const settingsFirstName = 'settings.first_name';

@@ -33,6 +33,7 @@ class SecurityService {
     String localizedReason = 'Пожалуйста, подтвердите свою личность',
     bool useErrorDialogs = true,
     bool stickyAuth = true,
+    bool biometricOnly = true,
   }) async {
     try {
       final isAvailable = await isBiometricAvailable();
@@ -45,7 +46,7 @@ class SecurityService {
         options: AuthenticationOptions(
           useErrorDialogs: useErrorDialogs,
           stickyAuth: stickyAuth,
-          biometricOnly: false,
+          biometricOnly: biometricOnly,
         ),
       );
     } on PlatformException {
