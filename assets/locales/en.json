@@ -12,7 +12,11 @@
     "calculator": "Calculators",
     "guides": "Guides",
     "settings": "Settings",
-    "loans": "Loans"
+    "loans": "Loans",
+    "psc_calculator": "TCC",
+    "budget": "Budget",
+    "goals": "Goals",
+    "user_loans": "Loans"
   },
   "calendar": {
     "title": "Calendar",
@@ -966,6 +970,22 @@
     "desc_1": "Great offers",
     "desc_2": "Pleasant interest rates",
     "desc_3": "Fast processing"
+  },
+  "psc_calculator": {
+    "title": "TCC Calculator",
+    "placeholder": "Total cost of credit calculator will be here"
+  },
+  "budget": {
+    "title": "Budget",
+    "placeholder": "Budget management will be here"
+  },
+  "goals": {
+    "title": "Financial Goals",
+    "placeholder": "Financial goals generator will be here"
+  },
+  "user_loans": {
+    "title": "My Loans",
+    "placeholder": "Loan history will be here"
   }
 }
 

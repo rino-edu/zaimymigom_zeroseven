@@ -15,6 +15,10 @@ class LocaleKeys {
   static const navGuides = 'navigation.guides';
   static const navSettings = 'navigation.settings';
   static const navLoans = 'navigation.loans';
+  static const navPscCalculator = 'navigation.psc_calculator';
+  static const navBudget = 'navigation.budget';
+  static const navGoals = 'navigation.goals';
+  static const navUserLoans = 'navigation.user_loans';
 
   // Calendar
   static const calendarTitle = 'calendar.title';
@@ -489,6 +493,22 @@ class LocaleKeys {
   static const taxHistoryMenu1 = 'tax_history.menu_1';
   static const taxHistoryMenu2 = 'tax_history.menu_2';
   static const taxHistoryMenu3 = 'tax_history.menu_3';
+
+  // PSC Calculator
+  static const pscCalculatorTitle = 'psc_calculator.title';
+  static const pscCalculatorPlaceholder = 'psc_calculator.placeholder';
+
+  // Budget
+  static const budgetTitle = 'budget.title';
+  static const budgetPlaceholder = 'budget.placeholder';
+
+  // Goals
+  static const goalsTitle = 'goals.title';
+  static const goalsPlaceholder = 'goals.placeholder';
+
+  // User Loans
+  static const userLoansTitle = 'user_loans.title';
+  static const userLoansPlaceholder = 'user_loans.placeholder';
 }
 
 // Ключи для Базы знаний (knowledge)
