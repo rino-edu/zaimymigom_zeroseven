@@ -213,6 +213,32 @@ class LocaleKeys {
   static const settingsResetConfirmTitle = 'settings.reset_confirm_title';
   static const settingsResetConfirmMessage = 'settings.reset_confirm_message';
   static const settingsResetSuccess = 'settings.reset_success';
+  static const settingsPersonalData = 'settings.personal_data';
+  static const settingsPersonalDataDescription = 'settings.personal_data_description';
+  static const settingsFirstName = 'settings.first_name';
+  static const settingsLastName = 'settings.last_name';
+  static const settingsEmail = 'settings.email';
+  static const settingsPhone = 'settings.phone';
+  static const settingsDateOfBirth = 'settings.date_of_birth';
+  static const settingsEnterFirstName = 'settings.enter_first_name';
+  static const settingsEnterLastName = 'settings.enter_last_name';
+  static const settingsEnterEmail = 'settings.enter_email';
+  static const settingsEnterPhone = 'settings.enter_phone';
+  static const settingsEnterDateOfBirth = 'settings.enter_date_of_birth';
+  static const settingsSavePersonalData = 'settings.save_personal_data';
+  static const settingsPersonalDataSaved = 'settings.personal_data_saved';
+  static const settingsPinCodeSet = 'settings.pin_code_set';
+  static const settingsPinCodeRemoved = 'settings.pin_code_removed';
+  static const settingsSetPinCode = 'settings.set_pin_code';
+  static const settingsRemovePinCode = 'settings.remove_pin_code';
+  static const settingsEnterPinCode = 'settings.enter_pin_code';
+  static const settingsConfirmPinCode = 'settings.confirm_pin_code';
+  static const settingsPinCodesNotMatch = 'settings.pin_codes_not_match';
+  static const settingsPinCodeMustBe4Digits = 'settings.pin_code_must_be_4_digits';
+  static const settingsBiometricNotAvailable = 'settings.biometric_not_available';
+  static const settingsEnableBiometricFirst = 'settings.enable_biometric_first';
+  static const settingsEnableSecurity = 'settings.enable_security';
+  static const settingsDisableSecurity = 'settings.disable_security';
 
   // Notifications
   static const notificationsEnable = 'notifications.enable';

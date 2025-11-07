@@ -9,7 +9,12 @@ import '../webview/webview_screen.dart';
 
 /// Экран "Займы"
 class LoansScreen extends StatefulWidget {
-  const LoansScreen({super.key});
+  final bool withScaffold;
+  
+  const LoansScreen({
+    super.key,
+    this.withScaffold = true,
+  });
 
   @override
   State<LoansScreen> createState() => _LoansScreenState();
@@ -107,16 +112,21 @@ class _LoansScreenState extends State<LoansScreen> {
   @override
   Widget build(BuildContext context) {
     final isCombatMode = _appModeService.currentMode == AppMode.combat;
+    final body = _buildBody(context, isCombatMode);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(AppStrings.loans),
-        centerTitle: true,
-        // В боевом режиме не показываем кнопку назад
-        automaticallyImplyLeading: !isCombatMode,
-      ),
-      body: _buildBody(context, isCombatMode),
-    );
+    if (widget.withScaffold) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(AppStrings.loans),
+          centerTitle: true,
+          // В боевом режиме не показываем кнопку назад
+          automaticallyImplyLeading: !isCombatMode,
+        ),
+        body: body,
+      );
+    }
+    
+    return body;
   }
 
   Widget _buildBody(BuildContext context, bool isCombatMode) {

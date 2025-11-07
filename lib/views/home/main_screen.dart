@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../utils/locale_keys.dart';
 import '../loans/loans_screen.dart';
+import '../settings/settings_screen.dart';
 import 'psc_calculator_screen.dart';
 import 'budget_screen.dart';
 import 'goals_screen.dart';
-import 'user_loans_screen.dart';
 
 /// Главный экран приложения с bottom navigation bar
 class MainScreen extends StatefulWidget {
@@ -18,11 +18,18 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = const [
+  final List<String> _screenTitles = [
+    LocaleKeys.pscCalculatorTitle,
+    LocaleKeys.budgetTitle,
+    LocaleKeys.goalsTitle,
+    LocaleKeys.userLoansTitle,
+  ];
+
+  final List<Widget> _screens = [
     PscCalculatorScreen(),
     BudgetScreen(),
     GoalsScreen(),
-    LoansScreen(),
+    const LoansScreen(withScaffold: false),
   ];
 
   void _onItemTapped(int index) {
@@ -31,9 +38,58 @@ class _MainScreenState extends State<MainScreen> {
     });
   }
 
+  String _getAppBarTitle() {
+    return _screenTitles[_selectedIndex].tr();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(title: Text(_getAppBarTitle())),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Icon(
+                    Icons.account_balance_wallet,
+                    size: 48,
+                    color: Theme.of(context).colorScheme.onPrimary,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'ЗаймыМигом',
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.settings),
+              title: Text(LocaleKeys.navSettings.tr()),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SettingsScreen(),
+                  ),
+                );
+              },
+            ),
+            const Divider(),
+          ],
+        ),
+      ),
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
@@ -61,4 +117,3 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
-

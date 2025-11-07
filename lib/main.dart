@@ -47,10 +47,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsService>();
+
+    // Определяем локаль из настроек
+    Locale? locale;
+    if (settings.languageCode != null) {
+      locale = Locale(settings.languageCode!);
+    }
+
     return MaterialApp(
       title: 'ПОМЕНЯТЬ',
       // Локализация
-      locale: context.locale,
+      locale: locale ?? context.locale,
       supportedLocales: context.supportedLocales,
       localizationsDelegates: context.localizationDelegates,
       // Темы
