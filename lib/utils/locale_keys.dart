@@ -527,6 +527,29 @@ class LocaleKeys {
   // PSC Calculator
   static const pscCalculatorTitle = 'psc_calculator.title';
   static const pscCalculatorPlaceholder = 'psc_calculator.placeholder';
+  static const pscCalculatorDescription = 'psc_calculator.description';
+  static const pscCalculatorFormula = 'psc_calculator.formula';
+  static const pscCalculatorAmount = 'psc_calculator.amount';
+  static const pscCalculatorAnnualRate = 'psc_calculator.annual_rate';
+  static const pscCalculatorTermMonths = 'psc_calculator.term_months';
+  static const pscCalculatorPaymentType = 'psc_calculator.payment_type';
+  static const pscCalculatorPaymentTypeAnnuity = 'psc_calculator.payment_type_annuity';
+  static const pscCalculatorPaymentTypeDifferentiated = 'psc_calculator.payment_type_differentiated';
+  static const pscCalculatorUpfrontFee = 'psc_calculator.upfront_fee';
+  static const pscCalculatorMonthlyFee = 'psc_calculator.monthly_fee';
+  static const pscCalculatorInsuranceMonthly = 'psc_calculator.insurance_monthly';
+  static const pscCalculatorMaxRateError = 'psc_calculator.max_rate_error';
+  static const pscCalculatorResultTitle = 'psc_calculator.result_title';
+  static const pscCalculatorResultPsk = 'psc_calculator.result_psk';
+  static const pscCalculatorResultTotalPayment = 'psc_calculator.result_total_payment';
+  static const pscCalculatorResultOverpayment = 'psc_calculator.result_overpayment';
+  static const pscCalculatorScheduleTitle = 'psc_calculator.schedule_title';
+  static const pscCalculatorColMonth = 'psc_calculator.col_month';
+  static const pscCalculatorColPrincipal = 'psc_calculator.col_principal';
+  static const pscCalculatorColInterest = 'psc_calculator.col_interest';
+  static const pscCalculatorColFees = 'psc_calculator.col_fees';
+  static const pscCalculatorColTotal = 'psc_calculator.col_total';
+  static const pscCalculatorColBalance = 'psc_calculator.col_balance';
 
   // Budget
   static const budgetTitle = 'budget.title';
