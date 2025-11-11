@@ -10,7 +10,8 @@
     "user_loans": "Loans",
     "settings": "Settings",
     "currency_converter": "Currency converter",
-    "calendar": "Financial calendar"
+    "calendar": "Financial calendar",
+    "financial_tips": "Financial tips"
   },
   "calendar": {
     "title": "Financial calendar",
@@ -279,6 +280,57 @@
     "try_again": "Try again",
     "feature_in_development": "Feature in development",
     "unsaved_changes": "You have unsaved changes"
+  },
+  "financial_tips": {
+    "title": "Financial tips",
+    "search_placeholder": "Search tips",
+    "favorites_only": "Favorites only",
+    "empty": "No tips match your query",
+    "tip_of_the_day": "Tip of the day",
+    "added_to_favorites": "Added to favorites",
+    "removed_from_favorites": "Removed from favorites",
+    "categories": {
+      "all": "All",
+      "budget": "Budget and saving",
+      "loans": "Loans and credit",
+      "savings_investments": "Savings and investments",
+      "literacy": "Financial literacy",
+      "anti_fraud": "Anti‑fraud"
+    },
+    "samples": {
+      "budget_1": {
+        "title": "50/30/20 rule",
+        "content": "Allocate 50% of income to needs, 30% to wants, and 20% to savings and goals."
+      },
+      "budget_2": {
+        "title": "Categorize your spending",
+        "content": "Split expenses into categories and set monthly limits for each category."
+      },
+      "loans_1": {
+        "title": "Payment load under 30%",
+        "content": "Total monthly loan payments should not exceed 30% of your income."
+      },
+      "loans_2": {
+        "title": "Early repayment",
+        "content": "Whenever possible, pay towards principal — it reduces total overpayment."
+      },
+      "savings_1": {
+        "title": "Emergency fund 3–6 months",
+        "content": "Build an emergency fund covering 3–6 months of essential expenses."
+      },
+      "savings_2": {
+        "title": "Diversify investments",
+        "content": "Do not put all eggs in one basket. Spread capital across asset classes."
+      },
+      "literacy_1": {
+        "title": "Improve financial literacy",
+        "content": "Study monthly via books, courses, and articles to make informed decisions."
+      },
+      "anti_fraud_1": {
+        "title": "Never share codes and passwords",
+        "content": "Do not disclose one‑time codes or passwords to anyone, even if they claim to be bank staff."
+      }
+    }
   },
   "creditworthiness": {
     "title": "Creditworthiness Assessment",

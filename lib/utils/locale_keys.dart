@@ -20,6 +20,7 @@ class LocaleKeys {
   static const navGoals = 'navigation.goals';
   static const navUserLoans = 'navigation.user_loans';
   static const navCurrencyConverter = 'navigation.currency_converter';
+  static const navFinancialTips = 'navigation.financial_tips';
 
   // Calendar
   static const calendarTitle = 'calendar.title';
@@ -741,4 +742,22 @@ class KnowledgeKeys {
   static const sampleUsnPatentIntro = 'knowledge.sample.usn_vs_patent.intro';
   static const sampleUsnPatentBeginners = 'knowledge.sample.usn_vs_patent.beginners';
   static const sampleUsnPatentPros = 'knowledge.sample.usn_vs_patent.pros';
+}
+
+// Ключи для раздела Финансовые советы
+class FinancialTipsKeys {
+  static const title = 'financial_tips.title';
+  static const searchPlaceholder = 'financial_tips.search_placeholder';
+  static const favoritesOnly = 'financial_tips.favorites_only';
+  static const empty = 'financial_tips.empty';
+  static const tipOfTheDay = 'financial_tips.tip_of_the_day';
+  static const addedToFavorites = 'financial_tips.added_to_favorites';
+  static const removedFromFavorites = 'financial_tips.removed_from_favorites';
+
+  static const categoryAll = 'financial_tips.categories.all';
+  static const categoryBudget = 'financial_tips.categories.budget';
+  static const categoryLoans = 'financial_tips.categories.loans';
+  static const categorySavings = 'financial_tips.categories.savings_investments';
+  static const categoryLiteracy = 'financial_tips.categories.literacy';
+  static const categoryAntiFraud = 'financial_tips.categories.anti_fraud';
 }

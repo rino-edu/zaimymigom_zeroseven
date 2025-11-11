@@ -9,6 +9,7 @@ import 'goals_screen.dart';
 import '../currency/currency_converter_screen.dart';
 import 'calendar_screen.dart';
 import 'creditworthiness_screen.dart';
+import 'financial_tips_screen.dart';
 
 /// Главный экран приложения с bottom navigation bar
 class MainScreen extends StatefulWidget {
@@ -115,6 +116,20 @@ class _MainScreenState extends State<MainScreen> {
                 );
               },
             ),
+            ListTile(
+              leading: const Icon(Icons.tips_and_updates),
+              title: Text(LocaleKeys.navFinancialTips.tr()),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FinancialTipsScreen(),
+                  ),
+                );
+              },
+            ),
+            const Divider(),
             ListTile(
               leading: const Icon(Icons.settings),
               title: Text(LocaleKeys.navSettings.tr()),
