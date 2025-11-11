@@ -406,5 +406,30 @@
       "no_emergency_fund": "No emergency fund",
       "low_stability": "Low stability"
     }
+  },
+  "expense_statistics": {
+    "title": "Expense Statistics",
+    "empty": "No expense data for the selected period",
+    "period_day": "Day",
+    "period_week": "Week",
+    "period_month": "Month",
+    "period_quarter": "Quarter",
+    "period_year": "Year",
+    "period_custom": "Custom",
+    "total_expenses": "Total Expenses",
+    "average_expense": "Average Expense",
+    "categories_count": "Categories",
+    "top_categories": "Top Categories",
+    "trends": "Trends",
+    "current_period": "Current Period",
+    "previous_period": "Previous Period",
+    "change": "Change",
+    "income_expense_comparison": "Income vs Expense Comparison",
+    "heatmap_title": "Expense Heatmap",
+    "filters": "Filters",
+    "compare_with_previous": "Compare with Previous Period",
+    "show_income_comparison": "Show Income Comparison",
+    "filter_by_category": "Filter by Category",
+    "export_message": "Statistics export will be implemented in the next version"
   }
 }

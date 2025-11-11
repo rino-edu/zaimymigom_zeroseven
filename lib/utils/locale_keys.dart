@@ -703,6 +703,31 @@ class LocaleKeys {
   static const creditworthinessHistoryEmpty = 'creditworthiness.history_empty';
   static const creditworthinessDeleteConfirm = 'creditworthiness.delete_confirm';
   static const creditworthinessDeleteConfirmMessage = 'creditworthiness.delete_confirm_message';
+
+  // Expense Statistics
+  static const expenseStatisticsTitle = 'expense_statistics.title';
+  static const expenseStatisticsEmpty = 'expense_statistics.empty';
+  static const expenseStatisticsPeriodDay = 'expense_statistics.period_day';
+  static const expenseStatisticsPeriodWeek = 'expense_statistics.period_week';
+  static const expenseStatisticsPeriodMonth = 'expense_statistics.period_month';
+  static const expenseStatisticsPeriodQuarter = 'expense_statistics.period_quarter';
+  static const expenseStatisticsPeriodYear = 'expense_statistics.period_year';
+  static const expenseStatisticsPeriodCustom = 'expense_statistics.period_custom';
+  static const expenseStatisticsTotalExpenses = 'expense_statistics.total_expenses';
+  static const expenseStatisticsAverageExpense = 'expense_statistics.average_expense';
+  static const expenseStatisticsCategoriesCount = 'expense_statistics.categories_count';
+  static const expenseStatisticsTopCategories = 'expense_statistics.top_categories';
+  static const expenseStatisticsTrends = 'expense_statistics.trends';
+  static const expenseStatisticsCurrentPeriod = 'expense_statistics.current_period';
+  static const expenseStatisticsPreviousPeriod = 'expense_statistics.previous_period';
+  static const expenseStatisticsChange = 'expense_statistics.change';
+  static const expenseStatisticsIncomeExpenseComparison = 'expense_statistics.income_expense_comparison';
+  static const expenseStatisticsHeatmapTitle = 'expense_statistics.heatmap_title';
+  static const expenseStatisticsFilters = 'expense_statistics.filters';
+  static const expenseStatisticsCompareWithPrevious = 'expense_statistics.compare_with_previous';
+  static const expenseStatisticsShowIncomeComparison = 'expense_statistics.show_income_comparison';
+  static const expenseStatisticsFilterByCategory = 'expense_statistics.filter_by_category';
+  static const expenseStatisticsExportMessage = 'expense_statistics.export_message';
 }
 
 // Ключи для Базы знаний (knowledge)

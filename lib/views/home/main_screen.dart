@@ -10,6 +10,7 @@ import '../currency/currency_converter_screen.dart';
 import 'calendar_screen.dart';
 import 'creditworthiness_screen.dart';
 import 'financial_tips_screen.dart';
+import 'expense_statistics_screen.dart';
 import 'package:liquid_glass_bottom_bar/liquid_glass_bottom_bar.dart';
 
 /// Главный экран приложения с bottom navigation bar
@@ -127,6 +128,19 @@ class _MainScreenState extends State<MainScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const FinancialTipsScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.analytics),
+              title: Text(LocaleKeys.expenseStatisticsTitle.tr()),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ExpenseStatisticsScreen(),
                   ),
                 );
               },

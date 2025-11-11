@@ -406,5 +406,30 @@
       "no_emergency_fund": "Нет резервного фонда",
       "low_stability": "Низкая стабильность"
     }
+  },
+  "expense_statistics": {
+    "title": "Статистика расходов",
+    "empty": "Нет данных о расходах за выбранный период",
+    "period_day": "День",
+    "period_week": "Неделя",
+    "period_month": "Месяц",
+    "period_quarter": "Квартал",
+    "period_year": "Год",
+    "period_custom": "Произвольный",
+    "total_expenses": "Всего расходов",
+    "average_expense": "Средний расход",
+    "categories_count": "Категорий",
+    "top_categories": "Топ категорий",
+    "trends": "Тренды",
+    "current_period": "Текущий период",
+    "previous_period": "Предыдущий период",
+    "change": "Изменение",
+    "income_expense_comparison": "Сравнение доходов и расходов",
+    "heatmap_title": "Тепловая карта расходов",
+    "filters": "Фильтры",
+    "compare_with_previous": "Сравнить с предыдущим периодом",
+    "show_income_comparison": "Показать сравнение с доходами",
+    "filter_by_category": "Фильтр по категории",
+    "export_message": "Экспорт статистики будет реализован в следующей версии"
   }
 }
