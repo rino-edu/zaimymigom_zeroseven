@@ -267,5 +267,17 @@
     "add_to_favorites": "Add to favorites",
     "remove_from_favorites": "Remove from favorites",
     "use_pair": "Use this pair"
+  },
+  "messages": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info",
+    "loading": "Loading...",
+    "no_data": "No data",
+    "no_internet": "No internet connection",
+    "try_again": "Try again",
+    "feature_in_development": "Feature in development",
+    "unsaved_changes": "You have unsaved changes"
   }
 }
