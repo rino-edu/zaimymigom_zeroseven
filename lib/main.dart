@@ -6,6 +6,7 @@ import 'services/firebase_service.dart';
 import 'services/app_mode_service.dart';
 import 'services/appmetrica_service.dart';
 import 'services/settings_service.dart';
+import 'services/budget_provider.dart';
 import 'views/loans/loans_screen.dart';
 import 'views/home/main_screen.dart';
 
@@ -33,8 +34,11 @@ void main() async {
       supportedLocales: const [Locale('en'), Locale('ru')],
       path: 'assets/locales',
       fallbackLocale: const Locale('en'),
-      child: ChangeNotifierProvider.value(
-        value: settingsService,
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider.value(value: settingsService),
+          ChangeNotifierProvider(create: (_) => BudgetProvider()),
+        ],
         child: const MyApp(),
       ),
     ),
