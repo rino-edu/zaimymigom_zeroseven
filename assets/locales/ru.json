@@ -91,7 +91,29 @@
   },
   "goals": {
     "title": "Цели",
-    "placeholder": ""
+    "placeholder": "",
+    "add_goal": "Добавить цель",
+    "edit_goal": "Редактировать цель",
+    "empty": "Пока нет целей. Создайте первую, чтобы начать копить.",
+    "fields": {
+      "title": "Название цели",
+      "target": "Целевая сумма",
+      "deadline": "Дедлайн",
+      "priority": "Приоритет"
+    },
+    "priority": {
+      "high": "Высокий",
+      "medium": "Средний",
+      "low": "Низкий"
+    },
+    "add_contribution": "Пополнить",
+    "contribution": {
+      "amount": "Сумма пополнения",
+      "comment": "Комментарий"
+    },
+    "delete_confirm": "Удалить цель?",
+    "delete_confirm_message": "Вы уверены, что хотите удалить цель и все ее пополнения?",
+    "suggested_monthly": "Рекоменд. в месяц"
   },
   "user_loans": {
     "title": "Займы",
@@ -99,7 +121,8 @@
   },
   "validation": {
     "required": "Обязательное поле",
-    "enter_number": "Введите корректное число"
+    "enter_number": "Введите корректное число",
+    "not_set": "Не установлено"
   },
   "calculator": {
     "calculate": "Рассчитать",

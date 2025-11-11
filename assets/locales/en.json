@@ -91,7 +91,29 @@
   },
   "goals": {
     "title": "Goals",
-    "placeholder": ""
+    "placeholder": "",
+    "add_goal": "Add goal",
+    "edit_goal": "Edit goal",
+    "empty": "No goals yet. Create your first one to start saving.",
+    "fields": {
+      "title": "Goal title",
+      "target": "Target amount",
+      "deadline": "Deadline",
+      "priority": "Priority"
+    },
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "add_contribution": "Add contribution",
+    "contribution": {
+      "amount": "Contribution amount",
+      "comment": "Comment"
+    },
+    "delete_confirm": "Delete goal?",
+    "delete_confirm_message": "Are you sure you want to delete the goal and all its contributions?",
+    "suggested_monthly": "Suggested monthly"
   },
   "user_loans": {
     "title": "Loans",
@@ -99,7 +121,8 @@
   },
   "validation": {
     "required": "Required",
-    "enter_number": "Enter a valid number"
+    "enter_number": "Enter a valid number",
+    "not_set": "Not set"
   },
   "calculator": {
     "calculate": "Calculate",

@@ -605,6 +605,22 @@ class LocaleKeys {
   // Goals
   static const goalsTitle = 'goals.title';
   static const goalsPlaceholder = 'goals.placeholder';
+  static const goalsAddGoal = 'goals.add_goal';
+  static const goalsEditGoal = 'goals.edit_goal';
+  static const goalsEmpty = 'goals.empty';
+  static const goalsFieldTitle = 'goals.fields.title';
+  static const goalsFieldTarget = 'goals.fields.target';
+  static const goalsFieldDeadline = 'goals.fields.deadline';
+  static const goalsFieldPriority = 'goals.fields.priority';
+  static const goalsPriorityHigh = 'goals.priority.high';
+  static const goalsPriorityMedium = 'goals.priority.medium';
+  static const goalsPriorityLow = 'goals.priority.low';
+  static const goalsAddContribution = 'goals.add_contribution';
+  static const goalsContributionAmount = 'goals.contribution.amount';
+  static const goalsContributionComment = 'goals.contribution.comment';
+  static const goalsDeleteConfirm = 'goals.delete_confirm';
+  static const goalsDeleteConfirmMessage = 'goals.delete_confirm_message';
+  static const goalsSuggestedMonthly = 'goals.suggested_monthly';
 
   // User Loans
   static const userLoansTitle = 'user_loans.title';
