@@ -28,7 +28,22 @@ class LocaleKeys {
   static const calendarYesterday = 'calendar.yesterday';
   static const calendarNoTasksForDate = 'calendar.no_tasks_for_date';
   static const calendarSelectDate = 'calendar.select_date';
-  static const calendarFilterByProjects = 'calendar.filter_by_projects';
+  static const calendarSelectTime = 'calendar.select_time';
+  static const calendarViewWeek = 'calendar.view_week';
+  static const calendarViewMonth = 'calendar.view_month';
+  static const calendarUpcomingWeek = 'calendar.upcoming_week';
+  static const calendarUpcomingMonth = 'calendar.upcoming_month';
+  static const calendarTypeLoan = 'calendar.type_loan';
+  static const calendarTypeSubscription = 'calendar.type_subscription';
+  static const calendarTypeBill = 'calendar.type_bill';
+  static const calendarTypeGoal = 'calendar.type_goal';
+  static const calendarTypeOther = 'calendar.type_other';
+  static const calendarAddEvent = 'calendar.add_event';
+  static const calendarEditEvent = 'calendar.edit_event';
+  static const calendarEventTitle = 'calendar.event_title';
+  static const calendarEventDescription = 'calendar.event_description';
+  static const calendarNoEventsWeek = 'calendar.no_events_week';
+  static const calendarNoEventsMonth = 'calendar.no_events_month';
 
   // Projects
   static const projectsTitle = 'projects.title';

@@ -7,6 +7,7 @@ import 'psc_calculator_screen.dart';
 import 'budget_screen.dart';
 import 'goals_screen.dart';
 import '../currency/currency_converter_screen.dart';
+import 'calendar_screen.dart';
 
 /// Главный экран приложения с bottom navigation bar
 class MainScreen extends StatefulWidget {
@@ -73,6 +74,19 @@ class _MainScreenState extends State<MainScreen> {
                   ),
                 ],
               ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.event),
+              title: Text(LocaleKeys.navCalendar.tr()),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CalendarScreen(),
+                  ),
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.currency_exchange),
