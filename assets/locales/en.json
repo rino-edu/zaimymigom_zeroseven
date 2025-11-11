@@ -11,7 +11,8 @@
     "settings": "Settings",
     "currency_converter": "Currency converter",
     "calendar": "Financial calendar",
-    "financial_tips": "Financial tips"
+    "financial_tips": "Financial tips",
+    "faq": "FAQ"
   },
   "calendar": {
     "title": "Financial calendar",
@@ -431,5 +432,90 @@
     "show_income_comparison": "Show Income Comparison",
     "filter_by_category": "Filter by Category",
     "export_message": "Statistics export will be implemented in the next version"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "search_placeholder": "Search questions",
+    "favorites_only": "Favorites only",
+    "empty": "No questions match your query",
+    "added_to_favorites": "Added to favorites",
+    "removed_from_favorites": "Removed from favorites",
+    "was_helpful": "Was this helpful?",
+    "helpful": "Helpful",
+    "not_helpful": "Not helpful",
+    "rating_helpful": "Thank you for your feedback!",
+    "rating_not_helpful": "Thank you for your feedback! We will take your opinion into account.",
+    "ask_question": "Ask a question",
+    "ask_question_title": "Ask a question",
+    "ask_question_message": "If you did not find an answer to your question, you can contact support through \"Settings\" -> \"Support\".",
+    "ask_question_sent": "Your question has been sent to support",
+    "categories": {
+      "all": "All",
+      "general": "General questions about loans",
+      "application": "Loan application procedure",
+      "repayment": "Repayment and early repayment terms",
+      "rates": "Interest rates and fees",
+      "credit_history": "Credit history and creditworthiness",
+      "security": "Security and data protection",
+      "technical": "Technical questions about app usage"
+    },
+    "samples": {
+      "general_1": {
+        "question": "What is a loan?",
+        "answer": "A loan is a sum of money that a borrower receives from a lender for a certain period with an obligation to repay it with interest. Loans can be short-term (up to 30 days) and long-term (more than 30 days)."
+      },
+      "general_2": {
+        "question": "How does a microloan differ from a regular loan?",
+        "answer": "A microloan differs in a smaller amount (usually up to 30,000 rubles), faster processing (often within minutes), higher interest rates, and less strict requirements for the borrower. Microloans are issued for a short term."
+      },
+      "application_1": {
+        "question": "How to apply for a loan?",
+        "answer": "To apply for a loan, you need to fill out an online application in the app, providing personal information, loan amount and term. After reviewing the application and approval, funds will be transferred to the specified bank card."
+      },
+      "application_2": {
+        "question": "How long does it take to review an application?",
+        "answer": "Application review usually takes from a few minutes to 1 hour. In most cases, the decision is made automatically. After approval, funds are credited to the card within a few minutes."
+      },
+      "repayment_1": {
+        "question": "How to repay a loan early?",
+        "answer": "Early repayment is possible through the app in the \"Loans\" section. Select an active loan and click \"Early Repayment\". When repaying early, interest is recalculated, which may reduce the total overpayment."
+      },
+      "repayment_2": {
+        "question": "What to do in case of payment delay?",
+        "answer": "In case of payment delay, penalties and late fees are charged. It is recommended to repay the debt as soon as possible to avoid an increase in the debt amount. Contact support to clarify repayment terms."
+      },
+      "rates_1": {
+        "question": "What is the total cost of credit (TCC)?",
+        "answer": "TCC is the interest rate that includes all loan payments: interest, fees, insurance, and other expenses. TCC shows the real cost of the loan as an annual percentage and allows you to compare different offers."
+      },
+      "rates_2": {
+        "question": "What fees may be charged?",
+        "answer": "When applying for a loan, a one-time issuance fee, monthly service fee, early repayment fee (if provided by the contract), and insurance (if available) may be charged. All fees must be specified in the contract."
+      },
+      "credit_1": {
+        "question": "Is credit history checked when issuing a loan?",
+        "answer": "Yes, when considering a loan application, the lender may check your credit history with credit bureaus (CBI). A poor credit history may affect the loan approval decision or the terms of its provision."
+      },
+      "credit_2": {
+        "question": "How to improve creditworthiness?",
+        "answer": "To improve creditworthiness, it is recommended to: repay loans on time, avoid delays, maintain a stable income, reduce the number of active loans, create an emergency fund, and plan a budget."
+      },
+      "security_1": {
+        "question": "Is my personal data safe?",
+        "answer": "Yes, we use modern encryption and data protection methods. All personal data is processed in accordance with personal data protection legislation. We do not share your data with third parties without your consent."
+      },
+      "security_2": {
+        "question": "How is my financial data protected?",
+        "answer": "Financial data is protected using SSL encryption, two-factor authentication (if necessary), and regular security checks. It is recommended to use strong passwords and not share data with third parties."
+      },
+      "technical_1": {
+        "question": "The app is not working. What to do?",
+        "answer": "Try restarting the app, updating it to the latest version, checking your internet connection, and clearing the app cache. If the problem persists, contact support through \"Settings\" -> \"Support\"."
+      },
+      "technical_2": {
+        "question": "How to update the app?",
+        "answer": "App updates are available in the App Store (for iOS) and Google Play (for Android). Enable automatic updates in the app store settings or update the app manually when notifications appear."
+      }
+    }
   }
 }

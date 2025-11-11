@@ -11,6 +11,7 @@ import 'calendar_screen.dart';
 import 'creditworthiness_screen.dart';
 import 'financial_tips_screen.dart';
 import 'expense_statistics_screen.dart';
+import 'faq_screen.dart';
 import 'package:liquid_glass_bottom_bar/liquid_glass_bottom_bar.dart';
 
 /// Главный экран приложения с bottom navigation bar
@@ -141,6 +142,19 @@ class _MainScreenState extends State<MainScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const ExpenseStatisticsScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.help_outline),
+              title: Text(LocaleKeys.navFaq.tr()),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const FaqScreen(),
                   ),
                 );
               },

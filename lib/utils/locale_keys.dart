@@ -21,6 +21,7 @@ class LocaleKeys {
   static const navUserLoans = 'navigation.user_loans';
   static const navCurrencyConverter = 'navigation.currency_converter';
   static const navFinancialTips = 'navigation.financial_tips';
+  static const navFaq = 'navigation.faq';
 
   // Calendar
   static const calendarTitle = 'calendar.title';
@@ -728,6 +729,31 @@ class LocaleKeys {
   static const expenseStatisticsShowIncomeComparison = 'expense_statistics.show_income_comparison';
   static const expenseStatisticsFilterByCategory = 'expense_statistics.filter_by_category';
   static const expenseStatisticsExportMessage = 'expense_statistics.export_message';
+
+  // FAQ
+  static const faqTitle = 'faq.title';
+  static const faqSearchPlaceholder = 'faq.search_placeholder';
+  static const faqFavoritesOnly = 'faq.favorites_only';
+  static const faqEmpty = 'faq.empty';
+  static const faqAddedToFavorites = 'faq.added_to_favorites';
+  static const faqRemovedFromFavorites = 'faq.removed_from_favorites';
+  static const faqWasHelpful = 'faq.was_helpful';
+  static const faqHelpful = 'faq.helpful';
+  static const faqNotHelpful = 'faq.not_helpful';
+  static const faqRatingHelpful = 'faq.rating_helpful';
+  static const faqRatingNotHelpful = 'faq.rating_not_helpful';
+  static const faqAskQuestion = 'faq.ask_question';
+  static const faqAskQuestionTitle = 'faq.ask_question_title';
+  static const faqAskQuestionMessage = 'faq.ask_question_message';
+  static const faqAskQuestionSent = 'faq.ask_question_sent';
+  static const faqCategoryAll = 'faq.categories.all';
+  static const faqCategoryGeneral = 'faq.categories.general';
+  static const faqCategoryApplication = 'faq.categories.application';
+  static const faqCategoryRepayment = 'faq.categories.repayment';
+  static const faqCategoryRates = 'faq.categories.rates';
+  static const faqCategoryCreditHistory = 'faq.categories.credit_history';
+  static const faqCategorySecurity = 'faq.categories.security';
+  static const faqCategoryTechnical = 'faq.categories.technical';
 }
 
 // Ключи для Базы знаний (knowledge)
@@ -785,4 +811,31 @@ class FinancialTipsKeys {
   static const categorySavings = 'financial_tips.categories.savings_investments';
   static const categoryLiteracy = 'financial_tips.categories.literacy';
   static const categoryAntiFraud = 'financial_tips.categories.anti_fraud';
+}
+
+// Ключи для раздела FAQ
+class FaqKeys {
+  static const title = 'faq.title';
+  static const searchPlaceholder = 'faq.search_placeholder';
+  static const favoritesOnly = 'faq.favorites_only';
+  static const empty = 'faq.empty';
+  static const addedToFavorites = 'faq.added_to_favorites';
+  static const removedFromFavorites = 'faq.removed_from_favorites';
+  static const wasHelpful = 'faq.was_helpful';
+  static const helpful = 'faq.helpful';
+  static const notHelpful = 'faq.not_helpful';
+  static const ratingHelpful = 'faq.rating_helpful';
+  static const ratingNotHelpful = 'faq.rating_not_helpful';
+  static const askQuestion = 'faq.ask_question';
+  static const askQuestionTitle = 'faq.ask_question_title';
+  static const askQuestionMessage = 'faq.ask_question_message';
+  static const askQuestionSent = 'faq.ask_question_sent';
+  static const categoryAll = 'faq.categories.all';
+  static const categoryGeneral = 'faq.categories.general';
+  static const categoryApplication = 'faq.categories.application';
+  static const categoryRepayment = 'faq.categories.repayment';
+  static const categoryRates = 'faq.categories.rates';
+  static const categoryCreditHistory = 'faq.categories.credit_history';
+  static const categorySecurity = 'faq.categories.security';
+  static const categoryTechnical = 'faq.categories.technical';
 }
