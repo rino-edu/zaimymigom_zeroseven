@@ -8,6 +8,7 @@ import 'services/appmetrica_service.dart';
 import 'services/settings_service.dart';
 import 'services/budget_provider.dart';
 import 'services/goals_provider.dart';
+import 'services/currency_prefs.dart';
 import 'views/loans/loans_screen.dart';
 import 'views/home/main_screen.dart';
 
@@ -40,6 +41,7 @@ void main() async {
           ChangeNotifierProvider.value(value: settingsService),
           ChangeNotifierProvider(create: (_) => BudgetProvider()),
           ChangeNotifierProvider(create: (_) => GoalsProvider()),
+          ChangeNotifierProvider(create: (_) => CurrencyPrefs()..load()),
         ],
         child: const MyApp(),
       ),

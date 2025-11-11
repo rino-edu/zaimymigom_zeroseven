@@ -19,6 +19,7 @@ class LocaleKeys {
   static const navBudget = 'navigation.budget';
   static const navGoals = 'navigation.goals';
   static const navUserLoans = 'navigation.user_loans';
+  static const navCurrencyConverter = 'navigation.currency_converter';
 
   // Calendar
   static const calendarTitle = 'calendar.title';
@@ -625,6 +626,24 @@ class LocaleKeys {
   // User Loans
   static const userLoansTitle = 'user_loans.title';
   static const userLoansPlaceholder = 'user_loans.placeholder';
+
+  // Currency converter
+  static const currencyTitle = 'currency.title';
+  static const currencyAmount = 'currency.amount';
+  static const currencyFrom = 'currency.from';
+  static const currencyTo = 'currency.to';
+  static const currencySwap = 'currency.swap';
+  static const currencyLastUpdate = 'currency.last_update';
+  static const currencyResult = 'currency.result';
+  static const currencyFavorites = 'currency.favorites';
+  static const currencyHistory = 'currency.history';
+  static const currencyHistoryEmpty = 'currency.history_empty';
+  static const currencyAddToFavorites = 'currency.add_to_favorites';
+  static const currencyRemoveFromFavorites = 'currency.remove_from_favorites';
+  static const currencyUsePair = 'currency.use_pair';
+
+  // Common actions
+  static const actionsClear = 'actions.clear';
 }
 
 // Ключи для Базы знаний (knowledge)

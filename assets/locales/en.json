@@ -8,7 +8,8 @@
     "budget": "Budget",
     "goals": "Goals",
     "user_loans": "Loans",
-    "settings": "Settings"
+    "settings": "Settings",
+    "currency_converter": "Currency converter"
   },
   "psc_calculator": {
     "title": "TCC Calculator",
@@ -211,6 +212,7 @@
     "export": "Export",
     "import": "Import",
     "clear_filters": "Clear Filters",
+    "clear": "Clear",
     "create_project": "Create Project",
     "retry": "Retry",
     "all": "All",
@@ -226,5 +228,20 @@
     "terms": "Terms of Service",
     "support": "Support",
     "feedback": "Feedback"
+  },
+  "currency": {
+    "title": "Currency converter",
+    "amount": "Amount",
+    "from": "From",
+    "to": "To",
+    "swap": "Swap",
+    "last_update": "Last update",
+    "result": "Result",
+    "favorites": "Favorites",
+    "history": "History",
+    "history_empty": "No conversions yet",
+    "add_to_favorites": "Add to favorites",
+    "remove_from_favorites": "Remove from favorites",
+    "use_pair": "Use this pair"
   }
 }

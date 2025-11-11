@@ -8,7 +8,8 @@
     "budget": "Бюджет",
     "goals": "Цели",
     "user_loans": "Займы",
-    "settings": "Настройки"
+    "settings": "Настройки",
+    "currency_converter": "Конвертер валют"
   },
   "psc_calculator": {
     "title": "Калькулятор ПСК",
@@ -211,6 +212,7 @@
     "export": "Экспорт",
     "import": "Импорт",
     "clear_filters": "Очистить фильтры",
+    "clear": "Очистить",
     "create_project": "Создать проект",
     "retry": "Повторить",
     "all": "Все",
@@ -226,5 +228,20 @@
     "terms": "Условия использования",
     "support": "Поддержка",
     "feedback": "Обратная связь"
+  },
+  "currency": {
+    "title": "Конвертер валют",
+    "amount": "Сумма",
+    "from": "Из",
+    "to": "В",
+    "swap": "Поменять",
+    "last_update": "Последнее обновление",
+    "result": "Результат",
+    "favorites": "Избранные пары",
+    "history": "История",
+    "history_empty": "Пока нет конвертаций",
+    "add_to_favorites": "Добавить в избранное",
+    "remove_from_favorites": "Убрать из избранного",
+    "use_pair": "Использовать пару"
   }
 }
