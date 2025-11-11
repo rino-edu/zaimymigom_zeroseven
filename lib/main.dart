@@ -10,6 +10,7 @@ import 'services/budget_provider.dart';
 import 'services/goals_provider.dart';
 import 'services/currency_prefs.dart';
 import 'services/calendar_provider.dart';
+import 'services/creditworthiness_provider.dart';
 import 'views/loans/loans_screen.dart';
 import 'views/home/main_screen.dart';
 
@@ -44,6 +45,13 @@ void main() async {
           ChangeNotifierProvider(create: (_) => GoalsProvider()),
           ChangeNotifierProvider(create: (_) => CurrencyPrefs()..load()),
           ChangeNotifierProvider(create: (_) => CalendarProvider()..load()),
+          ChangeNotifierProvider(
+            create: (_) {
+              final provider = CreditworthinessProvider();
+              provider.initialize();
+              return provider;
+            },
+          ),
         ],
         child: const MyApp(),
       ),

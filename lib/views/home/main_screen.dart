@@ -8,6 +8,7 @@ import 'budget_screen.dart';
 import 'goals_screen.dart';
 import '../currency/currency_converter_screen.dart';
 import 'calendar_screen.dart';
+import 'creditworthiness_screen.dart';
 
 /// Главный экран приложения с bottom navigation bar
 class MainScreen extends StatefulWidget {
@@ -97,6 +98,19 @@ class _MainScreenState extends State<MainScreen> {
                   context,
                   MaterialPageRoute(
                     builder: (context) => const CurrencyConverterScreen(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.assessment),
+              title: Text(LocaleKeys.creditworthinessTitle.tr()),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const CreditworthinessScreen(),
                   ),
                 );
               },

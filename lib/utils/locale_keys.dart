@@ -659,6 +659,49 @@ class LocaleKeys {
 
   // Common actions
   static const actionsClear = 'actions.clear';
+
+  // Creditworthiness
+  static const creditworthinessTitle = 'creditworthiness.title';
+  static const creditworthinessDescription = 'creditworthiness.description';
+  static const creditworthinessStep1Title = 'creditworthiness.step1_title';
+  static const creditworthinessStep2Title = 'creditworthiness.step2_title';
+  static const creditworthinessStep3Title = 'creditworthiness.step3_title';
+  static const creditworthinessMonthlyIncome = 'creditworthiness.monthly_income';
+  static const creditworthinessMonthlyIncomeHint = 'creditworthiness.monthly_income_hint';
+  static const creditworthinessMonthlyExpenses = 'creditworthiness.monthly_expenses';
+  static const creditworthinessMonthlyExpensesHint = 'creditworthiness.monthly_expenses_hint';
+  static const creditworthinessSavings = 'creditworthiness.savings';
+  static const creditworthinessSavingsHint = 'creditworthiness.savings_hint';
+  static const creditworthinessHasRegularIncome = 'creditworthiness.has_regular_income';
+  static const creditworthinessHasCurrentLoans = 'creditworthiness.has_current_loans';
+  static const creditworthinessCurrentLoansCount = 'creditworthiness.current_loans_count';
+  static const creditworthinessCurrentLoansTotal = 'creditworthiness.current_loans_total';
+  static const creditworthinessHasOverduePayments = 'creditworthiness.has_overdue_payments';
+  static const creditworthinessOverdueCount = 'creditworthiness.overdue_count';
+  static const creditworthinessUsesBudgetPlanning = 'creditworthiness.uses_budget_planning';
+  static const creditworthinessHasEmergencyFund = 'creditworthiness.has_emergency_fund';
+  static const creditworthinessMonthsStability = 'creditworthiness.months_stability';
+  static const creditworthinessMonthsStabilityHint = 'creditworthiness.months_stability_hint';
+  static const creditworthinessResultTitle = 'creditworthiness.result_title';
+  static const creditworthinessScore = 'creditworthiness.score';
+  static String creditworthinessScoreLabel(String label) => 'creditworthiness.score_label.$label';
+  static const creditworthinessSolvencyInfo = 'creditworthiness.solvency_info';
+  static const creditworthinessSolvencyRatio = 'creditworthiness.solvency_ratio';
+  static const creditworthinessAvailableLoanAmount = 'creditworthiness.available_loan_amount';
+  static const creditworthinessRiskLevel = 'creditworthiness.risk_level';
+  static const creditworthinessRecommendedLoanAmount = 'creditworthiness.recommended_loan_amount';
+  static const creditworthinessRecommendedLoanTerm = 'creditworthiness.recommended_loan_term';
+  static const creditworthinessMonths = 'creditworthiness.months';
+  static const creditworthinessRecommendations = 'creditworthiness.recommendations';
+  static String creditworthinessRecommendation(String rec) => 'creditworthiness.recommendation.$rec';
+  static const creditworthinessStrengths = 'creditworthiness.strengths';
+  static String creditworthinessStrength(String strength) => 'creditworthiness.strength.$strength';
+  static const creditworthinessWeaknesses = 'creditworthiness.weaknesses';
+  static String creditworthinessWeakness(String weakness) => 'creditworthiness.weakness.$weakness';
+  static const creditworthinessHistory = 'creditworthiness.history';
+  static const creditworthinessHistoryEmpty = 'creditworthiness.history_empty';
+  static const creditworthinessDeleteConfirm = 'creditworthiness.delete_confirm';
+  static const creditworthinessDeleteConfirmMessage = 'creditworthiness.delete_confirm_message';
 }
 
 // Ключи для Базы знаний (knowledge)
