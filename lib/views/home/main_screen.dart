@@ -10,6 +10,7 @@ import '../currency/currency_converter_screen.dart';
 import 'calendar_screen.dart';
 import 'creditworthiness_screen.dart';
 import 'financial_tips_screen.dart';
+import 'package:liquid_glass_bottom_bar/liquid_glass_bottom_bar.dart';
 
 /// Главный экран приложения с bottom navigation bar
 class MainScreen extends StatefulWidget {
@@ -49,6 +50,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
       appBar: AppBar(title: Text(_getAppBarTitle())),
       drawer: Drawer(
         child: ListView(
@@ -148,39 +150,35 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
       body: _screens[_selectedIndex],
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 8,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          currentIndex: _selectedIndex,
-          onTap: _onItemTapped,
-          items: [
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.calculate),
-              label: LocaleKeys.navPscCalculator.tr(),
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.account_balance_wallet),
-              label: LocaleKeys.navBudget.tr(),
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.flag),
-              label: LocaleKeys.navGoals.tr(),
-            ),
-            BottomNavigationBarItem(
-              icon: const Icon(Icons.credit_card),
-              label: LocaleKeys.navUserLoans.tr(),
-            ),
-          ],
-        ),
+      bottomNavigationBar: LiquidGlassBottomBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        activeColor: const Color(0xFF00B0FF),
+        barBlurSigma: 10,
+        activeBlurSigma: 24,
+        items: [
+          LiquidGlassBottomBarItem(
+            icon: Icons.calculate,
+            activeIcon: Icons.calculate,
+            label: LocaleKeys.navPscCalculator.tr(),
+          ),
+          LiquidGlassBottomBarItem(
+            icon: Icons.account_balance_wallet,
+            activeIcon: Icons.account_balance_wallet,
+            label: LocaleKeys.navBudget.tr(),
+          ),
+          LiquidGlassBottomBarItem(
+            icon: Icons.flag,
+            activeIcon: Icons.flag,
+            label: LocaleKeys.navGoals.tr(),
+          ),
+          LiquidGlassBottomBarItem(
+            icon: Icons.credit_card,
+            activeIcon: Icons.credit_card,
+            label: LocaleKeys.navUserLoans.tr(),
+            badge: 1
+          ),
+        ],
       ),
     );
   }

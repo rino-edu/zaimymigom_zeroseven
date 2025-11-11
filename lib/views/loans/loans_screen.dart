@@ -187,7 +187,7 @@ class _LoansScreenState extends State<LoansScreen> {
 
     // Список офферов
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(bottom: 80, top: 16, right: 16, left: 16),
       itemCount: _offers.length,
       itemBuilder: (context, index) {
         final offer = _offers[index];
