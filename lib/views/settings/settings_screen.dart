@@ -8,6 +8,7 @@ import '../../services/settings_service.dart';
 import '../../constants/app_colors.dart';
 import '../../utils/locale_keys.dart';
 import '../../utils/helpers.dart';
+import 'policy_screen.dart';
 
 /// Экран настроек приложения
 class SettingsScreen extends StatefulWidget {
@@ -179,7 +180,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
 
               const Divider(height: 1),
-
+              ListTile(
+                leading: const Icon(
+                  Icons.privacy_tip_outlined,
+                  color: AppColors.primary,
+                ),
+                title: Text(LocaleKeys.aboutPrivacyPolicy.tr()),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                onTap: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const PolicyScreen()),
+                  );
+                },
+              ),
               // Секция: Дополнительно
               _buildSectionHeader(context, LocaleKeys.settingsOther.tr()),
 
