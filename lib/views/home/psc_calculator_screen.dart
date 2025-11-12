@@ -228,7 +228,7 @@ class _PscCalculatorScreenState extends State<PscCalculatorScreen> {
         FocusScope.of(context).unfocus();
       },
       child: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 50, left: 16, right: 16),
+        padding: const EdgeInsets.only(bottom: 90, left: 16, right: 16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

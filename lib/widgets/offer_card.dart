@@ -64,27 +64,38 @@ class _OfferCardState extends State<OfferCard> {
       child: Column(
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               // Логотип
               _buildLogo(),
               const SizedBox(width: 12),
+              //Spacer(),
+              Text(
+              widget.offer.name,
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontSize: 22,
+                fontWeight: FontWeight.w600,
+                color: Colors.black,
+              ),
+              textAlign: TextAlign.center,
+              ),
               Spacer(),
               // Рейтинг
               _buildRating(),
             ],
           ),
-          const SizedBox(height: 16),
-          // Название по центру под логотипом
-          Center(
-            child: Text(
-              widget.offer.name,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
+          // const SizedBox(height: 16),
+          // // Название по центру под логотипом
+          // Center(
+          //   child: Text(
+          //     widget.offer.name,
+          //     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+          //       fontWeight: FontWeight.w600,
+          //       color: Colors.grey[600],
+          //     ),
+          //     textAlign: TextAlign.center,
+          //   ),
+          // ),
         ],
       ),
     );
@@ -93,7 +104,7 @@ class _OfferCardState extends State<OfferCard> {
   /// Логотип оффера
   Widget _buildLogo() {
     return SizedBox(
-      width: 140, // Увеличиваем размер логотипа
+      width: 70, // Увеличиваем размер логотипа
       height: 70,
       child: _buildImage(),
     );
@@ -103,37 +114,53 @@ class _OfferCardState extends State<OfferCard> {
   Widget _buildImage() {
     if (widget.offer.image.isEmpty) {
       // Заглушка если нет изображения
-      return Icon(Icons.business, color: Colors.grey[400], size: 80);
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Container(
+          color: Colors.grey[200],
+          child: Icon(Icons.business, color: Colors.grey[400], size: 80),
+        ),
+      );
     }
 
     if (widget.offer.isSvgImage) {
       // SVG изображение
-      return SvgPicture.network(
-        widget.offer.image,
-        fit: BoxFit.contain, // Изображение влезает полностью без обрезки
-        placeholderBuilder: (context) => Container(
-          color: Colors.grey[200],
-          child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: SvgPicture.network(
+          widget.offer.image,
+          fit: BoxFit.contain, // Изображение влезает полностью без обрезки
+          placeholderBuilder: (context) => Container(
+            color: Colors.grey[200],
+            child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          ),
+          errorBuilder: (context, error, stackTrace) => Container(
+            color: Colors.grey[200],
+            child: Icon(Icons.error_outline, color: Colors.grey[400], size: 80),
+          ),
         ),
-        errorBuilder: (context, error, stackTrace) =>
-            Icon(Icons.error_outline, color: Colors.grey[400], size: 80),
       );
     } else {
       // PNG/JPG изображение
-      return Image.network(
-        widget.offer.image,
-        fit: BoxFit.contain, // Изображение влезает полностью без обрезки
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return Container(
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.network(
+          widget.offer.image,
+          fit: BoxFit.contain, // Изображение влезает полностью без обрезки
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              color: Colors.grey[200],
+              child: const Center(
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) => Container(
             color: Colors.grey[200],
-            child: const Center(
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          );
-        },
-        errorBuilder: (context, error, stackTrace) =>
-            Icon(Icons.error_outline, color: Colors.grey[400], size: 80),
+            child: Icon(Icons.error_outline, color: Colors.grey[400], size: 80),
+          ),
+        ),
       );
     }
   }
