@@ -14,7 +14,7 @@ class LocaleKeys {
   static const navCalculator = 'navigation.calculator';
   static const navGuides = 'navigation.guides';
   static const navSettings = 'navigation.settings';
-  static const navLoans = 'navigation.loans';
+  static const navLoans = 'navigation.user_loans';
   static const navPscCalculator = 'navigation.psc_calculator';
   static const navBudget = 'navigation.budget';
   static const navGoals = 'navigation.goals';
@@ -754,6 +754,21 @@ class LocaleKeys {
   static const faqCategoryCreditHistory = 'faq.categories.credit_history';
   static const faqCategorySecurity = 'faq.categories.security';
   static const faqCategoryTechnical = 'faq.categories.technical';
+
+  // Onboarding
+  static const onboardingWelcomeTitle = 'onboarding.welcome.title';
+  static const onboardingWelcomeDescription = 'onboarding.welcome.description';
+  static const onboardingCalculatorTitle = 'onboarding.calculator.title';
+  static const onboardingCalculatorDescription = 'onboarding.calculator.description';
+  static const onboardingBudgetTitle = 'onboarding.budget.title';
+  static const onboardingBudgetDescription = 'onboarding.budget.description';
+  static const onboardingGoalsTitle = 'onboarding.goals.title';
+  static const onboardingGoalsDescription = 'onboarding.goals.description';
+  static const onboardingFeaturesTitle = 'onboarding.features.title';
+  static const onboardingFeaturesDescription = 'onboarding.features.description';
+  static const onboardingNext = 'onboarding.next';
+  static const onboardingSkip = 'onboarding.skip';
+  static const onboardingGetStarted = 'onboarding.get_started';
 }
 
 // Ключи для Базы знаний (knowledge)

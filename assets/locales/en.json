@@ -517,5 +517,30 @@
         "answer": "App updates are available in the App Store (for iOS) and Google Play (for Android). Enable automatic updates in the app store settings or update the app manually when notifications appear."
       }
     }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome!",
+      "description": "Manage your finances easily and efficiently. Our app will help you calculate loans, manage your budget, and achieve financial goals."
+    },
+    "calculator": {
+      "title": "TCC Calculator",
+      "description": "Calculate the total cost of credit including all fees and payments. Get detailed repayment schedule and accurate calculations."
+    },
+    "budget": {
+      "title": "Budget Management",
+      "description": "Track income and expenses, create categories and plan your budget. Control your finances in real time."
+    },
+    "goals": {
+      "title": "Financial Goals",
+      "description": "Set goals and track your progress. Plan savings and get recommendations for achieving your goals."
+    },
+    "features": {
+      "title": "Additional Features",
+      "description": "Financial calendar, currency converter, creditworthiness assessment, expense statistics and more. All financial management tools in one place."
+    },
+    "next": "Next",
+    "skip": "Skip",
+    "get_started": "Get Started"
   }
 }

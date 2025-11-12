@@ -73,12 +73,12 @@ class _OfferCardState extends State<OfferCard> {
               _buildRating(),
             ],
           ),
-          const SizedBox(height: 4),
+          const SizedBox(height: 16),
           // Название по центру под логотипом
           Center(
             child: Text(
               widget.offer.name,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: Colors.grey[600],
               ),
@@ -93,8 +93,8 @@ class _OfferCardState extends State<OfferCard> {
   /// Логотип оффера
   Widget _buildLogo() {
     return SizedBox(
-      width: 160, // Увеличиваем размер логотипа
-      height: 100,
+      width: 140, // Увеличиваем размер логотипа
+      height: 70,
       child: _buildImage(),
     );
   }

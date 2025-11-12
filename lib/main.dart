@@ -13,6 +13,7 @@ import 'services/calendar_provider.dart';
 import 'services/creditworthiness_provider.dart';
 import 'views/loans/loans_screen.dart';
 import 'views/home/main_screen.dart';
+import 'views/onboarding/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -105,10 +106,10 @@ class AppModeWrapper extends StatelessWidget {
     }
 
     // В небоевом режиме — если онбординг не пройден, сначала онбординг
-    // final settings = context.watch<SettingsService>();
-    // if (!settings.onboardingCompleted) {
-    //   return const OnboardingScreen();
-    // }
+    final settings = context.watch<SettingsService>();
+    if (!settings.onboardingCompleted) {
+      return const OnboardingScreen();
+    }
     return const MainScreen();
   }
 }
