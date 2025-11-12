@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "431376911075",
-    "project_id": "com-example-app5",
-    "storage_bucket": "com-example-app5.firebasestorage.app"
+    "project_number": "1006556239797",
+    "project_id": "com-kredit7-dney",
+    "storage_bucket": "com-kredit7-dney.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:431376911075:android:b3908f35fc335346e453d6",
+        "mobilesdk_app_id": "1:1006556239797:android:d0c99059b6c741196eabfc",
         "android_client_info": {
-          "package_name": "com.example.rinoFirstIos"
+          "package_name": "com.kredit7.dney"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAdw6M2i_4XGwmjCSXa3KiXg6O1frX6vfE"
+          "current_key": "AIzaSyCF3716RbieMHeqkd0aHk24H1ekpqNulIo"
         }
       ],
       "services": {

@@ -50,19 +50,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAdw6M2i_4XGwmjCSXa3KiXg6O1frX6vfE',
-    appId: '1:431376911075:android:b3908f35fc335346e453d6',
-    messagingSenderId: '431376911075',
-    projectId: 'com-example-app5',
-    storageBucket: 'com-example-app5.firebasestorage.app',
+    apiKey: 'AIzaSyCF3716RbieMHeqkd0aHk24H1ekpqNulIo',
+    appId: '1:1006556239797:android:d0c99059b6c741196eabfc',
+    messagingSenderId: '1006556239797',
+    projectId: 'com-kredit7-dney',
+    storageBucket: 'com-kredit7-dney.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDOQ6j59VbbQm90fXNIhIVDN6Mo-t6yMlw',
-    appId: '1:431376911075:ios:b0e295728041354de453d6',
-    messagingSenderId: '431376911075',
-    projectId: 'com-example-app5',
-    storageBucket: 'com-example-app5.firebasestorage.app',
-    iosBundleId: 'com.example.rinoFirstIos',
+    apiKey: 'AIzaSyDAAhKZ_5Re0XFjVfhL9Yfk8utGgnKvGww',
+    appId: '1:1006556239797:ios:8036854a1245e2416eabfc',
+    messagingSenderId: '1006556239797',
+    projectId: 'com-kredit7-dney',
+    storageBucket: 'com-kredit7-dney.firebasestorage.app',
+    iosBundleId: 'com.kredit7.dney',
   );
 }

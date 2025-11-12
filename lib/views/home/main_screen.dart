@@ -59,26 +59,17 @@ class _MainScreenState extends State<MainScreen> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primary,
+              padding: EdgeInsets.all(4),
+              decoration: const BoxDecoration(
+                color: Color(0xFF0C1C3D),
               ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Icon(
-                    Icons.account_balance_wallet,
-                    size: 48,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'ЗаймыМигом',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onPrimary,
-                    ),
-                  ),
-                ],
+              child: Align(
+                alignment: Alignment.bottomLeft,
+                child: Image.asset(
+                  'assets/icons/icon.png',
+                  width: 80,
+                  height: 80,
+                ),
               ),
             ),
             ListTile(

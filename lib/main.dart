@@ -73,7 +73,7 @@ class MyApp extends StatelessWidget {
     }
 
     return MaterialApp(
-      title: 'ПОМЕНЯТЬ',
+      title: 'Кредит 7 дней',
       // Локализация
       locale: locale ?? context.locale,
       supportedLocales: context.supportedLocales,

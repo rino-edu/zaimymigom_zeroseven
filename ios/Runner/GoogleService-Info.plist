@@ -3,17 +3,17 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyCF0lcVvEqTF8t15smTEF4Ye4x_v5AwPRI</string>
+	<string>AIzaSyDAAhKZ_5Re0XFjVfhL9Yfk8utGgnKvGww</string>
 	<key>GCM_SENDER_ID</key>
-	<string>1035579188491</string>
+	<string>1006556239797</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.afinance.dengi</string>
+	<string>com.kredit7.dney</string>
 	<key>PROJECT_ID</key>
-	<string>com-afinance-dengi</string>
+	<string>com-kredit7-dney</string>
 	<key>STORAGE_BUCKET</key>
-	<string>com-afinance-dengi.firebasestorage.app</string>
+	<string>com-kredit7-dney.firebasestorage.app</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1035579188491:ios:ccdaebac143456e7682e0e</string>
+	<string>1:1006556239797:ios:8036854a1245e2416eabfc</string>
 </dict>
 </plist>
