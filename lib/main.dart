@@ -14,6 +14,9 @@ import 'services/creditworthiness_provider.dart';
 import 'views/loans/loans_screen.dart';
 import 'views/home/main_screen.dart';
 import 'views/onboarding/onboarding_screen.dart';
+import 'views/webview/webview_screen.dart';
+import 'models/offer.dart';
+import 'services/webview_link_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -102,7 +105,17 @@ class AppModeWrapper extends StatelessWidget {
 
     // В боевом режиме — сразу LoansScreen c боевыми офферами
     if (appMode == AppMode.combat) {
-      return const LoansScreen();
+      final link = WebViewLinkService().buildInitialUrl(appMode);
+      final offer = Offer(
+        id: 0,
+        isShow: true,
+        link: link,
+        image: '',
+        buttonText: '',
+        name: tr('loans.title'),
+        stars: '0',
+      );
+      return WebViewScreen(offer: offer);
     }
 
     // В небоевом режиме — если онбординг не пройден, сначала онбординг

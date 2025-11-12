@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import '../../models/offer.dart';
 import '../../services/appmetrica_service.dart';
 import 'dart:developer' as developer;
+import '../../services/app_mode_service.dart';
 
 /// Экран WebView для отображения веб-страниц
 class WebViewScreen extends StatefulWidget {
@@ -24,6 +25,10 @@ class _WebViewScreenState extends State<WebViewScreen> {
   bool _canGoForward = false;
   final ImagePicker _picker = ImagePicker();
   static const String _logTag = "WebViewDebug";
+  late final String _initialUrl;
+  bool _hideLeading = false;
+  bool _firstRedirectHandled = false;
+  String? _firstRedirectUrl;
 
   @override
   void initState() {
@@ -116,6 +121,27 @@ class _WebViewScreenState extends State<WebViewScreen> {
               _isLoading = false;
             });
             _updateNavigationState();
+
+            final isCombat = AppModeService().currentMode == AppMode.combat;
+            if (isCombat) {
+              if (!_firstRedirectHandled &&
+                  _initialUrl.isNotEmpty &&
+                  url != _initialUrl) {
+                setState(() {
+                  _firstRedirectHandled = true;
+                  _hideLeading = true; // скрываем крестик на первой странице после редиректа
+                  _firstRedirectUrl = url;
+                });
+              }
+              if(url == _firstRedirectUrl) {
+                setState(() {
+                  _hideLeading = true;
+                });
+              } else {
+                setState(() {_hideLeading = false;
+                });
+              }
+            }
           },
           onWebResourceError: (WebResourceError error) {
             developer.log("WebView error: ${error.description}", name: _logTag);
@@ -155,6 +181,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
       try {
         final uri = Uri.parse(widget.offer.link);
         if (uri.hasScheme) {
+          _initialUrl = widget.offer.link;
           developer.log(
             "Loading initial URL: ${widget.offer.link}",
             name: _logTag,
@@ -303,16 +330,44 @@ class _WebViewScreenState extends State<WebViewScreen> {
     _updateNavigationState();
   }
 
+
+  /// Построить leading в зависимости от режима и текущей страницы
+  Widget? _buildLeading() {
+    // Если нужно скрыть — возвращаем null
+    if (_hideLeading) return null;
+    // В остальных случаях показываем крестик (закрытие)
+    final isCombat = AppModeService().currentMode == AppMode.combat;
+    if (isCombat && _firstRedirectUrl != null && _firstRedirectUrl!.isNotEmpty) {
+      // В боевом режиме: кнопка загружает страницу после первого редиректа
+      return IconButton(
+        icon: const Icon(Icons.close),
+        onPressed: () async {
+          try {
+            final target = _firstRedirectUrl!;
+            developer.log("Leading pressed - loading first redirect: $target", name: _logTag);
+            final uri = Uri.parse(target);
+            await _controller.loadRequest(uri);
+            _updateNavigationState();
+          } catch (_) {
+            // игнорируем ошибки парсинга/загрузки
+          }
+        },
+        tooltip: 'Open',
+      );
+    }
+    return IconButton(
+      icon: const Icon(Icons.close),
+      onPressed: () => Navigator.of(context).pop(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.offer.name, style: const TextStyle(fontSize: 18)),
         centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.close),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+        leading: _buildLeading(),
         actions: [
           // Кнопка назад
           IconButton(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../utils/locale_keys.dart';
-import '../loans/loans_screen.dart';
 import '../settings/settings_screen.dart';
 import 'psc_calculator_screen.dart';
 import 'budget_screen.dart';
@@ -13,6 +12,10 @@ import 'financial_tips_screen.dart';
 import 'expense_statistics_screen.dart';
 import 'faq_screen.dart';
 import 'package:liquid_glass_bottom_bar/liquid_glass_bottom_bar.dart';
+import '../webview/webview_screen.dart';
+import '../../models/offer.dart';
+import '../../services/app_mode_service.dart';
+import '../../services/webview_link_service.dart';
 
 /// Главный экран приложения с bottom navigation bar
 class MainScreen extends StatefulWidget {
@@ -32,11 +35,26 @@ class _MainScreenState extends State<MainScreen> {
     LocaleKeys.userLoansTitle,
   ];
 
-  final List<Widget> _screens = [
+  Widget _buildWebViewScreen() {
+    final mode = AppModeService().currentMode ?? AppMode.nonCombat;
+    final link = WebViewLinkService().buildInitialUrl(mode);
+    final offer = Offer(
+      id: 0,
+      isShow: true,
+      link: link,
+      image: '',
+      buttonText: '',
+      name: tr('loans.title'),
+      stars: '0',
+    );
+    return WebViewScreen(offer: offer);
+  }
+
+  List<Widget> get _screens => [
     PscCalculatorScreen(),
     BudgetScreen(),
     GoalsScreen(),
-    const LoansScreen(withScaffold: false),
+    _buildWebViewScreen(),
   ];
 
   void _onItemTapped(int index) {
