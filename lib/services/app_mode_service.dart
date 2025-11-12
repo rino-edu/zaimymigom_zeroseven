@@ -64,10 +64,10 @@ class AppModeService {
 
   /// Отправить событие в AppMetrica о результате определения режима
   void _reportModeToAppMetrica(
-    AppMode mode,
-    String reason, {
-    String? userCountry,
-  }) {
+      AppMode mode,
+      String reason, {
+        String? userCountry,
+      }) {
     AppMetricaService.reportEvent(
       'app_mode_determined',
       parameters: {
@@ -246,7 +246,7 @@ class AppModeService {
       final result = AppModeResult(
         mode: _currentMode!,
         reason:
-            'User country "$userCountry" is not in allowed list: $allowedCountriesLower',
+        'User country "$userCountry" is not in allowed list: $allowedCountriesLower',
         checks: checks,
       );
       _lastResult = result;
@@ -256,31 +256,6 @@ class AppModeService {
       _reportModeToAppMetrica(
         AppMode.nonCombat,
         'User country not allowed',
-        userCountry: userCountry,
-      );
-
-      return result;
-    }
-
-    // 8. Проверка наличия коллекции boy_offers_[код страны]
-    print('💼 Step 8: Checking boy offers collection...');
-    final hasBoyOffers = await _checkBoyOffersCollection(userCountry);
-    checks['Boy Offers Collection'] = hasBoyOffers;
-
-    if (!hasBoyOffers) {
-      _currentMode = AppMode.nonCombat;
-      final result = AppModeResult(
-        mode: _currentMode!,
-        reason: 'No boy_offers_$userCountry collection found',
-        checks: checks,
-      );
-      _lastResult = result;
-      result.logResult();
-
-      // Отправляем событие в AppMetrica
-      _reportModeToAppMetrica(
-        AppMode.nonCombat,
-        'No boy offers collection found',
         userCountry: userCountry,
       );
 
@@ -380,20 +355,6 @@ class AppModeService {
     }
   }
 
-  /// Проверка наличия коллекции boy_offers_[код страны]
-  Future<bool> _checkBoyOffersCollection(String countryCode) async {
-    try {
-      final offers = await _firebaseService.getBoyOffers(countryCode);
-      final hasOffers = offers.isNotEmpty;
-      print(
-        '   ${hasOffers ? "✅" : "❌"} Boy offers for $countryCode: ${offers.length} offers',
-      );
-      return hasOffers;
-    } catch (e) {
-      print('   ❌ Failed to check boy offers collection: $e');
-      return false;
-    }
-  }
 
   /// Переопределить режим работы (для тестирования)
   void setMode(AppMode mode, {String reason = 'Manual override'}) {
