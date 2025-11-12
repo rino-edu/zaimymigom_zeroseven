@@ -185,7 +185,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               // Сброс настроек
               ListTile(
-                leading: const Icon(Icons.restore, color: AppColors.warning),
+                leading: const Icon(Icons.restore_page_outlined, color: Colors.red),
                 title: Text(LocaleKeys.settingsResetSettings.tr()),
                 subtitle: Text(LocaleKeys.settingsResetDescription.tr()),
                 onTap: () => _showResetDialog(context, settingsService),
