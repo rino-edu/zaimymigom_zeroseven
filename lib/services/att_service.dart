@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart';
 
 /// Сервис для работы с App Tracking Transparency (ATT)
@@ -32,6 +33,31 @@ class ATTService {
       debugPrint('ATT: Инициализация завершена. Статус: $_trackingStatus');
     } catch (e) {
       debugPrint('ATT: Ошибка инициализации: $e');
+    }
+  }
+
+  /// Запросить ATT на первом запуске после установки
+  /// Диалог iOS показывается только если статус notDetermined и устройство iOS 14.5+
+  Future<void> requestIfFirstLaunch() async {
+    if (!Platform.isIOS) return;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      const key = 'att_prompt_shown';
+      final alreadyShown = prefs.getBool(key) ?? false;
+
+      await _checkTrackingStatus();
+
+      if (!alreadyShown && _trackingStatus == TrackingStatus.notDetermined) {
+        // Небольшая задержка, чтобы дождаться первого фрейма и активного состояния
+        await Future.delayed(const Duration(milliseconds: 300));
+        final result = await requestTrackingPermission();
+        debugPrint('ATT: Диалог показан на первом запуске, результат: $result');
+        await prefs.setBool(key, true);
+      } else {
+        debugPrint('ATT: Диалог уже показывался или статус не требует показа');
+      }
+    } catch (e) {
+      debugPrint('ATT: Ошибка при попытке показа на первом запуске: $e');
     }
   }
 
