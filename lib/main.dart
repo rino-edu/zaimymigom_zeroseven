@@ -17,6 +17,7 @@ import 'views/onboarding/onboarding_screen.dart';
 import 'views/webview/webview_screen.dart';
 import 'models/offer.dart';
 import 'services/webview_link_service.dart';
+import 'services/firebase_messaging_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +29,9 @@ void main() async {
   // Инициализация Firebase
   final firebaseService = FirebaseService();
   await firebaseService.initialize();
+
+  // Инициализация Firebase Cloud Messaging
+  await FirebaseMessagingService().initialize();
 
   // Определение режима работы
   final appModeService = AppModeService();
@@ -77,7 +81,7 @@ class MyApp extends StatelessWidget {
     }
 
     return MaterialApp(
-      title: 'Кредит 7 дней',
+      title: 'Мани Займ',
       // Локализация
       locale: locale ?? context.locale,
       supportedLocales: context.supportedLocales,
@@ -112,7 +116,7 @@ class AppModeWrapper extends StatelessWidget {
         link: link,
         image: '',
         buttonText: '',
-        name: tr('loans.title'),
+        name: tr('user_loans.title'),
         stars: '0',
       );
       return WebViewScreen(offer: offer);

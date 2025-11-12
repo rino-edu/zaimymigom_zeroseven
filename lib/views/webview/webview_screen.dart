@@ -363,9 +363,10 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isCombat = AppModeService().currentMode == AppMode.combat;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.offer.name, style: const TextStyle(fontSize: 18)),
+      appBar: isCombat ? AppBar(
+        title: Text("Мани Займ", style: const TextStyle(fontSize: 18)),
         centerTitle: true,
         leading: _buildLeading(),
         actions: [
@@ -382,7 +383,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
           // Кнопка обновления
           IconButton(icon: const Icon(Icons.refresh), onPressed: _reload),
         ],
-      ),
+      ) : null,
       body: Stack(
         children: [
           // WebView

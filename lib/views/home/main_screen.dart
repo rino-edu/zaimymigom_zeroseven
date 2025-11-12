@@ -44,7 +44,7 @@ class _MainScreenState extends State<MainScreen> {
       link: link,
       image: '',
       buttonText: '',
-      name: tr('loans.title'),
+      name: tr('user_loans.title'),
       stars: '0',
     );
     return WebViewScreen(offer: offer);
@@ -79,7 +79,7 @@ class _MainScreenState extends State<MainScreen> {
             DrawerHeader(
               padding: EdgeInsets.all(4),
               decoration: const BoxDecoration(
-                color: Color(0xFF0C1C3D),
+                color: Color(0xFF6B66FF),
               ),
               child: Align(
                 alignment: Alignment.bottomLeft,
