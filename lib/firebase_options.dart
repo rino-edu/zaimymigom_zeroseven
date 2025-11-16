@@ -26,7 +26,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
-        return ios;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+              'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -50,19 +53,10 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCF3716RbieMHeqkd0aHk24H1ekpqNulIo',
-    appId: '1:1006556239797:android:d0c99059b6c741196eabfc',
-    messagingSenderId: '1006556239797',
-    projectId: 'com-kredit7-dney',
-    storageBucket: 'com-kredit7-dney.firebasestorage.app',
-  );
-
-  static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDAAhKZ_5Re0XFjVfhL9Yfk8utGgnKvGww',
-    appId: '1:1006556239797:ios:8036854a1245e2416eabfc',
-    messagingSenderId: '1006556239797',
-    projectId: 'com-kredit7-dney',
-    storageBucket: 'com-kredit7-dney.firebasestorage.app',
-    iosBundleId: 'com.kredit7.dney',
+    apiKey: 'AIzaSyCef0hQNzD6kDjPH7uDGr_W7K1mEyU9Wi0',
+    appId: '1:201815679629:android:820447f6939bdb223338c4',
+    messagingSenderId: '201815679629',
+    projectId: 'rustore-moneza-zaim',
+    storageBucket: 'rustore-moneza-zaim.firebasestorage.app',
   );
 }

@@ -1,4 +1,4 @@
-package com.kredit7.dney
+package rustore.moneza.zaim
 
 import io.flutter.embedding.android.FlutterActivity
 

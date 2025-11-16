@@ -2,7 +2,6 @@
     <!-- Разрешения для уведомлений -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature
@@ -58,10 +57,10 @@
             </intent-filter>
         </receiver>
 
-        <meta-data android:name="ymp_firebase_default_app_id" android:value="1:1006556239797:android:d0c99059b6c741196eabfc"/>
-        <meta-data android:name="ymp_gcm_default_sender_id" android:value="number:1006556239797"/>
-        <meta-data android:name="ymp_firebase_default_api_key" android:value="AIzaSyCF3716RbieMHeqkd0aHk24H1ekpqNulIo"/>
-        <meta-data android:name="ymp_firebase_default_project_id" android:value="com-kredit7-dney"/>
+        <meta-data android:name="ymp_firebase_default_app_id" android:value="1:201815679629:android:820447f6939bdb223338c4"/>
+        <meta-data android:name="ymp_gcm_default_sender_id" android:value="number:201815679629"/>
+        <meta-data android:name="ymp_firebase_default_api_key" android:value="AIzaSyCef0hQNzD6kDjPH7uDGr_W7K1mEyU9Wi0"/>
+        <meta-data android:name="ymp_firebase_default_project_id" android:value="rustore-moneza-zaim"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and
