@@ -144,7 +144,10 @@
   },
   "user_loans": {
     "title": "Loans",
-    "placeholder": ""
+    "placeholder": "",
+    "terms_title": "Lending Terms",
+    "terms_content": "Minimum annual percentage rate (min Annual Percentage Rate (APR)): 0% per annum!\n\nMaximum annual percentage rate (max Annual Percentage Rate (APR)): 35% per annum.\n\nMinimum repayment term: 91 days;\n\nMaximum repayment term: 4380 days.\n\nExample of loan calculation in a microfinance organization:\n\nAmount: 25,000 rubles;\n\nTerm: 3 months;\n\nRate: 12%;\n\nInterest amount (example interest calculation): 501.65 rubles;\n\nTotal payment amount: up to twenty-five thousand five hundred and one rubles and sixty-five kopecks;\n\nExample monthly payment amount: eight thousand five hundred and fifty rubles and fifty kopecks.",
+    "terms_understood": "Understood"
   },
   "validation": {
     "required": "Required",

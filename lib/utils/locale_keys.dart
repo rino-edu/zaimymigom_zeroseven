@@ -643,6 +643,9 @@ class LocaleKeys {
   // User Loans
   static const userLoansTitle = 'user_loans.title';
   static const userLoansPlaceholder = 'user_loans.placeholder';
+  static const userLoansTermsTitle = 'user_loans.terms_title';
+  static const userLoansTermsContent = 'user_loans.terms_content';
+  static const userLoansTermsUnderstood = 'user_loans.terms_understood';
 
   // Currency converter
   static const currencyTitle = 'currency.title';

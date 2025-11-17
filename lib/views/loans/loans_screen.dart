@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../constants/app_strings.dart';
 import '../../services/app_mode_service.dart';
 import '../../services/firebase_service.dart';
 import '../../services/appmetrica_service.dart';
 import '../../models/offer.dart';
 import '../../widgets/offer_card.dart';
+import '../../utils/locale_keys.dart';
 import '../webview/webview_screen.dart';
 
 /// Экран "Займы"
@@ -18,6 +20,29 @@ class LoansScreen extends StatefulWidget {
 
   @override
   State<LoansScreen> createState() => _LoansScreenState();
+
+  /// Статический метод для показа диалога с условиями кредитования
+  /// (используется из MainScreen)
+  static void showTermsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(LocaleKeys.userLoansTermsTitle.tr()),
+        content: SingleChildScrollView(
+          child: Text(
+            LocaleKeys.userLoansTermsContent.tr(),
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(LocaleKeys.userLoansTermsUnderstood.tr()),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _LoansScreenState extends State<LoansScreen> {
@@ -111,16 +136,31 @@ class _LoansScreenState extends State<LoansScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isCombatMode = _appModeService.currentMode == AppMode.combat;
+    final currentMode = _appModeService.currentMode;
+    final isCombatMode = currentMode == AppMode.combat;
     final body = _buildBody(context, isCombatMode);
 
     if (widget.withScaffold) {
+      // Показываем кнопку info только в небоевом режиме (не в боевом)
+      final showInfoButton = currentMode != AppMode.combat;
+      print('LoansScreen: currentMode=$currentMode, isCombatMode=$isCombatMode, showInfoButton=$showInfoButton');
+      
       return Scaffold(
         appBar: AppBar(
           title: Text(AppStrings.loans),
           centerTitle: true,
           // В боевом режиме не показываем кнопку назад
           automaticallyImplyLeading: !isCombatMode,
+          // В небоевом режиме показываем кнопку info
+          actions: showInfoButton
+              ? [
+                  IconButton(
+                    icon: const Icon(Icons.info_outline),
+                    onPressed: () => _showTermsDialog(context),
+                    tooltip: LocaleKeys.userLoansTermsTitle.tr(),
+                  ),
+                ]
+              : null,
         ),
         body: body,
       );
@@ -236,5 +276,10 @@ class _LoansScreenState extends State<LoansScreen> {
         ),
       );
     }
+  }
+
+  /// Показать диалог с условиями кредитования
+  void _showTermsDialog(BuildContext context) {
+    LoansScreen.showTermsDialog(context);
   }
 }

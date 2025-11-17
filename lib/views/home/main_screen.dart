@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../utils/locale_keys.dart';
+import '../../services/app_mode_service.dart';
 import '../loans/loans_screen.dart';
 import '../settings/settings_screen.dart';
 import 'psc_calculator_screen.dart';
@@ -24,6 +25,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+  final AppModeService _appModeService = AppModeService();
 
   final List<String> _screenTitles = [
     LocaleKeys.pscCalculatorTitle,
@@ -51,9 +53,25 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Показываем кнопку info только на экране займов и в небоевом режиме
+    final isLoansScreen = _selectedIndex == 3;
+    final currentMode = _appModeService.currentMode;
+    final showInfoButton = isLoansScreen && currentMode != AppMode.combat;
+    
     return Scaffold(
       extendBody: true,
-      appBar: AppBar(title: Text(_getAppBarTitle())),
+      appBar: AppBar(
+        title: Text(_getAppBarTitle()),
+        actions: showInfoButton
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.info_outline),
+                  onPressed: () => LoansScreen.showTermsDialog(context),
+                  tooltip: LocaleKeys.userLoansTermsTitle.tr(),
+                ),
+              ]
+            : null,
+      ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
