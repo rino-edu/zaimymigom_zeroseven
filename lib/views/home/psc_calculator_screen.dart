@@ -223,12 +223,24 @@ class _PscCalculatorScreenState extends State<PscCalculatorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Вычисляем динамический отступ для bottom bar
+    // Высота LiquidGlassBottomBar обычно около 60-80 пикселей
+    // Плюс системные отступы (safe area)
+    final mediaQuery = MediaQuery.of(context);
+    final bottomBarHeight = 60.0; // Безопасная высота LiquidGlassBottomBar (с учетом всех вариантов)
+    final systemBottomPadding = mediaQuery.padding.bottom;
+    final totalBottomPadding = bottomBarHeight + systemBottomPadding + 4; // +16 для дополнительного отступа между кнопками и bottom bar
+    
     return GestureDetector(
       onTap: () {
         FocusScope.of(context).unfocus();
       },
       child: SingleChildScrollView(
-        padding: const EdgeInsets.only(bottom: 50, left: 16, right: 16),
+        padding: EdgeInsets.only(
+          bottom: totalBottomPadding,
+          left: 16,
+          right: 16,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
