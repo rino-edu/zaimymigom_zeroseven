@@ -23,12 +23,14 @@ class _WebViewScreenState extends State<WebViewScreen> {
   bool _isLoading = true;
   bool _canGoBack = false;
   bool _canGoForward = false;
+  bool _isErrorState = false;
   final ImagePicker _picker = ImagePicker();
   static const String _logTag = "WebViewDebug";
   late final String _initialUrl;
   bool _hideLeading = false;
   bool _firstRedirectHandled = false;
   String? _firstRedirectUrl;
+  String _currentUrl = '';
 
   @override
   void initState() {
@@ -69,14 +71,28 @@ class _WebViewScreenState extends State<WebViewScreen> {
       ..setBackgroundColor(Colors.white)
       ..setNavigationDelegate(
         NavigationDelegate(
+          onUrlChange: (UrlChange change) {
+            final String url = change.url ?? '';
+            if (url.isEmpty || url == 'about:blank') return;
+
+            developer.log("URL changed to: $url", name: _logTag);
+            _currentUrl = url;
+          },
           onPageStarted: (String url) {
             developer.log("Page started loading: $url", name: _logTag);
+
             setState(() {
+              _isErrorState = false;
               _isLoading = true;
             });
           },
           onPageFinished: (String url) {
             developer.log("Page finished loading: $url", name: _logTag);
+
+            if (url == 'about:blank') return;
+
+            developer.log("Page finished loading: $url", name: _logTag);
+            _currentUrl = url;
 
             // Инжектируем JavaScript для улучшения работы с файлами
             controller.runJavaScript('''
@@ -145,9 +161,39 @@ class _WebViewScreenState extends State<WebViewScreen> {
           },
           onWebResourceError: (WebResourceError error) {
             developer.log("WebView error: ${error.description}", name: _logTag);
-            setState(() {
-              _isLoading = false;
-            });
+            developer.log(
+              "WebView error code: ${error.errorCode}",
+              name: _logTag,
+            );
+
+            String error_name = error.description;
+
+            if (_isErrorState) return;
+
+            // Логируем все ошибки для диагностики
+            developer.log(
+              "WebView: обработка ошибки: $error_name",
+              name: _logTag,
+            );
+
+            if (error_name.contains('ERR_BLOCKED_BY_ORB') || error_name.contains('net::ERR_NAME_NOT_RESOLVED')) {
+              developer.log(
+                "Ignoring ${error.description} for URL: ${error.url}",
+                name: _logTag,
+              );
+              return;
+            } else {
+              // При любой ошибке показываем единый диалог
+              setState(() {
+                _isLoading = false;
+                _isErrorState = true;
+              });
+
+              _controller.loadRequest(Uri.parse('about:blank'));
+              if (mounted) {
+                _showUnifiedLoadErrorDialog(errorMessage: error.description);
+              }
+            }
           },
         ),
       );
@@ -200,6 +246,42 @@ class _WebViewScreenState extends State<WebViewScreen> {
         );
       }
     }
+  }
+
+  /// Единый диалог ошибок загрузки
+  void _showUnifiedLoadErrorDialog({String? errorMessage}) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Ошибка соединения"),
+          content: Text("Извините, возникла ошибка интернет соединения. Проверьте подключение к интернету и попробуйте снова."),
+          actions: [
+            TextButton(
+              child: Text("Попробовать снова"),
+              onPressed: () async {
+                Navigator.of(context).pop();
+                // Перезагружаем страницу с ошибкой, если известна, иначе текущую/initial
+                final String urlToLoad =
+                _currentUrl.isNotEmpty
+                    ? _currentUrl
+                    : _initialUrl;
+                if (urlToLoad.isNotEmpty && urlToLoad != 'about:blank') {
+                try {
+                await _controller.loadRequest(Uri.parse(urlToLoad));
+                } catch (e) {
+                developer.log("Retry load failed: $e", name: _logTag);
+                }
+                } else {
+                _controller.reload();
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   /// Обработка выбора файлов
