@@ -25,9 +25,22 @@ class _GoalsScreenState extends State<GoalsScreen> {
 
   @override
   Widget build(BuildContext context) {
+
+    // Вычисляем динамический отступ для bottom bar
+    // Высота LiquidGlassBottomBar обычно около 60-80 пикселей
+    // Плюс системные отступы (safe area)
+    final mediaQuery = MediaQuery.of(context);
+    final bottomBarHeight =
+    50.0; // Безопасная высота LiquidGlassBottomBar (с учетом всех вариантов)
+    final systemBottomPadding = mediaQuery.padding.bottom;
+    final totalBottomPadding =
+        bottomBarHeight +
+            systemBottomPadding +
+            4; // +4 для дополнительного отступа
+
     return SafeArea(
       top: true,
-      bottom: true,
+      bottom: false,
       child: Consumer<GoalsProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
@@ -57,7 +70,11 @@ class _GoalsScreenState extends State<GoalsScreen> {
               else
                 Expanded(
                   child: ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: EdgeInsets.only(
+                      left: 16,
+                      right: 16,
+                      bottom: totalBottomPadding,
+                    ),
                     itemCount: goals.length,
                     itemBuilder: (context, index) {
                       final goal = goals[index];

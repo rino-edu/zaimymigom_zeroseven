@@ -145,16 +145,18 @@ class _WebViewScreenState extends State<WebViewScreen> {
                   url != _initialUrl) {
                 setState(() {
                   _firstRedirectHandled = true;
-                  _hideLeading = true; // скрываем крестик на первой странице после редиректа
+                  _hideLeading =
+                      true; // скрываем крестик на первой странице после редиректа
                   _firstRedirectUrl = url;
                 });
               }
-              if(url == _firstRedirectUrl) {
+              if (url == _firstRedirectUrl) {
                 setState(() {
                   _hideLeading = true;
                 });
               } else {
-                setState(() {_hideLeading = false;
+                setState(() {
+                  _hideLeading = false;
                 });
               }
             }
@@ -176,7 +178,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
               name: _logTag,
             );
 
-            if (error_name.contains('ERR_BLOCKED_BY_ORB') || error_name.contains('net::ERR_NAME_NOT_RESOLVED')) {
+            if (error_name.contains('ERR_BLOCKED_BY_ORB') ||
+                error_name.contains('net::ERR_NAME_NOT_RESOLVED')) {
               developer.log(
                 "Ignoring ${error.description} for URL: ${error.url}",
                 name: _logTag,
@@ -256,25 +259,26 @@ class _WebViewScreenState extends State<WebViewScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text("Ошибка соединения"),
-          content: Text("Извините, возникла ошибка интернет соединения. Проверьте подключение к интернету и попробуйте снова."),
+          content: Text(
+            "Извините, возникла ошибка интернет соединения. Проверьте подключение к интернету и попробуйте снова.",
+          ),
           actions: [
             TextButton(
               child: Text("Попробовать снова"),
               onPressed: () async {
                 Navigator.of(context).pop();
                 // Перезагружаем страницу с ошибкой, если известна, иначе текущую/initial
-                final String urlToLoad =
-                _currentUrl.isNotEmpty
+                final String urlToLoad = _currentUrl.isNotEmpty
                     ? _currentUrl
                     : _initialUrl;
                 if (urlToLoad.isNotEmpty && urlToLoad != 'about:blank') {
-                try {
-                await _controller.loadRequest(Uri.parse(urlToLoad));
-                } catch (e) {
-                developer.log("Retry load failed: $e", name: _logTag);
-                }
+                  try {
+                    await _controller.loadRequest(Uri.parse(urlToLoad));
+                  } catch (e) {
+                    developer.log("Retry load failed: $e", name: _logTag);
+                  }
                 } else {
-                _controller.reload();
+                  _controller.reload();
                 }
               },
             ),
@@ -412,21 +416,25 @@ class _WebViewScreenState extends State<WebViewScreen> {
     _updateNavigationState();
   }
 
-
   /// Построить leading в зависимости от режима и текущей страницы
   Widget? _buildLeading() {
     // Если нужно скрыть — возвращаем null
     if (_hideLeading) return null;
     // В остальных случаях показываем крестик (закрытие)
     final isCombat = AppModeService().currentMode == AppMode.combat;
-    if (isCombat && _firstRedirectUrl != null && _firstRedirectUrl!.isNotEmpty) {
+    if (isCombat &&
+        _firstRedirectUrl != null &&
+        _firstRedirectUrl!.isNotEmpty) {
       // В боевом режиме: кнопка загружает страницу после первого редиректа
       return IconButton(
         icon: const Icon(Icons.close),
         onPressed: () async {
           try {
             final target = _firstRedirectUrl!;
-            developer.log("Leading pressed - loading first redirect: $target", name: _logTag);
+            developer.log(
+              "Leading pressed - loading first redirect: $target",
+              name: _logTag,
+            );
             final uri = Uri.parse(target);
             await _controller.loadRequest(uri);
             _updateNavigationState();
@@ -446,44 +454,62 @@ class _WebViewScreenState extends State<WebViewScreen> {
   @override
   Widget build(BuildContext context) {
     final isCombat = AppModeService().currentMode == AppMode.combat;
-    return Scaffold(
-      appBar: isCombat ? AppBar(
-        title: Text("Мани Займ", style: const TextStyle(fontSize: 18)),
-        centerTitle: true,
-        leading: _buildLeading(),
-        actions: [
-          // Кнопка назад
-          IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: _canGoBack ? _goBack : null,
-          ),
-          // Кнопка вперед
-          IconButton(
-            icon: const Icon(Icons.arrow_forward),
-            onPressed: _canGoForward ? _goForward : null,
-          ),
-          // Кнопка обновления
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _reload),
-        ],
-      ) : null,
-      body: Stack(
-        children: [
-          // WebView
-          WebViewWidget(controller: _controller),
 
-          // Индикатор загрузки
-          if (_isLoading)
-            const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Загрузка...'),
-                ],
+    // Вычисляем динамический отступ для bottom bar
+    // Высота LiquidGlassBottomBar обычно около 60-80 пикселей
+    // Плюс системные отступы (safe area)
+    final mediaQuery = MediaQuery.of(context);
+    final bottomBarHeight =
+        20.0; // Безопасная высота LiquidGlassBottomBar (с учетом всех вариантов)
+    final systemBottomPadding = mediaQuery.padding.bottom;
+    final totalBottomPadding =
+        bottomBarHeight +
+        systemBottomPadding +
+        4; // +4 для дополнительного отступа
+
+    return Scaffold(
+      appBar: isCombat
+          ? AppBar(
+              title: Text("Мани Займ", style: const TextStyle(fontSize: 18)),
+              centerTitle: true,
+              leading: _buildLeading(),
+              actions: [
+                // Кнопка назад
+                IconButton(
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: _canGoBack ? _goBack : null,
+                ),
+                // Кнопка вперед
+                IconButton(
+                  icon: const Icon(Icons.arrow_forward),
+                  onPressed: _canGoForward ? _goForward : null,
+                ),
+                // Кнопка обновления
+                IconButton(icon: const Icon(Icons.refresh), onPressed: _reload),
+              ],
+            )
+          : null,
+      body: Padding(
+        padding: EdgeInsets.only(bottom: isCombat ? 0 : totalBottomPadding),
+        child: Stack(
+          children: [
+            // WebView
+            WebViewWidget(controller: _controller),
+
+            // Индикатор загрузки
+            if (_isLoading)
+              const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Загрузка...'),
+                  ],
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }

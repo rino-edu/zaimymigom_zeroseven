@@ -72,9 +72,15 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    // Вычисляем динамический отступ для bottom bar
+    final mediaQuery = MediaQuery.of(context);
+    final bottomBarHeight = 60.0; // Безопасная высота LiquidGlassBottomBar
+    final systemBottomPadding = mediaQuery.padding.bottom;
+    final totalBottomPadding = bottomBarHeight + systemBottomPadding + 4;
+
     return SafeArea(
       top: true,
-      bottom: true,
+      bottom: false,
       child: Consumer<BudgetProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {
@@ -90,8 +96,8 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    _buildIncomesList(provider),
-                    _buildExpensesList(provider),
+                    _buildIncomesList(provider, totalBottomPadding),
+                    _buildExpensesList(provider, totalBottomPadding),
                   ],
                 ),
               ),
@@ -277,7 +283,7 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildIncomesList(BudgetProvider provider) {
+  Widget _buildIncomesList(BudgetProvider provider, double bottomPadding) {
     final incomes = provider.incomes;
 
     if (incomes.isEmpty) {
@@ -324,7 +330,11 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
         ),
         Expanded(
           child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              bottom: bottomPadding,
+            ),
             itemCount: incomes.length,
             itemBuilder: (context, index) {
               final income = incomes[index];
@@ -390,7 +400,7 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildExpensesList(BudgetProvider provider) {
+  Widget _buildExpensesList(BudgetProvider provider, double bottomPadding) {
     final expenses = provider.expenses;
 
     if (expenses.isEmpty) {
@@ -437,7 +447,11 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
         ),
         Expanded(
           child: ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              bottom: bottomPadding,
+            ),
             itemCount: expenses.length,
             itemBuilder: (context, index) {
               final expense = expenses[index];
