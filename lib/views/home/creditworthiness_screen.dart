@@ -124,17 +124,19 @@ class _CreditworthinessScreenState extends State<CreditworthinessScreen> {
       appBar: AppBar(
         title: Text(LocaleKeys.creditworthinessTitle.tr()),
       ),
-      body: Form(
-        key: _formKey,
-        child: Stepper(
-          currentStep: _currentStep,
-          onStepContinue: _currentStep < 2 ? _nextStep : _submit,
-          onStepCancel: _currentStep > 0 ? _previousStep : null,
-          steps: [
-            _buildStep1(),
-            _buildStep2(),
-            _buildStep3(),
-          ],
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: Stepper(
+            currentStep: _currentStep,
+            onStepContinue: _currentStep < 2 ? _nextStep : _submit,
+            onStepCancel: _currentStep > 0 ? _previousStep : null,
+            steps: [
+              _buildStep1(),
+              _buildStep2(),
+              _buildStep3(),
+            ],
+          ),
         ),
       ),
     );

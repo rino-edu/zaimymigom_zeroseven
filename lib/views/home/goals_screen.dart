@@ -40,7 +40,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
 
     return SafeArea(
       top: true,
-      bottom: false,
+      bottom: true,
       child: Consumer<GoalsProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
@@ -88,7 +88,7 @@ class _GoalsScreenState extends State<GoalsScreen> {
                   ),
                 ),
               Padding(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 25),
                 child: Align(
                   alignment: Alignment.center,
                   child: FloatingActionButton.extended(

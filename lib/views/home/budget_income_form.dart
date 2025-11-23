@@ -138,6 +138,7 @@ class _BudgetIncomeScreenState extends State<BudgetIncomeScreen> {
       ),
       body: SafeArea(
         top: true,
+        bottom: true,
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(

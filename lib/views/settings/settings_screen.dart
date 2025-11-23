@@ -56,156 +56,158 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(LocaleKeys.settingsTitle.tr())),
-      body: Consumer<SettingsService>(
-        builder: (context, settingsService, _) {
-          return ListView(
-            padding: const EdgeInsets.only(bottom: 32),
-            children: [
-              // Секция: Внешний вид
-              _buildSectionHeader(context, LocaleKeys.settingsAppearance.tr()),
-
-              // Тема приложения
-              ListTile(
-                leading: Icon(
-                  _getThemeIcon(settingsService.themeMode),
-                  color: AppColors.primary,
+      body: SafeArea(
+        child: Consumer<SettingsService>(
+          builder: (context, settingsService, _) {
+            return ListView(
+              padding: const EdgeInsets.only(bottom: 32),
+              children: [
+                // Секция: Внешний вид
+                _buildSectionHeader(context, LocaleKeys.settingsAppearance.tr()),
+        
+                // Тема приложения
+                ListTile(
+                  leading: Icon(
+                    _getThemeIcon(settingsService.themeMode),
+                    color: AppColors.primary,
+                  ),
+                  title: Text(LocaleKeys.settingsTheme.tr()),
+                  subtitle: Text(
+                    _getThemeName(context, settingsService.themeMode),
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () => _showThemeDialog(context, settingsService),
                 ),
-                title: Text(LocaleKeys.settingsTheme.tr()),
-                subtitle: Text(
-                  _getThemeName(context, settingsService.themeMode),
+        
+                const Divider(height: 1),
+        
+                // Язык интерфейса
+                ListTile(
+                  leading: const Icon(Icons.language, color: AppColors.primary),
+                  title: Text(LocaleKeys.settingsLanguage.tr()),
+                  subtitle: Text(_getLanguageName(context)),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () => _showLanguageDialog(context, settingsService),
                 ),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () => _showThemeDialog(context, settingsService),
-              ),
-
-              const Divider(height: 1),
-
-              // Язык интерфейса
-              ListTile(
-                leading: const Icon(Icons.language, color: AppColors.primary),
-                title: Text(LocaleKeys.settingsLanguage.tr()),
-                subtitle: Text(_getLanguageName(context)),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () => _showLanguageDialog(context, settingsService),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Секция: Безопасность
-              _buildSectionHeader(context, LocaleKeys.settingsSecurity.tr()),
-
-              SwitchListTile.adaptive(
-                value: settingsService.hasPinCode,
-                activeColor: AppColors.primary,
-                secondary: const Icon(Icons.lock, color: AppColors.primary),
-                title: Text(LocaleKeys.securityPinCode.tr()),
-                subtitle: Text(
-                  settingsService.hasPinCode
-                      ? LocaleKeys.securityChangePin.tr()
-                      : LocaleKeys.settingsEnableSecurity.tr(),
+        
+                const SizedBox(height: 24),
+        
+                // Секция: Безопасность
+                _buildSectionHeader(context, LocaleKeys.settingsSecurity.tr()),
+        
+                SwitchListTile.adaptive(
+                  value: settingsService.hasPinCode,
+                  activeColor: AppColors.primary,
+                  secondary: const Icon(Icons.lock, color: AppColors.primary),
+                  title: Text(LocaleKeys.securityPinCode.tr()),
+                  subtitle: Text(
+                    settingsService.hasPinCode
+                        ? LocaleKeys.securityChangePin.tr()
+                        : LocaleKeys.settingsEnableSecurity.tr(),
+                  ),
+                  onChanged: (enabled) => _onPinCodeToggle(context, settingsService, enabled),
                 ),
-                onChanged: (enabled) => _onPinCodeToggle(context, settingsService, enabled),
-              ),
-
-              const Divider(height: 1),
-
-              SwitchListTile.adaptive(
-                value: settingsService.biometricEnabled,
-                activeColor: AppColors.primary,
-                secondary: const Icon(Icons.fingerprint, color: AppColors.primary),
-                title: Text(LocaleKeys.securityBiometricAuth.tr()),
-                subtitle: Text(
-                  settingsService.biometricEnabled
-                      ? LocaleKeys.settingsDisableSecurity.tr()
-                      : LocaleKeys.settingsEnableSecurity.tr(),
+        
+                const Divider(height: 1),
+        
+                SwitchListTile.adaptive(
+                  value: settingsService.biometricEnabled,
+                  activeColor: AppColors.primary,
+                  secondary: const Icon(Icons.fingerprint, color: AppColors.primary),
+                  title: Text(LocaleKeys.securityBiometricAuth.tr()),
+                  subtitle: Text(
+                    settingsService.biometricEnabled
+                        ? LocaleKeys.settingsDisableSecurity.tr()
+                        : LocaleKeys.settingsEnableSecurity.tr(),
+                  ),
+                  onChanged: _isCheckingBiometric
+                      ? null
+                      : (enabled) => _onBiometricToggle(context, settingsService, enabled),
                 ),
-                onChanged: _isCheckingBiometric
-                    ? null
-                    : (enabled) => _onBiometricToggle(context, settingsService, enabled),
-              ),
-
-              if (_isCheckingBiometric)
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: LinearProgressIndicator(minHeight: 2),
-                ),
-
-              const SizedBox(height: 24),
-
-              // Секция: Личные данные
-              _buildSectionHeader(context, LocaleKeys.settingsPersonalData.tr()),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  LocaleKeys.settingsPersonalDataDescription.tr(),
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
-                ),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                child: _buildPersonalDataForm(context, settingsService),
-              ),
-
-              Padding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: ElevatedButton.icon(
-                    onPressed: () => _showResetPersonalDataDialog(context, settingsService),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.warning,
-                    ),
-                    icon: const Icon(Icons.delete_outline),
-                    label: Text(LocaleKeys.settingsResetPersonalData.tr()),
+        
+                if (_isCheckingBiometric)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: LinearProgressIndicator(minHeight: 2),
+                  ),
+        
+                const SizedBox(height: 24),
+        
+                // Секция: Личные данные
+                _buildSectionHeader(context, LocaleKeys.settingsPersonalData.tr()),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Text(
+                    LocaleKeys.settingsPersonalDataDescription.tr(),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 32),
-
-              // Секция: О приложении
-              _buildSectionHeader(context, LocaleKeys.settingsAbout.tr()),
-
-              // Версия приложения
-              ListTile(
-                leading: const Icon(
-                  Icons.info_outline,
-                  color: AppColors.primary,
+        
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  child: _buildPersonalDataForm(context, settingsService),
                 ),
-                title: Text(LocaleKeys.aboutVersion.tr()),
-                subtitle: const Text('1.0.0'),
-              ),
-
-              const Divider(height: 1),
-              ListTile(
-                leading: const Icon(
-                  Icons.privacy_tip_outlined,
-                  color: AppColors.primary,
+        
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: ElevatedButton.icon(
+                      onPressed: () => _showResetPersonalDataDialog(context, settingsService),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.warning,
+                      ),
+                      icon: const Icon(Icons.delete_outline),
+                      label: Text(LocaleKeys.settingsResetPersonalData.tr()),
+                    ),
+                  ),
                 ),
-                title: Text(LocaleKeys.aboutPrivacyPolicy.tr()),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const PolicyScreen()),
-                  );
-                },
-              ),
-              // Секция: Дополнительно
-              _buildSectionHeader(context, LocaleKeys.settingsOther.tr()),
-
-              // Сброс настроек
-              ListTile(
-                leading: const Icon(Icons.restore_page_outlined, color: Colors.red),
-                title: Text(LocaleKeys.settingsResetSettings.tr()),
-                subtitle: Text(LocaleKeys.settingsResetDescription.tr()),
-                onTap: () => _showResetDialog(context, settingsService),
-              ),
-            ],
-          );
-        },
+        
+                const SizedBox(height: 32),
+        
+                // Секция: О приложении
+                _buildSectionHeader(context, LocaleKeys.settingsAbout.tr()),
+        
+                // Версия приложения
+                ListTile(
+                  leading: const Icon(
+                    Icons.info_outline,
+                    color: AppColors.primary,
+                  ),
+                  title: Text(LocaleKeys.aboutVersion.tr()),
+                  subtitle: const Text('1.0.0'),
+                ),
+        
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(
+                    Icons.privacy_tip_outlined,
+                    color: AppColors.primary,
+                  ),
+                  title: Text(LocaleKeys.aboutPrivacyPolicy.tr()),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const PolicyScreen()),
+                    );
+                  },
+                ),
+                // Секция: Дополнительно
+                _buildSectionHeader(context, LocaleKeys.settingsOther.tr()),
+        
+                // Сброс настроек
+                ListTile(
+                  leading: const Icon(Icons.restore_page_outlined, color: Colors.red),
+                  title: Text(LocaleKeys.settingsResetSettings.tr()),
+                  subtitle: Text(LocaleKeys.settingsResetDescription.tr()),
+                  onTap: () => _showResetDialog(context, settingsService),
+                ),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

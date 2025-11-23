@@ -43,15 +43,17 @@ class _PolicyScreenState extends State<PolicyScreen> {
       appBar: AppBar(title: Text(LocaleKeys.aboutPrivacyPolicy.tr())),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16),
-              child: SingleChildScrollView(
-                child: Text(
-                  _text ?? '',
-                  style: Theme.of(context).textTheme.bodyMedium,
+          : SafeArea(
+            child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: SingleChildScrollView(
+                  child: Text(
+                    _text ?? '',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ),
               ),
-            ),
+          ),
     );
   }
 }

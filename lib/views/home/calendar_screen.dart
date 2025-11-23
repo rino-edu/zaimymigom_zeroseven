@@ -78,99 +78,103 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
         ],
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    icon: const Icon(Icons.calendar_today),
-                    label: Text(DateFormat('dd.MM.yyyy').format(_focusedDay)),
-                    onPressed: () async {
-                      final picked = await showDatePicker(
-                        context: context,
-                        initialDate: _focusedDay,
-                        firstDate: DateTime(2000),
-                        lastDate: DateTime(2100),
-                        helpText: LocaleKeys.calendarSelectDate.tr(),
-                        locale: context.locale,
-                      );
-                      if (picked != null) {
-                        setState(() {
-                          _focusedDay = picked;
-                        });
-                      }
-                    },
+      body: SafeArea(
+        top: true,
+        bottom: true,
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      icon: const Icon(Icons.calendar_today),
+                      label: Text(DateFormat('dd.MM.yyyy').format(_focusedDay)),
+                      onPressed: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: _focusedDay,
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100),
+                          helpText: LocaleKeys.calendarSelectDate.tr(),
+                          locale: context.locale,
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            _focusedDay = picked;
+                          });
+                        }
+                      },
+                    ),
                   ),
-                ),
-                const SizedBox(width: 8),
-                IconButton(
-                  onPressed: () {
-                    setState(() {
-                      _focusedDay = DateTime.now();
-                    });
-                  },
-                  tooltip: LocaleKeys.calendarToday.tr(),
-                  icon: const Icon(Icons.my_location),
-                ),
-              ],
+                  const SizedBox(width: 8),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _focusedDay = DateTime.now();
+                      });
+                    },
+                    tooltip: LocaleKeys.calendarToday.tr(),
+                    icon: const Icon(Icons.my_location),
+                  ),
+                ],
+              ),
             ),
-          ),
-          Expanded(
-            child: ListView(
-              children: [
-                _SectionHeader(
-                  title: DateFormat.yMMMM(context.locale.toString()).format(_focusedDay),
-                  icon: Icons.event,
-                ),
-                if (eventsForSelected.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(
-                      LocaleKeys.calendarNoTasksForDate.tr(),
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  )
-                else
-                  ...eventsForSelected.map((e) => _EventTile(
-                        event: e,
-                        onEdit: () => _openEventForm(existing: e),
-                        onDelete: () => provider.remove(e.id),
-                        onTogglePaid: () =>
-                            provider.update(e.copyWith(isPaid: !e.isPaid)),
-                      )),
-                const Divider(height: 24),
-                _SectionHeader(
-                  title: _showWeekAhead
-                      ? LocaleKeys.calendarUpcomingWeek.tr()
-                      : LocaleKeys.calendarUpcomingMonth.tr(),
-                  icon: Icons.upcoming,
-                ),
-                if (upcoming.isEmpty)
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(
-                      _showWeekAhead
-                          ? LocaleKeys.calendarNoEventsWeek.tr()
-                          : LocaleKeys.calendarNoEventsMonth.tr(),
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                  )
-                else
-                  ...upcoming.map((e) => _EventTile(
-                        event: e,
-                        onEdit: () => _openEventForm(existing: e),
-                        onDelete: () => provider.remove(e.id),
-                        onTogglePaid: () =>
-                            provider.update(e.copyWith(isPaid: !e.isPaid)),
-                      )),
-                const SizedBox(height: 88),
-              ],
+            Expanded(
+              child: ListView(
+                children: [
+                  _SectionHeader(
+                    title: DateFormat.yMMMM(context.locale.toString()).format(_focusedDay),
+                    icon: Icons.event,
+                  ),
+                  if (eventsForSelected.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        LocaleKeys.calendarNoTasksForDate.tr(),
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    )
+                  else
+                    ...eventsForSelected.map((e) => _EventTile(
+                          event: e,
+                          onEdit: () => _openEventForm(existing: e),
+                          onDelete: () => provider.remove(e.id),
+                          onTogglePaid: () =>
+                              provider.update(e.copyWith(isPaid: !e.isPaid)),
+                        )),
+                  const Divider(height: 24),
+                  _SectionHeader(
+                    title: _showWeekAhead
+                        ? LocaleKeys.calendarUpcomingWeek.tr()
+                        : LocaleKeys.calendarUpcomingMonth.tr(),
+                    icon: Icons.upcoming,
+                  ),
+                  if (upcoming.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Text(
+                        _showWeekAhead
+                            ? LocaleKeys.calendarNoEventsWeek.tr()
+                            : LocaleKeys.calendarNoEventsMonth.tr(),
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    )
+                  else
+                    ...upcoming.map((e) => _EventTile(
+                          event: e,
+                          onEdit: () => _openEventForm(existing: e),
+                          onDelete: () => provider.remove(e.id),
+                          onTogglePaid: () =>
+                              provider.update(e.copyWith(isPaid: !e.isPaid)),
+                        )),
+                  const SizedBox(height: 88),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: _openEventForm,

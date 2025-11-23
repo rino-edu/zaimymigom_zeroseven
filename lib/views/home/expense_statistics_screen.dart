@@ -105,57 +105,59 @@ class _ExpenseStatisticsScreenState extends State<ExpenseStatisticsScreen> {
           ),
         ],
       ),
-      body: Consumer<BudgetProvider>(
-        builder: (context, provider, child) {
-          if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final expenses = provider.expenses;
-          if (expenses.isEmpty) {
-            return Center(
+      body: SafeArea(
+        child: Consumer<BudgetProvider>(
+          builder: (context, provider, child) {
+            if (provider.isLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+        
+            final expenses = provider.expenses;
+            if (expenses.isEmpty) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.bar_chart,
+                      size: 64,
+                      color: Colors.grey[400],
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      LocaleKeys.expenseStatisticsEmpty.tr(),
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Colors.grey[600],
+                          ),
+                    ),
+                  ],
+                ),
+              );
+            }
+        
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(16),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(
-                    Icons.bar_chart,
-                    size: 64,
-                    color: Colors.grey[400],
-                  ),
+                  _buildPeriodFilter(),
                   const SizedBox(height: 16),
-                  Text(
-                    LocaleKeys.expenseStatisticsEmpty.tr(),
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: Colors.grey[600],
-                        ),
-                  ),
+                  _buildSummaryCards(provider),
+                  const SizedBox(height: 24),
+                  _buildChartTypeSelector(),
+                  const SizedBox(height: 16),
+                  _buildChart(provider, expenses),
+                  const SizedBox(height: 24),
+                  _buildTopCategories(provider, expenses),
+                  const SizedBox(height: 24),
+                  _buildTrends(provider),
+                  const SizedBox(height: 24),
+                  if (_showIncomeComparison) _buildIncomeExpenseComparison(provider),
                 ],
               ),
             );
-          }
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildPeriodFilter(),
-                const SizedBox(height: 16),
-                _buildSummaryCards(provider),
-                const SizedBox(height: 24),
-                _buildChartTypeSelector(),
-                const SizedBox(height: 16),
-                _buildChart(provider, expenses),
-                const SizedBox(height: 24),
-                _buildTopCategories(provider, expenses),
-                const SizedBox(height: 24),
-                _buildTrends(provider),
-                const SizedBox(height: 24),
-                if (_showIncomeComparison) _buildIncomeExpenseComparison(provider),
-              ],
-            ),
-          );
-        },
+          },
+        ),
       ),
     );
   }

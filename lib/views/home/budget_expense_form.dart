@@ -186,6 +186,7 @@ class _BudgetExpenseScreenState extends State<BudgetExpenseScreen> {
       ),
       body: SafeArea(
         top: true,
+        bottom: true,
         child: LayoutBuilder(
           builder: (context, constraints) {
             return SingleChildScrollView(

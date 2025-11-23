@@ -80,7 +80,7 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
 
     return SafeArea(
       top: true,
-      bottom: false,
+      bottom: true,
       child: Consumer<BudgetProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading) {

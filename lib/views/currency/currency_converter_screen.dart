@@ -141,6 +141,8 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
         ],
       ),
       body: SafeArea(
+        top: true,
+        bottom: true,
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: Column(

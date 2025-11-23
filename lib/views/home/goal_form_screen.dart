@@ -95,6 +95,7 @@ class _GoalFormScreenState extends State<GoalFormScreen> {
       ),
       body: SafeArea(
         top: true,
+        bottom: true,
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Form(

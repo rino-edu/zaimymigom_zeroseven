@@ -73,6 +73,7 @@ class _GoalContributionFormState extends State<GoalContributionForm> {
       ),
       body: SafeArea(
         top: true,
+        bottom: true,
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Form(
