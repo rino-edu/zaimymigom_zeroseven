@@ -49,7 +49,7 @@ class BudgetProvider extends ChangeNotifier {
       _categories = await _dbService.getAllCategories(type: type);
       notifyListeners();
     } catch (e) {
-      debugPrint('Error loading categories: $e');
+      //debugPrint('Error loading categories: $e');
     }
   }
 
@@ -60,7 +60,7 @@ class BudgetProvider extends ChangeNotifier {
       await loadCategories();
       return id;
     } catch (e) {
-      debugPrint('Error adding category: $e');
+      //debugPrint('Error adding category: $e');
       return null;
     }
   }
@@ -71,7 +71,7 @@ class BudgetProvider extends ChangeNotifier {
       await _dbService.updateCategory(category);
       await loadCategories();
     } catch (e) {
-      debugPrint('Error updating category: $e');
+      //debugPrint('Error updating category: $e');
     }
   }
 
@@ -81,7 +81,7 @@ class BudgetProvider extends ChangeNotifier {
       await _dbService.deleteCategory(id);
       await loadCategories();
     } catch (e) {
-      debugPrint('Error deleting category: $e');
+      //debugPrint('Error deleting category: $e');
     }
   }
 
@@ -101,7 +101,7 @@ class BudgetProvider extends ChangeNotifier {
       );
       notifyListeners();
     } catch (e) {
-      debugPrint('Error loading incomes: $e');
+      //debugPrint('Error loading incomes: $e');
     }
   }
 
@@ -112,7 +112,7 @@ class BudgetProvider extends ChangeNotifier {
       await loadIncomes();
       return id;
     } catch (e) {
-      debugPrint('Error adding income: $e');
+      //debugPrint('Error adding income: $e');
       return null;
     }
   }
@@ -123,7 +123,7 @@ class BudgetProvider extends ChangeNotifier {
       await _dbService.updateIncome(income);
       await loadIncomes();
     } catch (e) {
-      debugPrint('Error updating income: $e');
+      //debugPrint('Error updating income: $e');
     }
   }
 
@@ -133,7 +133,7 @@ class BudgetProvider extends ChangeNotifier {
       await _dbService.deleteIncome(id);
       await loadIncomes();
     } catch (e) {
-      debugPrint('Error deleting income: $e');
+      //debugPrint('Error deleting income: $e');
     }
   }
 
@@ -150,7 +150,7 @@ class BudgetProvider extends ChangeNotifier {
         categoryId: categoryId,
       );
     } catch (e) {
-      debugPrint('Error getting total incomes: $e');
+      //debugPrint('Error getting total incomes: $e');
       return 0.0;
     }
   }
@@ -171,7 +171,7 @@ class BudgetProvider extends ChangeNotifier {
       );
       notifyListeners();
     } catch (e) {
-      debugPrint('Error loading expenses: $e');
+      //debugPrint('Error loading expenses: $e');
     }
   }
 
@@ -182,7 +182,7 @@ class BudgetProvider extends ChangeNotifier {
       await loadExpenses();
       return id;
     } catch (e) {
-      debugPrint('Error adding expense: $e');
+      //debugPrint('Error adding expense: $e');
       return null;
     }
   }
@@ -193,7 +193,7 @@ class BudgetProvider extends ChangeNotifier {
       await _dbService.updateExpense(expense);
       await loadExpenses();
     } catch (e) {
-      debugPrint('Error updating expense: $e');
+      //debugPrint('Error updating expense: $e');
     }
   }
 
@@ -203,7 +203,7 @@ class BudgetProvider extends ChangeNotifier {
       await _dbService.deleteExpense(id);
       await loadExpenses();
     } catch (e) {
-      debugPrint('Error deleting expense: $e');
+      //debugPrint('Error deleting expense: $e');
     }
   }
 
@@ -220,7 +220,7 @@ class BudgetProvider extends ChangeNotifier {
         categoryId: categoryId,
       );
     } catch (e) {
-      debugPrint('Error getting total expenses: $e');
+      //debugPrint('Error getting total expenses: $e');
       return 0.0;
     }
   }
@@ -233,7 +233,7 @@ class BudgetProvider extends ChangeNotifier {
       _budgetLimits = await _dbService.getAllBudgetLimits(categoryId: categoryId);
       notifyListeners();
     } catch (e) {
-      debugPrint('Error loading budget limits: $e');
+      //debugPrint('Error loading budget limits: $e');
     }
   }
 
@@ -245,7 +245,7 @@ class BudgetProvider extends ChangeNotifier {
       notifyListeners();
       return id;
     } catch (e) {
-      debugPrint('Error adding budget limit: $e');
+      //debugPrint('Error adding budget limit: $e');
       return null;
     }
   }
@@ -257,7 +257,7 @@ class BudgetProvider extends ChangeNotifier {
       await loadBudgetLimits();
       notifyListeners();
     } catch (e) {
-      debugPrint('Error updating budget limit: $e');
+      //debugPrint('Error updating budget limit: $e');
     }
   }
 
@@ -267,7 +267,7 @@ class BudgetProvider extends ChangeNotifier {
       await _dbService.deleteBudgetLimit(id);
       await loadBudgetLimits();
     } catch (e) {
-      debugPrint('Error deleting budget limit: $e');
+      //debugPrint('Error deleting budget limit: $e');
     }
   }
 
@@ -279,7 +279,7 @@ class BudgetProvider extends ChangeNotifier {
     try {
       return await _dbService.getBudgetLimitForCategory(categoryId, period);
     } catch (e) {
-      debugPrint('Error getting budget limit: $e');
+      //debugPrint('Error getting budget limit: $e');
       return null;
     }
   }
@@ -315,7 +315,7 @@ class BudgetProvider extends ChangeNotifier {
 
       return totalExpenses > limit.amount;
     } catch (e) {
-      debugPrint('Error checking budget limit: $e');
+      //debugPrint('Error checking budget limit: $e');
       return false;
     }
   }

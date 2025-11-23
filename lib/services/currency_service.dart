@@ -21,11 +21,11 @@ class CurrencyService {
           _lastUpdate != null &&
           _lastBaseCurrency == baseCurrency &&
           DateTime.now().difference(_lastUpdate!) < _cacheTimeout) {
-        debugPrint('Используем кэшированные валютные курсы');
+        //debugPrint('Используем кэшированные валютные курсы');
         return _cachedResponse!;
       }
 
-      debugPrint('Загружаем валютные курсы для $baseCurrency');
+      //debugPrint('Загружаем валютные курсы для $baseCurrency');
       
       final url = Uri.parse('$_baseUrl/$baseCurrency');
       final response = await http.get(url);
@@ -40,7 +40,7 @@ class CurrencyService {
           _lastUpdate = DateTime.now();
           _lastBaseCurrency = baseCurrency;
           
-          debugPrint('Валютные курсы успешно загружены');
+          //debugPrint('Валютные курсы успешно загружены');
           return apiResponse;
         } else {
           throw Exception('API вернул ошибку: ${apiResponse.result}');
@@ -49,7 +49,7 @@ class CurrencyService {
         throw Exception('HTTP ошибка: ${response.statusCode}');
       }
     } catch (e) {
-      debugPrint('Ошибка загрузки валютных курсов: $e');
+      //debugPrint('Ошибка загрузки валютных курсов: $e');
       rethrow;
     }
   }
@@ -60,7 +60,7 @@ class CurrencyService {
       final response = await getCurrencyRates(baseCurrency);
       return response.getRate(targetCurrency);
     } catch (e) {
-      debugPrint('Ошибка получения курса валюты: $e');
+      //debugPrint('Ошибка получения курса валюты: $e');
       return null;
     }
   }
@@ -82,7 +82,7 @@ class CurrencyService {
       }
       return null;
     } catch (e) {
-      debugPrint('Ошибка конвертации валюты: $e');
+      //debugPrint('Ошибка конвертации валюты: $e');
       return null;
     }
   }
@@ -106,6 +106,6 @@ class CurrencyService {
     _cachedResponse = null;
     _lastUpdate = null;
     _lastBaseCurrency = null;
-    debugPrint('Кэш валютных курсов очищен');
+    //debugPrint('Кэш валютных курсов очищен');
   }
 }

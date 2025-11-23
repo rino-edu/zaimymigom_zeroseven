@@ -22,16 +22,16 @@ class ATTService {
     try {
       // Проверяем, поддерживается ли ATT на текущей платформе
       if (!Platform.isIOS) {
-        debugPrint('ATT: Поддерживается только на iOS');
+        //debugPrint('ATT: Поддерживается только на iOS');
         return;
       }
 
       // Получаем текущий статус разрешения
       await _checkTrackingStatus();
       
-      debugPrint('ATT: Инициализация завершена. Статус: $_trackingStatus');
+      //debugPrint('ATT: Инициализация завершена. Статус: $_trackingStatus');
     } catch (e) {
-      debugPrint('ATT: Ошибка инициализации: $e');
+      //debugPrint('ATT: Ошибка инициализации: $e');
     }
   }
 
@@ -40,9 +40,9 @@ class ATTService {
     try {
       final status = await AppTrackingTransparency.trackingAuthorizationStatus;
       _trackingStatus = status;
-      debugPrint('ATT: Текущий статус разрешения: $status');
+      //debugPrint('ATT: Текущий статус разрешения: $status');
     } catch (e) {
-      debugPrint('ATT: Ошибка проверки статуса: $e');
+      //debugPrint('ATT: Ошибка проверки статуса: $e');
     }
   }
 
@@ -51,23 +51,23 @@ class ATTService {
   Future<TrackingStatus> requestTrackingPermission() async {
     try {
       if (!Platform.isIOS) {
-        debugPrint('ATT: Запрос разрешения поддерживается только на iOS');
+        //debugPrint('ATT: Запрос разрешения поддерживается только на iOS');
         return TrackingStatus.notSupported;
       }
 
-      debugPrint('ATT: Запрашиваем разрешение на отслеживание...');
+      //debugPrint('ATT: Запрашиваем разрешение на отслеживание...');
       
       final status = await AppTrackingTransparency.requestTrackingAuthorization();
       _trackingStatus = status;
       
-      debugPrint('ATT: Результат запроса разрешения: $status');
+      //debugPrint('ATT: Результат запроса разрешения: $status');
       
       // Логируем результат для аналитики
       _logTrackingPermissionResult(status);
       
       return status;
     } catch (e) {
-      debugPrint('ATT: Ошибка запроса разрешения: $e');
+      //debugPrint('ATT: Ошибка запроса разрешения: $e');
       return TrackingStatus.denied;
     }
   }
@@ -93,7 +93,7 @@ class ATTService {
         break;
     }
     
-    debugPrint('ATT: Разрешение на отслеживание: $statusString');
+    //debugPrint('ATT: Разрешение на отслеживание: $statusString');
     
     // Здесь можно отправить событие в аналитику
     // FirebaseAnalytics.instance.logEvent(
@@ -121,15 +121,15 @@ class ATTService {
       }
 
       if (!isTrackingAuthorized) {
-        debugPrint('ATT: IDFA недоступен - отслеживание не разрешено');
+        //debugPrint('ATT: IDFA недоступен - отслеживание не разрешено');
         return null;
       }
 
       final idfa = await AppTrackingTransparency.getAdvertisingIdentifier();
-      debugPrint('ATT: IDFA получен: ${idfa.isNotEmpty ? '${idfa.substring(0, 8)}...' : 'пустой'}');
+      //debugPrint('ATT: IDFA получен: ${idfa.isNotEmpty ? '${idfa.substring(0, 8)}...' : 'пустой'}');
       return idfa;
     } catch (e) {
-      debugPrint('ATT: Ошибка получения IDFA: $e');
+      //debugPrint('ATT: Ошибка получения IDFA: $e');
       return null;
     }
   }

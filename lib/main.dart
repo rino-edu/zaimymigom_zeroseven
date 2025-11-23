@@ -11,7 +11,6 @@ import 'services/goals_provider.dart';
 import 'services/currency_prefs.dart';
 import 'services/calendar_provider.dart';
 import 'services/creditworthiness_provider.dart';
-import 'views/loans/loans_screen.dart';
 import 'views/home/main_screen.dart';
 import 'views/onboarding/onboarding_screen.dart';
 import 'views/webview/webview_screen.dart';
@@ -24,7 +23,7 @@ void main() async {
   await EasyLocalization.ensureInitialized();
 
   // Инициализация AppMetrica
-  await AppMetricaService.initialize();
+  await AppMetricaService().initialize();
 
   // Инициализация Firebase
   final firebaseService = FirebaseService();
@@ -45,7 +44,7 @@ void main() async {
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ru')],
       path: 'assets/locales',
-      fallbackLocale: const Locale('en'),
+      fallbackLocale: const Locale('ru'),
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider.value(value: settingsService),
@@ -81,7 +80,7 @@ class MyApp extends StatelessWidget {
     }
 
     return MaterialApp(
-      title: 'Мани Займ',
+      title: 'Макс Кредит',
       // Локализация
       locale: locale ?? context.locale,
       supportedLocales: context.supportedLocales,

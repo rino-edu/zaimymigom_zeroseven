@@ -108,23 +108,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   onChanged: (enabled) => _onPinCodeToggle(context, settingsService, enabled),
                 ),
         
-                const Divider(height: 1),
-        
-                SwitchListTile.adaptive(
-                  value: settingsService.biometricEnabled,
-                  activeColor: AppColors.primary,
-                  secondary: const Icon(Icons.fingerprint, color: AppColors.primary),
-                  title: Text(LocaleKeys.securityBiometricAuth.tr()),
-                  subtitle: Text(
-                    settingsService.biometricEnabled
-                        ? LocaleKeys.settingsDisableSecurity.tr()
-                        : LocaleKeys.settingsEnableSecurity.tr(),
-                  ),
-                  onChanged: _isCheckingBiometric
-                      ? null
-                      : (enabled) => _onBiometricToggle(context, settingsService, enabled),
-                ),
-        
                 if (_isCheckingBiometric)
                   const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 16),
@@ -177,22 +160,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     color: AppColors.primary,
                   ),
                   title: Text(LocaleKeys.aboutVersion.tr()),
-                  subtitle: const Text('1.0.0'),
-                ),
-        
-                const Divider(height: 1),
-                ListTile(
-                  leading: const Icon(
-                    Icons.privacy_tip_outlined,
-                    color: AppColors.primary,
-                  ),
-                  title: Text(LocaleKeys.aboutPrivacyPolicy.tr()),
-                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const PolicyScreen()),
-                    );
-                  },
+                  subtitle: const Text('1.0.1'),
                 ),
                 // Секция: Дополнительно
                 _buildSectionHeader(context, LocaleKeys.settingsOther.tr()),

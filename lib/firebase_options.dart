@@ -53,10 +53,10 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCef0hQNzD6kDjPH7uDGr_W7K1mEyU9Wi0',
-    appId: '1:201815679629:android:820447f6939bdb223338c4',
-    messagingSenderId: '201815679629',
-    projectId: 'rustore-moneza-zaim',
-    storageBucket: 'rustore-moneza-zaim.firebasestorage.app',
+    apiKey: 'AIzaSyCA6FEoYeKLly2SUd6ZN6t2yBTjc15BV8w',
+    appId: '1:930814021384:android:74a485e765ffcc9bb966bd',
+    messagingSenderId: '930814021384',
+    projectId: 'max-credit-zaym-app',
+    storageBucket: 'max-credit-zaym-app.firebasestorage.app',
   );
 }

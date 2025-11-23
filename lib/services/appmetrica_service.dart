@@ -1,13 +1,14 @@
 import 'package:appmetrica_plugin/appmetrica_plugin.dart';
+import 'package:appmetrica_push_plugin/appmetrica_push_plugin.dart';
 import 'package:flutter/foundation.dart';
 
 /// Сервис для работы с AppMetrica
 class AppMetricaService {
   static const String _apiKey =
-      'ad2febf8-015a-4307-8a38-925b3399a914'; // Замените на ваш API ключ
+      '5e237c06-f2d3-4d8c-8381-851de0693dbe'; // Замените на ваш API ключ
 
   /// Инициализация AppMetrica
-  static Future<void> initialize() async {
+  Future<void> initialize() async {
     try {
       // Конфигурация AppMetrica
       final config = AppMetricaConfig(
@@ -26,7 +27,8 @@ class AppMetricaService {
 
       // Инициализация AppMetrica
       await AppMetrica.activate(config);
-
+      // Инициализация AppMetrica Push SDK
+      await _initPush();
       if (kDebugMode) {
         print('AppMetrica initialized successfully');
       }
@@ -34,6 +36,27 @@ class AppMetricaService {
       if (kDebugMode) {
         print('Error initializing AppMetrica: $e');
       }
+    }
+  }
+
+  /// Инициализация AppMetrica Push SDK
+  Future<void> _initPush() async {
+    try {
+      //debugPrint('AppMetricaService: инициализация Push SDK');
+
+      // Инициализация Push SDK
+      await AppMetricaPush.activate();
+      //debugPrint('AppMetricaService: Push SDK активирован');
+
+      // Получение токена Firebase и настройка слушателя токенов
+      AppMetricaPush.tokenStream.listen((tokens) {
+        //debugPrint('AppMetricaService: получены новые токены: $tokens');
+      });
+
+      // Запрос разрешения на показ уведомлений
+      AppMetricaPush.requestPermission(alert: true, badge: true, sound: true);
+    } catch (e) {
+      //debugPrint('AppMetricaService: ошибка при инициализации Push SDK: $e');
     }
   }
 

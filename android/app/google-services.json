@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "201815679629",
-    "project_id": "rustore-moneza-zaim",
-    "storage_bucket": "rustore-moneza-zaim.firebasestorage.app"
+    "project_number": "930814021384",
+    "project_id": "max-credit-zaym-app",
+    "storage_bucket": "max-credit-zaym-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:201815679629:android:820447f6939bdb223338c4",
+        "mobilesdk_app_id": "1:930814021384:android:74a485e765ffcc9bb966bd",
         "android_client_info": {
-          "package_name": "rustore.moneza.zaim"
+          "package_name": "max.credit.zaym.app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCef0hQNzD6kDjPH7uDGr_W7K1mEyU9Wi0"
+          "current_key": "AIzaSyCA6FEoYeKLly2SUd6ZN6t2yBTjc15BV8w"
         }
       ],
       "services": {
