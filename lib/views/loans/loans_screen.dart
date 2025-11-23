@@ -42,24 +42,24 @@ class _LoansScreenState extends State<LoansScreen> {
   Future<void> _loadOffers() async {
     try {
       final isCombatMode = _appModeService.currentMode == AppMode.combat;
-      print('LoansScreen: Loading offers, combat mode: $isCombatMode');
+      //print('LoansScreen: Loading offers, combat mode: $isCombatMode');
 
       if (isCombatMode) {
         // Боевой режим - загружаем boy_offers
         _userCountry = await _getUserCountry();
-        print('LoansScreen: User country: $_userCountry');
+        //print('LoansScreen: User country: $_userCountry');
 
         if (_userCountry != null) {
           final offers = await _firebaseService.getVisibleBoyOffers(
             _userCountry!,
           );
-          print('LoansScreen: Loaded ${offers.length} boy offers');
+          //print('LoansScreen: Loaded ${offers.length} boy offers');
           setState(() {
             _offers = offers; // Уже отфильтрованы и отсортированы в сервисе
             _isLoading = false;
           });
         } else {
-          print('LoansScreen: User country is null, setting empty offers');
+          //print('LoansScreen: User country is null, setting empty offers');
           setState(() {
             _offers = [];
             _isLoading = false;
@@ -67,16 +67,16 @@ class _LoansScreenState extends State<LoansScreen> {
         }
       } else {
         // Небоевой режим - загружаем vpn_offers
-        print('LoansScreen: Loading VPN offers');
+        //print('LoansScreen: Loading VPN offers');
         final offers = await _firebaseService.getVisibleVpnOffers();
-        print('LoansScreen: Loaded ${offers.length} VPN offers');
+        //print('LoansScreen: Loaded ${offers.length} VPN offers');
         setState(() {
           _offers = offers; // Уже отфильтрованы и отсортированы в сервисе
           _isLoading = false;
         });
       }
     } catch (e) {
-      print('LoansScreen: Error loading offers: $e');
+      //print('LoansScreen: Error loading offers: $e');
       setState(() {
         _offers = [];
         _isLoading = false;
@@ -89,11 +89,11 @@ class _LoansScreenState extends State<LoansScreen> {
     try {
       // Получаем страну из последнего результата AppModeService
       final lastResult = _appModeService.lastResult;
-      print('LoansScreen: Last result: ${lastResult?.checks}');
+      //print('LoansScreen: Last result: ${lastResult?.checks}');
 
       if (lastResult != null && lastResult.checks.containsKey('User Country')) {
         final userCountry = lastResult.checks['User Country']?.toString();
-        print('LoansScreen: User country from checks: $userCountry');
+        //print('LoansScreen: User country from checks: $userCountry');
         if (userCountry != null && userCountry.isNotEmpty) {
           // Используем страну в том же регистре, что и в AppModeService (нижний регистр)
           return userCountry;
@@ -101,10 +101,10 @@ class _LoansScreenState extends State<LoansScreen> {
       }
 
       // Если страна не определена, используем ru по умолчанию
-      print('LoansScreen: Using default country ru');
+      //print('LoansScreen: Using default country ru');
       return 'ru';
     } catch (e) {
-      print('LoansScreen: Error getting user country: $e');
+      //print('LoansScreen: Error getting user country: $e');
       return 'ru'; // Fallback
     }
   }

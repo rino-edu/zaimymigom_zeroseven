@@ -158,23 +158,23 @@ class Offer {
 
   /// Вывод данных в лог
   void logData() {
-    print('=== Offer ===');
-    print('id: $id');
-    print('isShow: $isShow');
-    print('link: $link');
-    print('image: $image (SVG: $isSvgImage, PNG: $isPngImage)');
-    print('buttonText: $buttonText');
-    print('name: $name');
-    print('stars: $stars (${starsAsDouble})');
+    //print('=== Offer ===');
+    //print('id: $id');
+    //print('isShow: $isShow');
+    //print('link: $link');
+    //print('image: $image (SVG: $isSvgImage, PNG: $isPngImage)');
+    //print('buttonText: $buttonText');
+    //print('name: $name');
+    //print('stars: $stars (${starsAsDouble})');
 
     final fields = getFields();
     if (fields.isNotEmpty) {
-      print('Fields:');
+      //print('Fields:');
       for (int i = 0; i < fields.length; i++) {
-        print('  ${i + 1}. ${fields[i].name}: ${fields[i].value}');
+        //print('  ${i + 1}. ${fields[i].name}: ${fields[i].value}');
       }
     }
-    print('=============');
+    //print('=============');
   }
 
   @override

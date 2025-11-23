@@ -266,10 +266,10 @@ final currentMode = AppModeService().currentMode;
 final lastResult = AppModeService().lastResult;
 
 if (currentMode == AppMode.combat) {
-  print('🔥 Combat mode active');
-  print('Reason: ${lastResult?.reason}');
+  //print('🔥 Combat mode active');
+  //print('Reason: ${lastResult?.reason}');
 } else {
-  print('🛡️ Non-combat mode active');
+  //print('🛡️ Non-combat mode active');
 }
 ```
 
