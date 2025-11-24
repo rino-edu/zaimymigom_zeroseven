@@ -154,7 +154,7 @@ class WebViewService {
       );
       return image;
     } catch (e) {
-      debugPrint('Ошибка при выборе изображения из галереи: $e');
+      //debugPrint('Ошибка при выборе изображения из галереи: $e');
       return null;
     }
   }
@@ -168,7 +168,7 @@ class WebViewService {
       );
       return image;
     } catch (e) {
-      debugPrint('Ошибка при съемке фото: $e');
+      //debugPrint('Ошибка при съемке фото: $e');
       return null;
     }
   }
@@ -269,7 +269,7 @@ class WebViewService {
         }
       }
     } catch (e) {
-      debugPrint('Ошибка при обработке загрузки файла: $e');
+      //debugPrint('Ошибка при обработке загрузки файла: $e');
     }
   }
 
@@ -328,7 +328,7 @@ class WebViewService {
         },
       );
     } catch (e) {
-      debugPrint('Ошибка при выборе изображения: $e');
+      //debugPrint('Ошибка при выборе изображения: $e');
       return null;
     }
   }

@@ -40,13 +40,13 @@ class FirebaseSettings {
 
   /// Вывод данных в лог
   void logData() {
-    print('=== Firebase Settings ===');
-    print('checkInternet: $checkInternet');
-    print('checkLocation: $checkLocation');
-    print('checkSIM: $checkSIM');
-    print('checkVPN: $checkVPN');
-    print('location: $location');
-    print('========================');
+    //print('=== Firebase Settings ===');
+    //print('checkInternet: $checkInternet');
+    //print('checkLocation: $checkLocation');
+    //print('checkSIM: $checkSIM');
+    //print('checkVPN: $checkVPN');
+    //print('location: $location');
+    //print('========================');
   }
 
   @override

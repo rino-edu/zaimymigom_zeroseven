@@ -28,11 +28,11 @@ class AppMetricaService {
       await AppMetrica.activate(config);
 
       if (kDebugMode) {
-        print('AppMetrica initialized successfully');
+        //print('AppMetrica initialized successfully');
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error initializing AppMetrica: $e');
+        //print('Error initializing AppMetrica: $e');
       }
     }
   }
@@ -53,11 +53,11 @@ class AppMetricaService {
         await AppMetrica.reportEvent(eventName);
       }
       if (kDebugMode) {
-        print('AppMetrica event sent: $eventName with params: $parameters');
+        //print('AppMetrica event sent: $eventName with params: $parameters');
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error sending AppMetrica event: $e');
+        //print('Error sending AppMetrica event: $e');
       }
     }
   }
@@ -70,11 +70,11 @@ class AppMetricaService {
         {'screen_name': screenName} as Map<String, Object>,
       );
       if (kDebugMode) {
-        print('AppMetrica screen reported: $screenName');
+        //print('AppMetrica screen reported: $screenName');
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error reporting AppMetrica screen: $e');
+        //print('Error reporting AppMetrica screen: $e');
       }
     }
   }
@@ -89,11 +89,11 @@ class AppMetricaService {
             as Map<String, Object>,
       );
       if (kDebugMode) {
-        print('AppMetrica user attribute set: $key = $value');
+        //print('AppMetrica user attribute set: $key = $value');
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error setting AppMetrica user attribute: $e');
+        //print('Error setting AppMetrica user attribute: $e');
       }
     }
   }
@@ -107,11 +107,11 @@ class AppMetricaService {
         {'error': error, 'reason': reason ?? 'Unknown'} as Map<String, Object>,
       );
       if (kDebugMode) {
-        print('AppMetrica error reported: $error, reason: $reason');
+        //print('AppMetrica error reported: $error, reason: $reason');
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error reporting AppMetrica error: $e');
+        //print('Error reporting AppMetrica error: $e');
       }
     }
   }

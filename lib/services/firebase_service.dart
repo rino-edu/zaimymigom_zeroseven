@@ -16,49 +16,49 @@ class FirebaseService {
   /// Инициализация Firebase
   Future<void> initialize() async {
     if (_initialized) {
-      print('⚠️  Firebase already initialized');
+      //print('⚠️  Firebase already initialized');
       return;
     }
 
-    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    print('🚀 Starting Firebase initialization...');
-    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    //print('🚀 Starting Firebase initialization...');
+    //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     try {
       // Шаг 1: Инициализация Firebase Core
-      print('📱 Step 1: Initializing Firebase Core...');
+      //print('📱 Step 1: Initializing Firebase Core...');
       await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
       );
-      print('✅ Firebase Core initialized successfully');
+      //print('✅ Firebase Core initialized successfully');
 
       // Шаг 2: Получение инстанса Firestore
-      print('🗄️  Step 2: Getting Firestore instance...');
+      //print('🗄️  Step 2: Getting Firestore instance...');
       _firestore = FirebaseFirestore.instance;
       _initialized = true;
-      print('✅ Firestore instance obtained');
+      //print('✅ Firestore instance obtained');
 
       // Шаг 3: Проверка реального подключения к Firestore
-      print('🔌 Step 3: Testing Firestore connection...');
+      //print('🔌 Step 3: Testing Firestore connection...');
       final connectionSuccessful = await _testFirestoreConnection();
 
       if (connectionSuccessful) {
-        print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        print('✅ Firebase Firestore connection SUCCESSFUL');
-        print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        //print('✅ Firebase Firestore connection SUCCESSFUL');
+        //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       } else {
-        print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        print('⚠️  Firebase initialized but Firestore connection FAILED');
-        print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        //print('⚠️  Firebase initialized but Firestore connection FAILED');
+        //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       }
     } catch (e, stackTrace) {
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      print('❌ Firebase initialization FAILED');
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      print('Error type: ${e.runtimeType}');
-      print('Error message: $e');
-      print('Stack trace: $stackTrace');
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      //print('❌ Firebase initialization FAILED');
+      //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      //print('Error type: ${e.runtimeType}');
+      //print('Error message: $e');
+      //print('Stack trace: $stackTrace');
+      //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       rethrow;
     }
   }
@@ -78,29 +78,29 @@ class FirebaseService {
             },
           );
 
-      print('   ✓ Successfully connected to Firestore');
-      print('   ✓ Settings document ${doc.exists ? "EXISTS" : "NOT FOUND"}');
+      //print('   ✓ Successfully connected to Firestore');
+      //print('   ✓ Settings document ${doc.exists ? "EXISTS" : "NOT FOUND"}');
 
       // Если документ существует, выводим его содержимое
       if (doc.exists && doc.data() != null) {
         final data = doc.data()!;
-        print('   ✓ Document has ${data.length} fields');
-        print('   📄 Document content:');
+        //print('   ✓ Document has ${data.length} fields');
+        //print('   📄 Document content:');
         data.forEach((key, value) {
-          print('      • $key: $value');
+          //print('      • $key: $value');
         });
 
         // Создаем объект настроек и выводим через logData()
         final settings = FirebaseSettings.fromFirestore(data);
-        print('   📋 Parsed settings:');
+        //print('   📋 Parsed settings:');
         settings.logData();
       } else {
-        print('   ⚠️  Settings document is empty or does not exist');
+        //print('   ⚠️  Settings document is empty or does not exist');
       }
 
       return true;
     } catch (e) {
-      print('   ✗ Firestore connection test failed: $e');
+      //print('   ✗ Firestore connection test failed: $e');
       return false;
     }
   }
@@ -121,27 +121,27 @@ class FirebaseService {
     _ensureInitialized();
 
     try {
-      print('Fetching settings from Firestore...');
+      //print('Fetching settings from Firestore...');
       final doc = await _firestore.collection('settings').doc('general').get();
 
       if (!doc.exists) {
-        print('Settings document does not exist');
+        //print('Settings document does not exist');
         return null;
       }
 
       final data = doc.data();
       if (data == null) {
-        print('Settings document has no data');
+        //print('Settings document has no data');
         return null;
       }
 
       final settings = FirebaseSettings.fromFirestore(data);
-      print('Settings loaded successfully:');
+      //print('Settings loaded successfully:');
       settings.logData();
 
       return settings;
     } catch (e) {
-      print('Error fetching settings: $e');
+      //print('Error fetching settings: $e');
       return null;
     }
   }
@@ -154,12 +154,12 @@ class FirebaseService {
       snapshot,
     ) {
       if (!snapshot.exists || snapshot.data() == null) {
-        print('Settings document does not exist or has no data');
+        //print('Settings document does not exist or has no data');
         return null;
       }
 
       final settings = FirebaseSettings.fromFirestore(snapshot.data()!);
-      print('Settings updated:');
+      //print('Settings updated:');
       settings.logData();
 
       return settings;
@@ -175,14 +175,14 @@ class FirebaseService {
 
     try {
       final collectionName = 'boy_offers_$regionCode';
-      print('Fetching boy offers from collection: $collectionName...');
+      //print('Fetching boy offers from collection: $collectionName...');
 
       final querySnapshot = await _firestore
           .collection(collectionName)
           .orderBy('id', descending: false)
           .get();
 
-      print('Found ${querySnapshot.docs.length} boy offers');
+      //print('Found ${querySnapshot.docs.length} boy offers');
 
       final offers = <Offer>[];
       for (var doc in querySnapshot.docs) {
@@ -193,7 +193,7 @@ class FirebaseService {
 
       return offers;
     } catch (e) {
-      print('Error fetching boy offers: $e');
+      //print('Error fetching boy offers: $e');
       return [];
     }
   }
@@ -204,14 +204,14 @@ class FirebaseService {
 
     try {
       final collectionName = 'boy_offers_$regionCode';
-      print(
-        'Fetching all boy offers from collection: $collectionName (will filter on client)...',
-      );
+      // print(
+      //   'Fetching all boy offers from collection: $collectionName (will filter on client)...',
+      // );
 
       // Загружаем все офферы без фильтрации и сортировки
       final querySnapshot = await _firestore.collection(collectionName).get();
 
-      print('Found ${querySnapshot.docs.length} total boy offers');
+      //print('Found ${querySnapshot.docs.length} total boy offers');
 
       final offers = <Offer>[];
       for (var doc in querySnapshot.docs) {
@@ -224,11 +224,11 @@ class FirebaseService {
       final visibleOffers = offers.where((offer) => offer.isShow).toList()
         ..sort((a, b) => a.id.compareTo(b.id));
 
-      print('Found ${visibleOffers.length} visible boy offers after filtering');
+      //print('Found ${visibleOffers.length} visible boy offers after filtering');
 
       return visibleOffers;
     } catch (e) {
-      print('Error fetching boy offers: $e');
+      //print('Error fetching boy offers: $e');
       return [];
     }
   }
@@ -238,14 +238,14 @@ class FirebaseService {
     _ensureInitialized();
 
     final collectionName = 'boy_offers_$regionCode';
-    print('Watching boy offers from collection: $collectionName');
+    //print('Watching boy offers from collection: $collectionName');
 
     return _firestore
         .collection(collectionName)
         .orderBy('id', descending: false)
         .snapshots()
         .map((snapshot) {
-          print('Boy offers updated: ${snapshot.docs.length} offers');
+          //print('Boy offers updated: ${snapshot.docs.length} offers');
 
           final offers = <Offer>[];
           for (var doc in snapshot.docs) {
@@ -263,7 +263,7 @@ class FirebaseService {
     _ensureInitialized();
 
     final collectionName = 'boy_offers_$regionCode';
-    print('Watching visible boy offers from collection: $collectionName');
+    //print('Watching visible boy offers from collection: $collectionName');
 
     return _firestore
         .collection(collectionName)
@@ -271,7 +271,7 @@ class FirebaseService {
         .orderBy('id', descending: false)
         .snapshots()
         .map((snapshot) {
-          print('Visible boy offers updated: ${snapshot.docs.length} offers');
+          //print('Visible boy offers updated: ${snapshot.docs.length} offers');
 
           final offers = <Offer>[];
           for (var doc in snapshot.docs) {
@@ -292,14 +292,14 @@ class FirebaseService {
     _ensureInitialized();
 
     try {
-      print('Fetching VPN offers...');
+      //print('Fetching VPN offers...');
 
       final querySnapshot = await _firestore
           .collection('vpn_offers')
           .orderBy('id', descending: false)
           .get();
 
-      print('Found ${querySnapshot.docs.length} VPN offers');
+      //print('Found ${querySnapshot.docs.length} VPN offers');
 
       final offers = <Offer>[];
       for (var doc in querySnapshot.docs) {
@@ -310,7 +310,7 @@ class FirebaseService {
 
       return offers;
     } catch (e) {
-      print('Error fetching VPN offers: $e');
+      //print('Error fetching VPN offers: $e');
       return [];
     }
   }
@@ -320,12 +320,12 @@ class FirebaseService {
     _ensureInitialized();
 
     try {
-      print('Fetching all VPN offers (will filter on client)...');
+      //print('Fetching all VPN offers (will filter on client)...');
 
       // Загружаем все офферы без фильтрации и сортировки
       final querySnapshot = await _firestore.collection('vpn_offers').get();
 
-      print('Found ${querySnapshot.docs.length} total VPN offers');
+      //print('Found ${querySnapshot.docs.length} total VPN offers');
 
       final offers = <Offer>[];
       for (var doc in querySnapshot.docs) {
@@ -338,11 +338,11 @@ class FirebaseService {
       final visibleOffers = offers.where((offer) => offer.isShow).toList()
         ..sort((a, b) => a.id.compareTo(b.id));
 
-      print('Found ${visibleOffers.length} visible VPN offers after filtering');
+      //print('Found ${visibleOffers.length} visible VPN offers after filtering');
 
       return visibleOffers;
     } catch (e) {
-      print('Error fetching VPN offers: $e');
+      //print('Error fetching VPN offers: $e');
       return [];
     }
   }
@@ -351,14 +351,14 @@ class FirebaseService {
   Stream<List<Offer>> watchVpnOffers() {
     _ensureInitialized();
 
-    print('Watching VPN offers');
+    //print('Watching VPN offers');
 
     return _firestore
         .collection('vpn_offers')
         .orderBy('id', descending: false)
         .snapshots()
         .map((snapshot) {
-          print('VPN offers updated: ${snapshot.docs.length} offers');
+          //print('VPN offers updated: ${snapshot.docs.length} offers');
 
           final offers = <Offer>[];
           for (var doc in snapshot.docs) {
@@ -375,7 +375,7 @@ class FirebaseService {
   Stream<List<Offer>> watchVisibleVpnOffers() {
     _ensureInitialized();
 
-    print('Watching visible VPN offers');
+    //print('Watching visible VPN offers');
 
     return _firestore
         .collection('vpn_offers')
@@ -383,7 +383,7 @@ class FirebaseService {
         .orderBy('id', descending: false)
         .snapshots()
         .map((snapshot) {
-          print('Visible VPN offers updated: ${snapshot.docs.length} offers');
+          //print('Visible VPN offers updated: ${snapshot.docs.length} offers');
 
           final offers = <Offer>[];
           for (var doc in snapshot.docs) {
@@ -402,8 +402,8 @@ class FirebaseService {
   Future<bool> checkConnection() async {
     _ensureInitialized();
 
-    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    print('🔌 Checking Firestore connection...');
+    //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    //print('🔌 Checking Firestore connection...');
 
     try {
       final startTime = DateTime.now();
@@ -422,19 +422,19 @@ class FirebaseService {
       final endTime = DateTime.now();
       final duration = endTime.difference(startTime).inMilliseconds;
 
-      print('✅ Firestore connection SUCCESSFUL');
-      print('   ✓ Response time: ${duration}ms');
-      print('   ✓ Settings document ${doc.exists ? "EXISTS" : "NOT FOUND"}');
+      //print('✅ Firestore connection SUCCESSFUL');
+      //print('   ✓ Response time: ${duration}ms');
+      //print('   ✓ Settings document ${doc.exists ? "EXISTS" : "NOT FOUND"}');
       if (doc.exists && doc.data() != null) {
-        print('   ✓ Document has ${doc.data()!.length} fields');
+        //print('   ✓ Document has ${doc.data()!.length} fields');
       }
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       return true;
     } catch (e) {
-      print('❌ Firestore connection FAILED');
-      print('   ✗ Error type: ${e.runtimeType}');
-      print('   ✗ Error message: $e');
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      //print('❌ Firestore connection FAILED');
+      //print('   ✗ Error type: ${e.runtimeType}');
+      //print('   ✗ Error message: $e');
+      //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       return false;
     }
   }
@@ -444,26 +444,26 @@ class FirebaseService {
     _ensureInitialized();
 
     try {
-      print('Fetching all boy offers collections...');
+      //print('Fetching all boy offers collections...');
       // Firestore не позволяет получить список всех коллекций на клиенте
       // Нужно использовать Admin SDK на сервере или хранить список коллекций
       // в отдельном документе
-      print('Note: Cannot list collections from client SDK');
+      //print('Note: Cannot list collections from client SDK');
       return [];
     } catch (e) {
-      print('Error fetching boy offers collections: $e');
+      //print('Error fetching boy offers collections: $e');
       return [];
     }
   }
 
   /// Получить детальную информацию о статусе подключения
   Future<ConnectionStatus> getConnectionStatus() async {
-    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    print('📊 Getting connection status...');
+    //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    //print('📊 Getting connection status...');
 
     if (!_initialized) {
-      print('❌ Firebase not initialized');
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      //print('❌ Firebase not initialized');
+      //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       return ConnectionStatus(
         isInitialized: false,
         isConnected: false,
@@ -488,11 +488,11 @@ class FirebaseService {
       final endTime = DateTime.now();
       final responseTime = endTime.difference(startTime).inMilliseconds;
 
-      print('✅ Connection status: CONNECTED');
-      print('   ✓ Initialized: YES');
-      print('   ✓ Response time: ${responseTime}ms');
-      print('   ✓ Document exists: ${doc.exists}');
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      //print('✅ Connection status: CONNECTED');
+      //print('   ✓ Initialized: YES');
+      //print('   ✓ Response time: ${responseTime}ms');
+      //print('   ✓ Document exists: ${doc.exists}');
+      //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
       return ConnectionStatus(
         isInitialized: true,
@@ -501,9 +501,9 @@ class FirebaseService {
         documentExists: doc.exists,
       );
     } catch (e) {
-      print('❌ Connection status: DISCONNECTED');
-      print('   ✗ Error: $e');
-      print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      //print('❌ Connection status: DISCONNECTED');
+      //print('   ✗ Error: $e');
+      //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
       return ConnectionStatus(
         isInitialized: true,
@@ -520,90 +520,90 @@ class FirebaseService {
   Future<void> runFullDiagnostics({String regionCode = 'RU'}) async {
     _ensureInitialized();
 
-    print('');
-    print('═══════════════════════════════════════════════════════════');
-    print('🔍 FIREBASE FIRESTORE - FULL DIAGNOSTICS');
-    print('═══════════════════════════════════════════════════════════');
-    print('');
+    //print('');
+    //print('═══════════════════════════════════════════════════════════');
+    //print('🔍 FIREBASE FIRESTORE - FULL DIAGNOSTICS');
+    //print('═══════════════════════════════════════════════════════════');
+    //print('');
 
     // 1. Проверка подключения
-    print('━━━ 1. CONNECTION CHECK ━━━');
+    //print('━━━ 1. CONNECTION CHECK ━━━');
     final connectionStatus = await getConnectionStatus();
     connectionStatus.logStatus();
 
     if (!connectionStatus.isConnected) {
-      print('❌ Cannot continue diagnostics - not connected');
-      print('═══════════════════════════════════════════════════════════');
+      //print('❌ Cannot continue diagnostics - not connected');
+      //print('═══════════════════════════════════════════════════════════');
       return;
     }
 
-    print('');
+    //print('');
 
     // 2. Загрузка Settings
-    print('━━━ 2. SETTINGS COLLECTION ━━━');
+    //print('━━━ 2. SETTINGS COLLECTION ━━━');
     try {
       final settings = await getSettings();
       if (settings != null) {
-        print('✅ Settings loaded successfully');
+        //print('✅ Settings loaded successfully');
         settings.logData();
       } else {
-        print('⚠️  Settings not found');
+        //print('⚠️  Settings not found');
       }
     } catch (e) {
-      print('❌ Error loading settings: $e');
+      //print('❌ Error loading settings: $e');
     }
 
-    print('');
+    //print('');
 
     // 3. Загрузка Boy Offers
-    print('━━━ 3. BOY OFFERS (region: $regionCode) ━━━');
+    //print('━━━ 3. BOY OFFERS (region: $regionCode) ━━━');
     try {
       final boyOffers = await getBoyOffers(regionCode);
-      print('✅ Total boy offers: ${boyOffers.length}');
+      //print('✅ Total boy offers: ${boyOffers.length}');
 
       if (boyOffers.isNotEmpty) {
-        print('');
-        print('📋 All boy offers:');
+        //print('');
+        //print('📋 All boy offers:');
         for (var i = 0; i < boyOffers.length; i++) {
-          print('');
-          print('--- Offer ${i + 1}/${boyOffers.length} ---');
+          //print('');
+          //print('--- Offer ${i + 1}/${boyOffers.length} ---');
           boyOffers[i].logData();
         }
       } else {
-        print('⚠️  No boy offers found for region $regionCode');
+        //print('⚠️  No boy offers found for region $regionCode');
       }
     } catch (e) {
-      print('❌ Error loading boy offers: $e');
+      //print('❌ Error loading boy offers: $e');
     }
 
-    print('');
+    //print('');
 
     // 4. Загрузка VPN Offers
-    print('━━━ 4. VPN OFFERS ━━━');
+    //print('━━━ 4. VPN OFFERS ━━━');
     try {
       final vpnOffers = await getVpnOffers();
-      print('✅ Total VPN offers: ${vpnOffers.length}');
+      //print('✅ Total VPN offers: ${vpnOffers.length}');
 
       if (vpnOffers.isNotEmpty) {
-        print('');
-        print('📋 All VPN offers:');
+        //print('');
+        //print('📋 All VPN offers:');
         for (var i = 0; i < vpnOffers.length; i++) {
-          print('');
-          print('--- VPN Offer ${i + 1}/${vpnOffers.length} ---');
+          //print('');
+          //print('--- VPN Offer ${i + 1}/${vpnOffers.length} ---');
           vpnOffers[i].logData();
         }
       } else {
-        print('⚠️  No VPN offers found');
+        //print('⚠️  No VPN offers found');
       }
     } catch (e) {
-      print('❌ Error loading VPN offers: $e');
+      //print('❌ Error loading VPN offers: $e');
     }
 
-    print('');
-    print('═══════════════════════════════════════════════════════════');
-    print('✅ DIAGNOSTICS COMPLETE');
-    print('═══════════════════════════════════════════════════════════');
-    print('');
+    //print('');
+    //print('═══════════════════════════════════════════════════════════');
+    //print('✅ DIAGNOSTICS COMPLETE');
+    //print('═══════════════════════════════════════════════════════════');
+    //print('');
   }
 }
 
@@ -625,21 +625,21 @@ class ConnectionStatus {
 
   /// Логирование статуса подключения
   void logStatus() {
-    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    print('📊 Connection Status');
-    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    print('Initialized: ${isInitialized ? "✅ YES" : "❌ NO"}');
-    print('Connected: ${isConnected ? "✅ YES" : "❌ NO"}');
+    //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    //print('📊 Connection Status');
+    //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    //print('Initialized: ${isInitialized ? "✅ YES" : "❌ NO"}');
+    //print('Connected: ${isConnected ? "✅ YES" : "❌ NO"}');
     if (responseTimeMs != null) {
-      print('Response time: $responseTimeMs ms');
+      //print('Response time: $responseTimeMs ms');
     }
     if (documentExists != null) {
-      print('Settings document exists: ${documentExists! ? "✅ YES" : "❌ NO"}');
+      //print('Settings document exists: ${documentExists! ? "✅ YES" : "❌ NO"}');
     }
     if (errorMessage != null) {
-      print('Error: $errorMessage');
+      //print('Error: $errorMessage');
     }
-    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   }
 
   @override

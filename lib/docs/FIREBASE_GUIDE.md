@@ -73,7 +73,7 @@ final settings = await firebaseService.getSettings();
 // Слушать изменения в реальном времени
 firebaseService.watchSettings().listen((settings) {
   if (settings != null) {
-    print('Settings updated: ${settings.location}');
+    //print('Settings updated: ${settings.location}');
   }
 });
 ```
@@ -89,12 +89,12 @@ final visibleOffers = await firebaseService.getVisibleBoyOffers('RU');
 
 // Слушать все офферы
 firebaseService.watchBoyOffers('RU').listen((offers) {
-  print('Offers: ${offers.length}');
+  //print('Offers: ${offers.length}');
 });
 
 // Слушать только видимые офферы
 firebaseService.watchVisibleBoyOffers('RU').listen((offers) {
-  print('Visible offers: ${offers.length}');
+  //print('Visible offers: ${offers.length}');
 });
 ```
 
@@ -109,12 +109,12 @@ final visibleVpnOffers = await firebaseService.getVisibleVpnOffers();
 
 // Слушать все VPN офферы
 firebaseService.watchVpnOffers().listen((offers) {
-  print('VPN offers: ${offers.length}');
+  //print('VPN offers: ${offers.length}');
 });
 
 // Слушать только видимые VPN офферы
 firebaseService.watchVisibleVpnOffers().listen((offers) {
-  print('Visible VPN offers: ${offers.length}');
+  //print('Visible VPN offers: ${offers.length}');
 });
 ```
 
@@ -127,14 +127,14 @@ final isConnected = await firebaseService.checkConnection();
 // Получить детальный статус подключения
 final status = await firebaseService.getConnectionStatus();
 if (status.isConnected) {
-  print('Подключено, время ответа: ${status.responseTimeMs}ms');
+  //print('Подключено, время ответа: ${status.responseTimeMs}ms');
 } else {
-  print('Ошибка: ${status.errorMessage}');
+  //print('Ошибка: ${status.errorMessage}');
 }
 
 // Быстрая проверка инициализации (синхронно, без async)
 if (firebaseService.isInitialized) {
-  print('Firebase инициализирован');
+  //print('Firebase инициализирован');
 }
 
 // Полная диагностика - загрузить и вывести ВСЕ данные из Firestore
@@ -487,7 +487,7 @@ try {
     // Обработать отсутствие данных
   }
 } catch (e) {
-  print('Error: $e');
+  //print('Error: $e');
 }
 
 // Для Stream
@@ -496,7 +496,7 @@ firebaseService.watchSettings().listen(
     // Обработать данные
   },
   onError: (error) {
-    print('Stream error: $error');
+    //print('Stream error: $error');
   },
 );
 ```

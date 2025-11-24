@@ -42,7 +42,7 @@ class CreditworthinessProvider extends ChangeNotifier {
       await loadAssessments();
       return id;
     } catch (e) {
-      debugPrint('addAssessment error: $e');
+      //debugPrint('addAssessment error: $e');
       return null;
     }
   }
@@ -52,7 +52,7 @@ class CreditworthinessProvider extends ChangeNotifier {
       await _db.deleteAssessment(id);
       await loadAssessments();
     } catch (e) {
-      debugPrint('deleteAssessment error: $e');
+      //debugPrint('deleteAssessment error: $e');
     }
   }
 }

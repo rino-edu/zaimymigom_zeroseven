@@ -40,7 +40,7 @@ class GoalsProvider extends ChangeNotifier {
       await loadGoals();
       return id;
     } catch (e) {
-      debugPrint('addGoal error: $e');
+      //debugPrint('addGoal error: $e');
       return null;
     }
   }
@@ -50,7 +50,7 @@ class GoalsProvider extends ChangeNotifier {
       await _db.updateGoal(goal);
       await loadGoals();
     } catch (e) {
-      debugPrint('updateGoal error: $e');
+      //debugPrint('updateGoal error: $e');
     }
   }
 
@@ -60,7 +60,7 @@ class GoalsProvider extends ChangeNotifier {
       _goalIdToContribs.remove(id);
       await loadGoals();
     } catch (e) {
-      debugPrint('deleteGoal error: $e');
+      //debugPrint('deleteGoal error: $e');
     }
   }
 
@@ -71,7 +71,7 @@ class GoalsProvider extends ChangeNotifier {
       await loadContributions(c.goalId);
       return id;
     } catch (e) {
-      debugPrint('addContribution error: $e');
+      //debugPrint('addContribution error: $e');
       return null;
     }
   }
@@ -82,7 +82,7 @@ class GoalsProvider extends ChangeNotifier {
       await loadGoals();
       await loadContributions(c.goalId);
     } catch (e) {
-      debugPrint('deleteContribution error: $e');
+      //debugPrint('deleteContribution error: $e');
     }
   }
 }
