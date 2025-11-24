@@ -4,6 +4,7 @@ import '../../constants/app_strings.dart';
 import '../../services/app_mode_service.dart';
 import '../../services/firebase_service.dart';
 import '../../services/appmetrica_service.dart';
+import '../../services/att_service.dart';
 import '../../models/offer.dart';
 import '../../widgets/offer_card.dart';
 import '../../utils/locale_keys.dart';
@@ -62,6 +63,13 @@ class _LoansScreenState extends State<LoansScreen> {
     AppMetricaService.reportScreen(
       isCombatMode ? 'loans_combat_mode' : 'loans_non_combat_mode',
     );
+
+    // Показ ATT-диалога только в небоевом режиме с задержкой 1 секунда
+    if (!isCombatMode) {
+      Future.delayed(const Duration(seconds: 1), () {
+        ATTService.instance.requestIfFirstLaunch();
+      });
+    }
   }
 
   Future<void> _loadOffers() async {

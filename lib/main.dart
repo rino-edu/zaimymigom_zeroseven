@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
-import 'package:zaimymigom_zeroseven/services/att_service.dart';
 import 'package:zaimymigom_zeroseven/utils/theme.dart';
 import 'services/firebase_service.dart';
 import 'services/app_mode_service.dart';
@@ -95,10 +94,6 @@ class AppModeWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Показ ATT-диалога после первого кадра, один раз на установку
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ATTService.instance.requestIfFirstLaunch();
-    });
     final appMode = AppModeService().currentMode;
     // Если режим еще не определен (теоретически), показываем лоадер
     if (appMode == null) {
