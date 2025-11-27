@@ -550,5 +550,10 @@
     "dialog_title": "It seems VPN is enabled on your device",
     "dialog_description": "For a more stable app experience, we recommend turning off VPN and restarting the app.",
     "dialog_ok": "Got it"
+  },
+  "connection": {
+    "lost_title": "No internet connection",
+    "lost_message": "Please check your network connection. Some app features may be unavailable.",
+    "lost_ok": "Got it"
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
 import 'package:zaimymigom_zeroseven/utils/theme.dart';
+import 'package:zaimymigom_zeroseven/widgets/connectivity_listener.dart';
 import 'services/firebase_service.dart';
 import 'services/app_mode_service.dart';
 import 'services/appmetrica_service.dart';
@@ -84,7 +85,9 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: settings.themeMode,
       debugShowCheckedModeBanner: false,
-      home: const AppModeWrapper(),
+      home: const ConnectivityListener(
+        child: AppModeWrapper(),
+      ),
     );
   }
 }
