@@ -25,6 +25,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
+  static bool _vpnDialogShown = false;
   final AppModeService _appModeService = AppModeService();
 
   final List<String> _screenTitles = [
@@ -49,6 +50,36 @@ class _MainScreenState extends State<MainScreen> {
 
   String _getAppBarTitle() {
     return _screenTitles[_selectedIndex].tr();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Попап про включённый VPN после первого рендера домашнего экрана
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_vpnDialogShown) return;
+      final lastResult = AppModeService().lastResult;
+      final hasVpn = lastResult?.checks['VPN Status'] == true;
+      if (!hasVpn) return;
+
+      _vpnDialogShown = true;
+      showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            title: Text(LocaleKeys.vpnDialogTitle.tr()),
+            content: Text(LocaleKeys.vpnDialogDescription.tr()),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(ctx).pop(),
+                child: Text(LocaleKeys.vpnDialogOk.tr()),
+              ),
+            ],
+          );
+        },
+      );
+    });
   }
 
   @override

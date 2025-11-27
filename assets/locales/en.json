@@ -545,5 +545,10 @@
     "next": "Next",
     "skip": "Skip",
     "get_started": "Get Started"
+  },
+  "vpn": {
+    "dialog_title": "It seems VPN is enabled on your device",
+    "dialog_description": "For a more stable app experience, we recommend turning off VPN and restarting the app.",
+    "dialog_ok": "Got it"
   }
 }

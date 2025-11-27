@@ -5,6 +5,11 @@ class LocaleKeys {
   static const appName = 'app.name';
   static const appDescription = 'app.description';
 
+  // VPN
+  static const vpnDialogTitle = 'vpn.dialog_title';
+  static const vpnDialogDescription = 'vpn.dialog_description';
+  static const vpnDialogOk = 'vpn.dialog_ok';
+
   // Navigation
   static const navHome = 'navigation.home';
   static const navProjects = 'navigation.projects';
