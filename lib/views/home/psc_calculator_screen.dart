@@ -231,11 +231,19 @@ class _PscCalculatorScreenState extends State<PscCalculatorScreen> {
     final systemBottomPadding = mediaQuery.padding.bottom;
     final totalBottomPadding = bottomBarHeight + systemBottomPadding + 4; // +16 для дополнительного отступа между кнопками и bottom bar
     
-    return GestureDetector(
-      onTap: () {
-        FocusScope.of(context).unfocus();
-      },
-      child: SingleChildScrollView(
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color(0xFF5F5F5F), Color(0xFFBEBEBE)],
+        ),
+      ),
+      child: GestureDetector(
+        onTap: () {
+          FocusScope.of(context).unfocus();
+        },
+        child: SingleChildScrollView(
         padding: EdgeInsets.only(
           bottom: totalBottomPadding,
           left: 16,
@@ -437,6 +445,7 @@ class _PscCalculatorScreenState extends State<PscCalculatorScreen> {
               ],
             ),
         ],
+      ),
       ),
       ),
     );

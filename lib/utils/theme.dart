@@ -26,21 +26,21 @@ class AppTheme {
 
       // AppBar тема
       appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.white,
+        backgroundColor: Color(0xFF5F5F5F),
         surfaceTintColor: Colors.transparent,
-        foregroundColor: AppColors.textPrimary,
+        foregroundColor: Colors.white,
         elevation: 2,
         centerTitle: true,
         titleTextStyle: TextStyle(
-          color: AppColors.textPrimary,
+          color: Colors.white,
           fontSize: 20,
           fontWeight: FontWeight.w600,
         ),
-        iconTheme: IconThemeData(color: AppColors.textPrimary),
-        actionsIconTheme: IconThemeData(color: AppColors.primary),
+        iconTheme: IconThemeData(color: Colors.white),
+        actionsIconTheme: IconThemeData(color: Colors.white),
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
-          statusBarIconBrightness: Brightness.dark,
+          statusBarIconBrightness: Brightness.light,
         ),
       ),
 
