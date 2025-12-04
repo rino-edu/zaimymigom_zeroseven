@@ -1,3 +1,4 @@
+import 'package:dot_curved_bottom_nav/dot_curved_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../utils/locale_keys.dart';
@@ -16,6 +17,7 @@ import '../webview/webview_screen.dart';
 import '../../models/offer.dart';
 import '../../services/app_mode_service.dart';
 import '../../services/webview_link_service.dart';
+import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 
 /// Главный экран приложения с bottom navigation bar
 class MainScreen extends StatefulWidget {
@@ -27,7 +29,7 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _selectedIndex = 0;
-
+  final ScrollController _scrollController = ScrollController();
   final List<String> _screenTitles = [
     LocaleKeys.pscCalculatorTitle,
     LocaleKeys.budgetTitle,
@@ -202,7 +204,40 @@ class _MainScreenState extends State<MainScreen> {
         ),
       ),
       body: _screens[_selectedIndex],
-      bottomNavigationBar: LiquidGlassBottomBar(
+      bottomNavigationBar: DotCurvedBottomNav(
+        scrollController: _scrollController,
+        hideOnScroll: false,
+        indicatorColor: _selectedIndex == 0 ? Colors.blue : _selectedIndex == 1 ? Colors.green : _selectedIndex == 2 ? Colors.red : Color(0xff424242),
+        backgroundColor: Color(0xff424242),
+        animationDuration: const Duration(milliseconds: 300),
+        animationCurve: Curves.ease,
+        selectedIndex: _selectedIndex,
+        indicatorSize: 5,
+        borderRadius: 20,
+        height: 70,
+        onTap: (index) {
+          setState(() => _selectedIndex = index);
+        },
+        items: [
+          Icon(
+            Icons.calculate,
+            color: _selectedIndex == 0 ? Colors.blue : Colors.white,
+          ),
+          Icon(
+            Icons.account_balance_wallet,
+            color: _selectedIndex == 1 ? Colors.green : Colors.white,
+          ),
+          Icon(
+            Icons.flag,
+            color: _selectedIndex == 2 ? Colors.red : Colors.white,
+          ),
+/*          Icon(
+            Icons.person,
+            color: _selectedIndex == 3 ? Colors.blue : Colors.white,
+          ),*/
+        ],
+      ),
+/*      bottomNavigationBar: LiquidGlassBottomBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         activeColor: const Color(0xFF0547BE),
@@ -224,14 +259,14 @@ class _MainScreenState extends State<MainScreen> {
             activeIcon: Icons.flag,
             label: LocaleKeys.navGoals.tr(),
           ),
-          /*          LiquidGlassBottomBarItem(
+          *//*          LiquidGlassBottomBarItem(
             icon: Icons.credit_card,
             activeIcon: Icons.credit_card,
             label: LocaleKeys.navUserLoans.tr(),
             badge: 1
-          ),*/
+          ),*//*
         ],
-      ),
+      ),*/
     );
   }
 }

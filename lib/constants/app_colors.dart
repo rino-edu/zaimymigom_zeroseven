@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 /// Цветовая схема приложения для строительного таск-менеджера
 class AppColors {
   // Основные цвета
-  static const Color primary = Color(0xFF1976D2); // Зеленый - цвет строительства
-  static const Color primaryLight = Color(0xFF64B5F6);
-  static const Color primaryDark = Color(0xFF0D47A1);
+  static const Color primary = Color(0xFF727272); // Зеленый - цвет строительства
+  static const Color primaryLight = Color(0xFFC2C2C2);
+  static const Color primaryDark = Color(0xFF565656);
   
   // Вторичные цвета
   static const Color secondary = Color(0xFFFF8F00); // Оранжевый - предупреждения
