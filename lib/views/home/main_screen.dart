@@ -54,7 +54,7 @@ class _MainScreenState extends State<MainScreen> {
     PscCalculatorScreen(),
     BudgetScreen(),
     GoalsScreen(),
-    _buildWebViewScreen(),
+    //_buildWebViewScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -79,14 +79,31 @@ class _MainScreenState extends State<MainScreen> {
             DrawerHeader(
               padding: EdgeInsets.all(4),
               decoration: const BoxDecoration(
-                color: Color(0xFF0547BE),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Color(0xFFBEBEBE), Color(0xFF5F5F5F)],
+                ),
               ),
               child: Align(
                 alignment: Alignment.bottomLeft,
-                child: Image.asset(
-                  'assets/icons/icon.png',
-                  width: 80,
-                  height: 80,
+                child: Row(
+                  children: [
+                    Image.asset(
+                      'assets/icons/icon.png',
+                      width: 80,
+                      height: 80,
+                    ),
+                    SizedBox(width: 4,),
+                    Text(
+                      "BudgetBox",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold
+                      ),
+                    )
+                  ],
                 ),
               ),
             ),
@@ -162,9 +179,7 @@ class _MainScreenState extends State<MainScreen> {
                 Navigator.pop(context);
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const FaqScreen(),
-                  ),
+                  MaterialPageRoute(builder: (context) => const FaqScreen()),
                 );
               },
             ),
@@ -209,12 +224,12 @@ class _MainScreenState extends State<MainScreen> {
             activeIcon: Icons.flag,
             label: LocaleKeys.navGoals.tr(),
           ),
-          LiquidGlassBottomBarItem(
+          /*          LiquidGlassBottomBarItem(
             icon: Icons.credit_card,
             activeIcon: Icons.credit_card,
             label: LocaleKeys.navUserLoans.tr(),
             badge: 1
-          ),
+          ),*/
         ],
       ),
     );

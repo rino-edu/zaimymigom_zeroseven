@@ -1,4 +1,4 @@
-package max.credit.zaym.app
+package com.budgetbox.finance
 
 import io.flutter.embedding.android.FlutterActivity
 

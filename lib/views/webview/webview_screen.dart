@@ -470,7 +470,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
     return Scaffold(
       appBar: isCombat
           ? AppBar(
-              title: Text("Макс Кредит", style: const TextStyle(fontSize: 18)),
+              title: Text("BudgetBox", style: const TextStyle(fontSize: 18)),
               centerTitle: true,
               leading: _buildLeading(),
               actions: [

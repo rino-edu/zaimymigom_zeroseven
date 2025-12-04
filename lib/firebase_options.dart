@@ -24,7 +24,12 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return android;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+              'you can reconfigure this by running the FlutterFire CLI again.',
+        );
+/*      case TargetPlatform.android:
+        return android;*/
       case TargetPlatform.iOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -52,11 +57,11 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
+/*  static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyCA6FEoYeKLly2SUd6ZN6t2yBTjc15BV8w',
     appId: '1:930814021384:android:74a485e765ffcc9bb966bd',
     messagingSenderId: '930814021384',
     projectId: 'max-credit-zaym-app',
     storageBucket: 'max-credit-zaym-app.firebasestorage.app',
-  );
+  );*/
 }
