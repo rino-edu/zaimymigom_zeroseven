@@ -253,192 +253,440 @@ class _PscCalculatorScreenState extends State<PscCalculatorScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Описание калькулятора
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      LocaleKeys.pscCalculatorDescription.tr(),
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      LocaleKeys.pscCalculatorFormula.tr(),
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        fontFamily: 'monospace',
-                      ),
-                    ),
-                  ],
+            Container(
+              margin: const EdgeInsets.only(top: 8),
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 1,
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            Form(
-              key: _formKey,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextFormField(
-                    controller: _amountController,
-                    decoration: InputDecoration(
-                      labelText: LocaleKeys.pscCalculatorAmount.tr(),
-                      prefixIcon: const Icon(Icons.payments),
-                    ),
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                      signed: false,
-                    ),
-                    validator: _validatePositiveNumber,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _rateController,
-                    decoration: InputDecoration(
-                      labelText: LocaleKeys.pscCalculatorAnnualRate.tr(),
-                      suffixText: '%',
-                      prefixIcon: const Icon(Icons.percent),
-                    ),
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                      signed: false,
-                    ),
-                    validator: _validateRate,
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _termMonthsController,
-                    decoration: InputDecoration(
-                      labelText: LocaleKeys.pscCalculatorTermMonths.tr(),
-                      prefixIcon: const Icon(Icons.calendar_month),
-                    ),
-                    keyboardType: TextInputType.number,
-                    validator: _validatePositiveInt,
-                  ),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<PaymentType>(
-                    value: _paymentType,
-                    decoration: InputDecoration(
-                      labelText: LocaleKeys.pscCalculatorPaymentType.tr(),
-                    ),
-                    items: [
-                      DropdownMenuItem(
-                        value: PaymentType.annuity,
-                        child: Text(LocaleKeys.pscCalculatorPaymentTypeAnnuity.tr()),
-                      ),
-                      DropdownMenuItem(
-                        value: PaymentType.differentiated,
-                        child: Text(LocaleKeys.pscCalculatorPaymentTypeDifferentiated.tr()),
-                      ),
-                    ],
-                    onChanged: (val) {
-                      if (val != null) setState(() => _paymentType = val);
-                    },
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _upfrontFeeController,
-                    decoration: InputDecoration(
-                      labelText: LocaleKeys.pscCalculatorUpfrontFee.tr(),
-                      prefixIcon: const Icon(Icons.attach_money),
-                    ),
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                      signed: false,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _monthlyFeeController,
-                    decoration: InputDecoration(
-                      labelText: LocaleKeys.pscCalculatorMonthlyFee.tr(),
-                      prefixIcon: const Icon(Icons.request_quote),
-                    ),
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                      signed: false,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _insuranceMonthlyController,
-                    decoration: InputDecoration(
-                      labelText: LocaleKeys.pscCalculatorInsuranceMonthly.tr(),
-                      prefixIcon: const Icon(Icons.health_and_safety),
-                    ),
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                      signed: false,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
                   Row(
                     children: [
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: _calculate,
-                          icon: const Icon(Icons.calculate),
-                          label: Text(LocaleKeys.calculatorCalculate.tr()),
-                        ),
+                      Icon(
+                        Icons.info_outline,
+                        color: Colors.white.withOpacity(0.9),
+                        size: 24,
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 8),
                       Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: _clear,
-                          icon: const Icon(Icons.clear),
-                          label: Text(LocaleKeys.calculatorClear.tr()),
+                        child: Text(
+                          LocaleKeys.pscCalculatorDescription.tr(),
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.95),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
                     ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    LocaleKeys.pscCalculatorFormula.tr(),
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.85),
+                      fontSize: 13,
+                      fontFamily: 'monospace',
+                    ),
                   ),
                 ],
               ),
             ),
-          const SizedBox(height: 24),
-          if (_pskAnnualPercent != null)
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.2),
+                  width: 1,
+                ),
+              ),
+              child: Form(
+                key: _formKey,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      LocaleKeys.pscCalculatorResultTitle.tr(),
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 16,
-                      runSpacing: 8,
-                      children: [
-                        _ResultChip(
-                          labelKey: LocaleKeys.pscCalculatorResultPsk,
-                          value: (_pskAnnualPercent!).toStringAsFixed(2) + ' %',
+                    TextFormField(
+                      controller: _amountController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: LocaleKeys.pscCalculatorAmount.tr(),
+                        labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+                        prefixIcon: Icon(Icons.payments, color: Colors.white.withOpacity(0.8)),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.1),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
                         ),
-                        if (_totalPayment != null)
-                          _ResultChip(
-                            labelKey: LocaleKeys.pscCalculatorResultTotalPayment,
-                            value: _fmtAmount(context, _totalPayment!),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.white, width: 2),
+                        ),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                        signed: false,
+                      ),
+                      validator: _validatePositiveNumber,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _rateController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: LocaleKeys.pscCalculatorAnnualRate.tr(),
+                        labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+                        suffixText: '%',
+                        suffixStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+                        prefixIcon: Icon(Icons.percent, color: Colors.white.withOpacity(0.8)),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.1),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.white, width: 2),
+                        ),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                        signed: false,
+                      ),
+                      validator: _validateRate,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _termMonthsController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: LocaleKeys.pscCalculatorTermMonths.tr(),
+                        labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+                        prefixIcon: Icon(Icons.calendar_month, color: Colors.white.withOpacity(0.8)),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.1),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.white, width: 2),
+                        ),
+                      ),
+                      keyboardType: TextInputType.number,
+                      validator: _validatePositiveInt,
+                    ),
+                    const SizedBox(height: 16),
+                    DropdownButtonFormField<PaymentType>(
+                      value: _paymentType,
+                      style: const TextStyle(color: Colors.white),
+                      dropdownColor: const Color(0xFF5F5F5F),
+                      decoration: InputDecoration(
+                        labelText: LocaleKeys.pscCalculatorPaymentType.tr(),
+                        labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.1),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.white, width: 2),
+                        ),
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: PaymentType.annuity,
+                          child: Text(LocaleKeys.pscCalculatorPaymentTypeAnnuity.tr()),
+                        ),
+                        DropdownMenuItem(
+                          value: PaymentType.differentiated,
+                          child: Text(LocaleKeys.pscCalculatorPaymentTypeDifferentiated.tr()),
+                        ),
+                      ],
+                      onChanged: (val) {
+                        if (val != null) setState(() => _paymentType = val);
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _upfrontFeeController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: LocaleKeys.pscCalculatorUpfrontFee.tr(),
+                        labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+                        prefixIcon: Icon(Icons.attach_money, color: Colors.white.withOpacity(0.8)),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.1),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.white, width: 2),
+                        ),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                        signed: false,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _monthlyFeeController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: LocaleKeys.pscCalculatorMonthlyFee.tr(),
+                        labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+                        prefixIcon: Icon(Icons.request_quote, color: Colors.white.withOpacity(0.8)),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.1),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.white, width: 2),
+                        ),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                        signed: false,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: _insuranceMonthlyController,
+                      style: const TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        labelText: LocaleKeys.pscCalculatorInsuranceMonthly.tr(),
+                        labelStyle: TextStyle(color: Colors.white.withOpacity(0.8)),
+                        prefixIcon: Icon(Icons.health_and_safety, color: Colors.white.withOpacity(0.8)),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.1),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(color: Colors.white.withOpacity(0.3)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: const BorderSide(color: Colors.white, width: 2),
+                        ),
+                      ),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                        signed: false,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Container(
+                            height: 56,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              gradient: LinearGradient(
+                                colors: [
+                                  Colors.white.withOpacity(0.9),
+                                  Colors.white.withOpacity(0.7),
+                                ],
+                              ),
+                            ),
+                            child: ElevatedButton.icon(
+                              onPressed: _calculate,
+                              icon: const Icon(Icons.calculate, color: Color(0xFF5F5F5F)),
+                              label: Text(
+                                LocaleKeys.calculatorCalculate.tr(),
+                                style: const TextStyle(
+                                  color: Color(0xFF5F5F5F),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.transparent,
+                                shadowColor: Colors.transparent,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                            ),
                           ),
-                        if (_totalOverpayment != null)
-                          _ResultChip(
-                            labelKey: LocaleKeys.pscCalculatorResultOverpayment,
-                            value: _fmtAmount(context, _totalOverpayment!),
+                        ),
+                        const SizedBox(width: 16),
+                        Expanded(
+                          child: Container(
+                            height: 56,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: Colors.white.withOpacity(0.6),
+                                width: 2,
+                              ),
+                            ),
+                            child: OutlinedButton.icon(
+                              onPressed: _clear,
+                              icon: Icon(Icons.clear, color: Colors.white.withOpacity(0.9)),
+                              label: Text(
+                                LocaleKeys.calculatorClear.tr(),
+                                style: TextStyle(
+                                  color: Colors.white.withOpacity(0.9),
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide.none,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                              ),
+                            ),
                           ),
+                        ),
                       ],
                     ),
                   ],
                 ),
               ),
             ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
+          if (_pskAnnualPercent != null)
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.15),
+                borderRadius: BorderRadius.circular(20),
+                border: Border.all(
+                  color: Colors.white.withOpacity(0.3),
+                  width: 1,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.assessment,
+                        color: Colors.white.withOpacity(0.9),
+                        size: 24,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          LocaleKeys.pscCalculatorResultTitle.tr(),
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.95),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Column(
+                    children: [
+                      _ResultCard(
+                        labelKey: LocaleKeys.pscCalculatorResultPsk,
+                        value: (_pskAnnualPercent!).toStringAsFixed(2) + ' %',
+                        icon: Icons.trending_up,
+                        color: Colors.blue,
+                      ),
+                      if (_totalPayment != null) ...[
+                        const SizedBox(height: 12),
+                        _ResultCard(
+                          labelKey: LocaleKeys.pscCalculatorResultTotalPayment,
+                          value: _fmtAmount(context, _totalPayment!),
+                          icon: Icons.account_balance_wallet,
+                          color: Colors.green,
+                        ),
+                      ],
+                      if (_totalOverpayment != null) ...[
+                        const SizedBox(height: 12),
+                        _ResultCard(
+                          labelKey: LocaleKeys.pscCalculatorResultOverpayment,
+                          value: _fmtAmount(context, _totalOverpayment!),
+                          icon: Icons.money_off,
+                          color: Colors.orange,
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          const SizedBox(height: 24),
           if (_schedule.isNotEmpty)
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  LocaleKeys.pscCalculatorScheduleTitle.tr(),
-                  style: Theme.of(context).textTheme.titleMedium,
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.table_chart,
+                        color: Colors.white.withOpacity(0.9),
+                        size: 24,
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          LocaleKeys.pscCalculatorScheduleTitle.tr(),
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.95),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 8),
                 _ScheduleTable(rows: _schedule),
@@ -452,21 +700,63 @@ class _PscCalculatorScreenState extends State<PscCalculatorScreen> {
   }
 }
 
-class _ResultChip extends StatelessWidget {
+class _ResultCard extends StatelessWidget {
   final String labelKey;
   final String value;
-  const _ResultChip({required this.labelKey, required this.value});
+  final IconData icon;
+  final Color color;
+  const _ResultCard({
+    required this.labelKey,
+    required this.value,
+    required this.icon,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Chip(
-      label: Row(
-        mainAxisSize: MainAxisSize.min,
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: color.withOpacity(0.4),
+          width: 1.5,
+        ),
+      ),
+      child: Row(
         children: [
-          Text(labelKey.tr() + ': '),
-          Text(
-            value,
-            style: const TextStyle(fontWeight: FontWeight.bold),
+          Container(
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Icon(icon, color: color, size: 24),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  labelKey.tr(),
+                  style: TextStyle(
+                    color: Colors.white.withOpacity(0.7),
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -497,30 +787,137 @@ class _ScheduleTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Colors.white.withOpacity(0.2),
+          width: 1,
+        ),
+      ),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: DataTable(
+          headingRowColor: MaterialStateProperty.all(
+            Colors.white.withOpacity(0.15),
+          ),
+          dataRowColor: MaterialStateProperty.resolveWith((states) {
+            if (states.contains(MaterialState.selected)) {
+              return Colors.white.withOpacity(0.2);
+            }
+            return null;
+          }),
           columns: [
-            DataColumn(label: Text(LocaleKeys.pscCalculatorColMonth.tr())),
-            DataColumn(label: Text(LocaleKeys.pscCalculatorColPrincipal.tr())),
-            DataColumn(label: Text(LocaleKeys.pscCalculatorColInterest.tr())),
-            DataColumn(label: Text(LocaleKeys.pscCalculatorColFees.tr())),
-            DataColumn(label: Text(LocaleKeys.pscCalculatorColTotal.tr())),
-            DataColumn(label: Text(LocaleKeys.pscCalculatorColBalance.tr())),
+            DataColumn(
+              label: Text(
+                LocaleKeys.pscCalculatorColMonth.tr(),
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.9),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                LocaleKeys.pscCalculatorColPrincipal.tr(),
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.9),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                LocaleKeys.pscCalculatorColInterest.tr(),
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.9),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                LocaleKeys.pscCalculatorColFees.tr(),
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.9),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                LocaleKeys.pscCalculatorColTotal.tr(),
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.9),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            DataColumn(
+              label: Text(
+                LocaleKeys.pscCalculatorColBalance.tr(),
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.9),
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
           ],
-          rows: rows
-              .map(
-                (r) => DataRow(cells: [
-                  DataCell(Text(r.month.toString())),
-                  DataCell(Text(r.principal.toStringAsFixed(2))),
-                  DataCell(Text(r.interest.toStringAsFixed(2))),
-                  DataCell(Text(r.fees.toStringAsFixed(2))),
-                  DataCell(Text(r.total.toStringAsFixed(2))),
-                  DataCell(Text(r.balance.toStringAsFixed(2))),
-                ]),
-              )
-              .toList(),
+          rows: rows.asMap().entries.map(
+            (entry) {
+              final index = entry.key;
+              final r = entry.value;
+              return DataRow(
+                color: MaterialStateProperty.all(
+                  index.isEven
+                      ? Colors.white.withOpacity(0.05)
+                      : Colors.white.withOpacity(0.08),
+                ),
+                cells: [
+                  DataCell(
+                    Text(
+                      r.month.toString(),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      r.principal.toStringAsFixed(2),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      r.interest.toStringAsFixed(2),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      r.fees.toStringAsFixed(2),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      r.total.toStringAsFixed(2),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      r.balance.toStringAsFixed(2),
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              );
+            },
+          ).toList(),
         ),
       ),
     );

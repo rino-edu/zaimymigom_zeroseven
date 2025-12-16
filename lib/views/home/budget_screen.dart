@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
+import '../../constants/app_colors.dart';
 import '../../utils/locale_keys.dart';
 import '../../utils/helpers.dart';
 import '../../services/budget_provider.dart';
@@ -16,7 +17,8 @@ class BudgetScreen extends StatefulWidget {
   State<BudgetScreen> createState() => _BudgetScreenState();
 }
 
-class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderStateMixin {
+class _BudgetScreenState extends State<BudgetScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   BudgetPeriodFilter _periodFilter = BudgetPeriodFilter.thisMonth;
 
@@ -72,12 +74,6 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
-    // Вычисляем динамический отступ для bottom bar
-    final mediaQuery = MediaQuery.of(context);
-    final bottomBarHeight = 60.0; // Безопасная высота LiquidGlassBottomBar
-    final systemBottomPadding = mediaQuery.padding.bottom;
-    final totalBottomPadding = bottomBarHeight + systemBottomPadding + 4;
-
     return SafeArea(
       top: true,
       bottom: true,
@@ -89,18 +85,19 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
 
           return Column(
             children: [
-              _buildSummaryCards(provider),
+              //_buildSummaryCards(provider),
               _buildPeriodFilter(),
               _buildTabs(),
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
                   children: [
-                    _buildIncomesList(provider, totalBottomPadding),
-                    _buildExpensesList(provider, totalBottomPadding),
+                    _buildIncomesList(provider),
+                    _buildExpensesList(provider),
                   ],
                 ),
               ),
+              _buildSummaryCards(provider),
             ],
           );
         },
@@ -117,29 +114,27 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
         final balance = totalIncome - totalExpense;
 
         return Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           child: Row(
             children: [
               Expanded(
-                child: _buildSummaryCard(
+                child: _buildSummaryColumn(
                   LocaleKeys.budgetTotalIncome.tr(),
                   totalIncome,
                   Colors.green,
                   Icons.trending_up,
                 ),
               ),
-              const SizedBox(width: 12),
               Expanded(
-                child: _buildSummaryCard(
+                child: _buildSummaryColumn(
                   LocaleKeys.budgetTotalExpense.tr(),
                   totalExpense,
                   Colors.red,
                   Icons.trending_down,
                 ),
               ),
-              const SizedBox(width: 12),
               Expanded(
-                child: _buildSummaryCard(
+                child: _buildSummaryColumn(
                   LocaleKeys.budgetBalance.tr(),
                   balance,
                   balance >= 0 ? Colors.blue : Colors.orange,
@@ -179,77 +174,76 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
         break;
     }
 
-    final income = await provider.getTotalIncomes(startDate: startDate, endDate: endDate);
-    final expense = await provider.getTotalExpenses(startDate: startDate, endDate: endDate);
+    final income = await provider.getTotalIncomes(
+      startDate: startDate,
+      endDate: endDate,
+    );
+    final expense = await provider.getTotalExpenses(
+      startDate: startDate,
+      endDate: endDate,
+    );
 
     return {'income': income, 'expense': expense};
   }
 
-  Widget _buildSummaryCard(String title, double amount, Color color, IconData icon) {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 20, color: color),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: Theme.of(context).textTheme.bodySmall,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              Helpers.formatNumber(amount, decimals: 0),
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: color,
-                    fontWeight: FontWeight.bold,
-                  ),
-            ),
-            Text(
-              '₽',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: color),
-            ),
-          ],
+  Widget _buildSummaryColumn(
+      String title,
+      double amount,
+      Color color,
+      IconData icon,
+      ) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Icon(icon, size: 24, color: color),
+        const SizedBox(height: 8),
+        Text(
+          title,
+          style: Theme.of(context).textTheme.bodySmall,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          textAlign: TextAlign.center,
         ),
-      ),
+        const SizedBox(height: 4),
+        Text(
+          Helpers.formatNumber(amount, decimals: 0),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: color,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        Text(
+          '₽',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(color: color),
+        ),
+      ],
     );
   }
 
   Widget _buildPeriodFilter() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          children: BudgetPeriodFilter.values.map((filter) {
-            final isSelected = _periodFilter == filter;
-            return Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: FilterChip(
-                label: Text(_getPeriodFilterLabel(filter)),
-                selected: isSelected,
-                onSelected: (selected) {
-                  if (selected) {
-                    setState(() {
-                      _periodFilter = filter;
-                    });
-                    _loadDataForPeriod();
-                  }
-                },
-              ),
-            );
-          }).toList(),
-        ),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
+      child: Wrap(
+        spacing: 8,
+        runSpacing: 0,
+        children: BudgetPeriodFilter.values.map((filter) {
+          final isSelected = _periodFilter == filter;
+          return FilterChip(
+            label: Text(
+              _getPeriodFilterLabel(filter),
+              style: TextStyle(color: isSelected ? Colors.white : Colors.black),
+            ),
+            selected: isSelected,
+            onSelected: (selected) {
+              if (selected) {
+                setState(() {
+                  _periodFilter = filter;
+                });
+                _loadDataForPeriod();
+              }
+            },
+          );
+        }).toList(),
       ),
     );
   }
@@ -269,21 +263,21 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
 
   Widget _buildTabs() {
     return TabBar(
+      indicatorAnimation: TabIndicatorAnimation.elastic,
+      dividerColor: AppColors.primary,
+      indicatorWeight: 5,
       controller: _tabController,
       tabs: [
+        Tab(icon: const Icon(Icons.add), text: LocaleKeys.budgetIncomes.tr()),
         Tab(
-          icon: const Icon(Icons.arrow_upward),
-          text: LocaleKeys.budgetIncomes.tr(),
-        ),
-        Tab(
-          icon: const Icon(Icons.arrow_downward),
+          icon: const Icon(Icons.remove),
           text: LocaleKeys.budgetExpenses.tr(),
         ),
       ],
     );
   }
 
-  Widget _buildIncomesList(BudgetProvider provider, double bottomPadding) {
+  Widget _buildIncomesList(BudgetProvider provider) {
     final incomes = provider.incomes;
 
     if (incomes.isEmpty) {
@@ -292,23 +286,24 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.arrow_upward,
-              size: 64,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.add, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
               LocaleKeys.budgetNoIncomes.tr(),
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: () => _showAddIncomeDialog(context, provider),
-              icon: const Icon(Icons.add),
+              //icon: const Icon(Icons.add),
               label: Text(LocaleKeys.budgetAddIncome.tr()),
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
             ),
           ],
         ),
@@ -323,18 +318,14 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
             alignment: Alignment.centerRight,
             child: FloatingActionButton.extended(
               onPressed: () => _showAddIncomeDialog(context, provider),
-              icon: const Icon(Icons.add),
+              //icon: const Icon(Icons.add),
               label: Text(LocaleKeys.budgetAddIncome.tr()),
             ),
           ),
         ),
         Expanded(
           child: ListView.builder(
-            padding: EdgeInsets.only(
-              left: 16,
-              right: 16,
-              bottom: bottomPadding,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: incomes.length,
             itemBuilder: (context, index) {
               final income = incomes[index];
@@ -348,7 +339,7 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
 
   Widget _buildIncomeCard(Income income, BudgetProvider provider) {
     final category = provider.categories.firstWhere(
-      (c) => c.id == income.categoryId,
+          (c) => c.id == income.categoryId,
       orElse: () => Category(name: 'Неизвестно', type: CategoryType.income),
     );
 
@@ -381,16 +372,16 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
             Text(
               '${Helpers.formatNumber(income.amount, decimals: 0)} ₽',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.green,
-                    fontWeight: FontWeight.bold,
-                  ),
+                color: Colors.green,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             if (income.isRecurring)
               Text(
                 'Регулярный',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontSize: 10,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(fontSize: 10),
               ),
           ],
         ),
@@ -400,7 +391,7 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildExpensesList(BudgetProvider provider, double bottomPadding) {
+  Widget _buildExpensesList(BudgetProvider provider) {
     final expenses = provider.expenses;
 
     if (expenses.isEmpty) {
@@ -409,23 +400,24 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(
-              Icons.arrow_downward,
-              size: 64,
-              color: Colors.grey[400],
-            ),
+            Icon(Icons.remove, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 16),
             Text(
               LocaleKeys.budgetNoExpenses.tr(),
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: Colors.grey[600],
-                  ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(color: Colors.grey[600]),
             ),
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: () => _showAddExpenseDialog(context, provider),
-              icon: const Icon(Icons.add),
+              //icon: const Icon(Icons.add),
               label: Text(LocaleKeys.budgetAddExpense.tr()),
+              style: ElevatedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
             ),
           ],
         ),
@@ -440,18 +432,14 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
             alignment: Alignment.centerRight,
             child: FloatingActionButton.extended(
               onPressed: () => _showAddExpenseDialog(context, provider),
-              icon: const Icon(Icons.add),
+              //icon: const Icon(Icons.add),
               label: Text(LocaleKeys.budgetAddExpense.tr()),
             ),
           ),
         ),
         Expanded(
           child: ListView.builder(
-            padding: EdgeInsets.only(
-              left: 16,
-              right: 16,
-              bottom: bottomPadding,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             itemCount: expenses.length,
             itemBuilder: (context, index) {
               final expense = expenses[index];
@@ -465,7 +453,7 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
 
   Widget _buildExpenseCard(Expense expense, BudgetProvider provider) {
     final category = provider.categories.firstWhere(
-      (c) => c.id == expense.categoryId,
+          (c) => c.id == expense.categoryId,
       orElse: () => Category(name: 'Неизвестно', type: CategoryType.expense),
     );
 
@@ -509,16 +497,16 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
             Text(
               '${Helpers.formatNumber(expense.amount, decimals: 0)} ₽',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.red,
-                    fontWeight: FontWeight.bold,
-                  ),
+                color: Colors.red,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             if (expense.isRecurring)
               Text(
                 'Регулярный',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      fontSize: 10,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(fontSize: 10),
               ),
             if (expense.receiptImagePath != null)
               const Icon(Icons.receipt, size: 14),
@@ -575,7 +563,11 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
     );
   }
 
-  void _showEditIncomeDialog(BuildContext context, BudgetProvider provider, Income income) {
+  void _showEditIncomeDialog(
+      BuildContext context,
+      BudgetProvider provider,
+      Income income,
+      ) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => BudgetIncomeScreen(
@@ -589,7 +581,11 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
     );
   }
 
-  void _showDeleteIncomeDialog(BuildContext context, BudgetProvider provider, Income income) {
+  void _showDeleteIncomeDialog(
+      BuildContext context,
+      BudgetProvider provider,
+      Income income,
+      ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -628,7 +624,11 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
     );
   }
 
-  void _showEditExpenseDialog(BuildContext context, BudgetProvider provider, Expense expense) {
+  void _showEditExpenseDialog(
+      BuildContext context,
+      BudgetProvider provider,
+      Expense expense,
+      ) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) => BudgetExpenseScreen(
@@ -642,7 +642,11 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
     );
   }
 
-  void _showDeleteExpenseDialog(BuildContext context, BudgetProvider provider, Expense expense) {
+  void _showDeleteExpenseDialog(
+      BuildContext context,
+      BudgetProvider provider,
+      Expense expense,
+      ) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -669,9 +673,4 @@ class _BudgetScreenState extends State<BudgetScreen> with SingleTickerProviderSt
   }
 }
 
-enum BudgetPeriodFilter {
-  today,
-  thisWeek,
-  thisMonth,
-  allTime,
-}
+enum BudgetPeriodFilter { today, thisWeek, thisMonth, allTime }
