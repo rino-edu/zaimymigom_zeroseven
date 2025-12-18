@@ -18,6 +18,7 @@ import 'views/webview/webview_screen.dart';
 import 'models/offer.dart';
 import 'services/webview_link_service.dart';
 import 'services/firebase_messaging_service.dart';
+import 'package:facebook_app_events/facebook_app_events.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,6 +39,13 @@ void main() async {
     if (kDebugMode) {
       //print('[MAIN] Firebase Messaging initialization error: $e');
     }
+  }
+
+  try {
+    final facebookAppEvents = FacebookAppEvents();
+    facebookAppEvents.setAutoLogAppEventsEnabled(true);
+  } catch (e) {
+    debugPrint('[PostFrame] Facebook events init error: $e');
   }
 
   // Определение режима работы

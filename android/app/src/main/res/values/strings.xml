@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">BudgetBox</string>
+    <string name="facebook_app_id" translatable="false">1498696204570564</string>
+    <string name="facebook_client_token" translatable="false">2c3ec19c0d24f6c847dbe98b6f5471df</string>
 </resources>

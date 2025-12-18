@@ -69,6 +69,9 @@
             </intent-filter>
         </receiver>
 
+        <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
+        <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>
+
         <meta-data android:name="ymp_firebase_default_app_id" android:value="1:776300326740:android:7824415abe0ff45aca62c1"/>
         <meta-data android:name="ymp_gcm_default_sender_id" android:value="number:776300326740"/>
         <meta-data android:name="ymp_firebase_default_api_key" android:value="AIzaSyA_nqf0epHzFX3thbgp8K_tWgQvGlgsyUY"/>

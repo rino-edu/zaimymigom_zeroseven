@@ -289,6 +289,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.7"
+  facebook_app_events:
+    dependency: "direct main"
+    description:
+      name: facebook_app_events
+      sha256: "70784d153ff4ac317d7debba7d7c676e742c14b5c963620aa73657a15243f1a5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.23.0"
   fake_async:
     dependency: transitive
     description:
