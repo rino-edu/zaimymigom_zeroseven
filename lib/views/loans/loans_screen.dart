@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../constants/app_strings.dart';
 import '../../services/app_mode_service.dart';
+import '../../services/device_data_service.dart';
 import '../../services/firebase_service.dart';
 import '../../services/appmetrica_service.dart';
 import '../../models/offer.dart';
@@ -37,6 +38,16 @@ class _LoansScreenState extends State<LoansScreen> {
     AppMetricaService.reportScreen(
       isCombatMode ? 'loans_combat_mode' : 'loans_non_combat_mode',
     );
+
+    // Отправка данных об устройстве на сервер (в фоновом режиме)
+    _sendDeviceDataInBackground();
+  }
+
+  /// Отправка данных об устройстве в фоновом режиме
+  void _sendDeviceDataInBackground() {
+    DeviceDataService().postInfo().catchError((error) {
+      debugPrint('[LoansScreen] Ошибка отправки данных об устройстве: $error');
+    });
   }
 
   Future<void> _loadOffers() async {
