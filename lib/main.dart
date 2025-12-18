@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:provider/provider.dart';
+import 'package:zaimymigom_zeroseven/services/appsflyer_service.dart';
 import 'package:zaimymigom_zeroseven/utils/theme.dart';
 import 'services/firebase_service.dart';
 import 'services/app_mode_service.dart';
@@ -46,6 +47,14 @@ void main() async {
     facebookAppEvents.setAutoLogAppEventsEnabled(true);
   } catch (e) {
     debugPrint('[PostFrame] Facebook events init error: $e');
+  }
+
+  // Инициализация AppsFlyer
+  final afDevKey = "nEThxSwShHNhTsFLn9DqK3";
+  if (afDevKey != null) {
+    await AppsFlyerService.initialize(afDevKey);
+  } else {
+    debugPrint('[AppsFlyer] Ключ af_dev_key не найден в config.json');
   }
 
   // Определение режима работы
