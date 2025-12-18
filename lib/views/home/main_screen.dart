@@ -2,6 +2,7 @@ import 'package:dot_curved_bottom_nav/dot_curved_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../utils/locale_keys.dart';
+import '../loans/loans_screen.dart';
 import '../settings/settings_screen.dart';
 import 'psc_calculator_screen.dart';
 import 'budget_screen.dart';
@@ -56,7 +57,7 @@ class _MainScreenState extends State<MainScreen> {
     PscCalculatorScreen(),
     BudgetScreen(),
     GoalsScreen(),
-    //_buildWebViewScreen(),
+    LoansScreen()
   ];
 
   void _onItemTapped(int index) {
@@ -231,10 +232,10 @@ class _MainScreenState extends State<MainScreen> {
             Icons.flag,
             color: _selectedIndex == 2 ? Colors.red : Colors.white,
           ),
-/*          Icon(
-            Icons.person,
-            color: _selectedIndex == 3 ? Colors.blue : Colors.white,
-          ),*/
+          Icon(
+            Icons.credit_card,
+            color: _selectedIndex == 3 ? Colors.orange : Colors.white,
+          ),
         ],
       ),
 /*      bottomNavigationBar: LiquidGlassBottomBar(

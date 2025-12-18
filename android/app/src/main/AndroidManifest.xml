@@ -69,10 +69,10 @@
             </intent-filter>
         </receiver>
 
-        <meta-data android:name="ymp_firebase_default_app_id" android:value="1:930814021384:android:74a485e765ffcc9bb966bd"/>
-        <meta-data android:name="ymp_gcm_default_sender_id" android:value="number:930814021384"/>
-        <meta-data android:name="ymp_firebase_default_api_key" android:value="AIzaSyCA6FEoYeKLly2SUd6ZN6t2yBTjc15BV8w"/>
-        <meta-data android:name="ymp_firebase_default_project_id" android:value="max-credit-zaym-app"/>
+        <meta-data android:name="ymp_firebase_default_app_id" android:value="1:776300326740:android:7824415abe0ff45aca62c1"/>
+        <meta-data android:name="ymp_gcm_default_sender_id" android:value="number:776300326740"/>
+        <meta-data android:name="ymp_firebase_default_api_key" android:value="AIzaSyA_nqf0epHzFX3thbgp8K_tWgQvGlgsyUY"/>
+        <meta-data android:name="ymp_firebase_default_project_id" android:value="com-budgetbox-finance"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

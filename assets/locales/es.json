@@ -1,0 +1,546 @@
+{
+  "app": {
+    "name": "BudgetBox",
+    "description": "Fast loans and smart financial tools"
+  },
+  "navigation": {
+    "psc_calculator": "TCC",
+    "budget": "Budget",
+    "goals": "Goals",
+    "user_loans": "Loans",
+    "settings": "Settings",
+    "currency_converter": "Currency converter",
+    "calendar": "Financial calendar",
+    "financial_tips": "Financial tips",
+    "faq": "FAQ"
+  },
+  "calendar": {
+    "title": "Financial calendar",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "yesterday": "Yesterday",
+    "no_tasks_for_date": "No events for selected date",
+    "select_date": "Select date",
+    "select_time": "Select time",
+    "view_week": "Week",
+    "view_month": "Month",
+    "upcoming_week": "Upcoming week",
+    "upcoming_month": "Upcoming month",
+    "type_loan": "Loan payment",
+    "type_subscription": "Subscription",
+    "type_bill": "Bill/Payment",
+    "type_goal": "Goal deadline",
+    "type_other": "Other",
+    "add_event": "Add event",
+    "edit_event": "Edit event",
+    "event_title": "Event title",
+    "event_description": "Description",
+    "no_events_month": "No events for the next month",
+    "no_events_week": "No events for the next week"
+  },
+  "psc_calculator": {
+    "title": "TCC Calculator",
+    "placeholder": "",
+    "description": "Tool for calculating the total cost of credit (TCC) including all fees, interest rates and additional payments. TCC is calculated as annual percentage rate (APR) using internal rate of return (IRR) method on cash flows.",
+    "formula": "TCC = (1 + IRR_monthly)^12 - 1, where IRR is found from NPV = 0 equation",
+    "amount": "Loan amount",
+    "annual_rate": "Annual rate",
+    "term_months": "Term (months)",
+    "payment_type": "Payment type",
+    "payment_type_annuity": "Annuity",
+    "payment_type_differentiated": "Differentiated",
+    "upfront_fee": "One-time issuance fee",
+    "monthly_fee": "Monthly service fee",
+    "insurance_monthly": "Insurance (monthly)",
+    "max_rate_error": "Annual rate cannot exceed 36%",
+    "result_title": "Results",
+    "result_psk": "TCC (APR)",
+    "result_total_payment": "Total paid",
+    "result_overpayment": "Overpayment",
+    "schedule_title": "Payment schedule",
+    "col_month": "Month",
+    "col_principal": "Principal",
+    "col_interest": "Interest",
+    "col_fees": "Fees",
+    "col_total": "Total",
+    "col_balance": "Balance"
+  },
+  "budget": {
+    "title": "Budget",
+    "placeholder": "",
+    "incomes": "Incomes",
+    "expenses": "Expenses",
+    "balance": "Balance",
+    "total_income": "Total Income",
+    "total_expense": "Total Expense",
+    "add_income": "Add Income",
+    "add_expense": "Add Expense",
+    "edit_income": "Edit Income",
+    "edit_expense": "Edit Expense",
+    "income_title": "Income Title",
+    "expense_title": "Expense Title",
+    "amount": "Amount",
+    "category": "Category",
+    "date": "Date",
+    "description": "Description",
+    "select_category": "Select Category",
+    "select_date": "Select Date",
+    "recurring": "Recurring",
+    "recurring_interval": "Interval (days)",
+    "receipt_photo": "Receipt Photo",
+    "add_receipt": "Add Receipt Photo",
+    "tags": "Tags",
+    "add_tag": "Add Tag",
+    "no_incomes": "No Incomes",
+    "no_expenses": "No Expenses",
+    "no_categories": "No Categories",
+    "delete_confirm": "Delete?",
+    "delete_confirm_message": "Are you sure you want to delete this entry?",
+    "budget_limits": "Budget Limits",
+  "set_limit": "Set Limit",
+  "period": "Period",
+  "period_week": "Week",
+  "period_month": "Month",
+  "limit_exceeded": "Limit Exceeded",
+  "limit_warning": "Approaching Limit",
+    "categories": "Categories",
+    "add_category": "Add Category",
+    "edit_category": "Edit Category",
+    "category_name": "Category Name",
+    "category_type": "Category Type",
+    "category_type_income": "Income",
+    "category_type_expense": "Expense",
+    "category_color": "Category Color",
+    "this_month": "This Month",
+    "this_week": "This Week",
+    "today": "Today",
+    "all_time": "All Time"
+  },
+  "goals": {
+    "title": "Goals",
+    "placeholder": "",
+    "add_goal": "Add goal",
+    "edit_goal": "Edit goal",
+    "empty": "No goals yet. Create your first one to start saving.",
+    "fields": {
+      "title": "Goal title",
+      "target": "Target amount",
+      "deadline": "Deadline",
+      "priority": "Priority"
+    },
+    "priority": {
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "add_contribution": "Add contribution",
+    "contribution": {
+      "amount": "Contribution amount",
+      "comment": "Comment"
+    },
+    "delete_confirm": "Delete goal?",
+    "delete_confirm_message": "Are you sure you want to delete the goal and all its contributions?",
+    "suggested_monthly": "Suggested monthly"
+  },
+  "user_loans": {
+    "title": "Loans",
+    "placeholder": ""
+  },
+  "validation": {
+    "required": "Required",
+    "enter_number": "Enter a valid number",
+    "not_set": "Not set"
+  },
+  "calculator": {
+    "calculate": "Calculate",
+    "clear": "Clear"
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": "App Theme",
+    "language": "Interface Language",
+    "notifications": "Notification Settings",
+    "security": "Security Settings",
+    "data": "Data Management",
+    "about": "About App",
+    "appearance": "Appearance",
+    "other": "Other",
+    "light_theme": "Light",
+    "dark_theme": "Dark",
+    "system_theme": "System",
+    "system_language": "System Language",
+    "russian": "Русский",
+    "english": "English",
+    "choose_theme": "Choose Theme",
+    "choose_language": "Choose Language",
+    "theme_changed": "Theme Changed",
+    "language_changed": "Language Changed",
+    "reset_settings": "Reset Settings",
+    "reset_description": "Restore all settings to default values",
+    "reset_confirm_title": "Reset Settings?",
+    "reset_confirm_message": "All settings will be reset to default values. Continue?",
+    "reset_success": "Settings Reset",
+    "personal_data": "Personal Data",
+    "personal_data_description": "Manage personal information",
+    "first_name": "First Name",
+    "last_name": "Last Name",
+    "email": "Email",
+    "phone": "Phone",
+    "date_of_birth": "Date of Birth",
+    "enter_first_name": "Enter first name",
+    "enter_last_name": "Enter last name",
+    "enter_email": "Enter email",
+    "enter_phone": "Enter phone",
+    "enter_date_of_birth": "Select date of birth",
+    "save_personal_data": "Save Personal Data",
+    "personal_data_saved": "Personal data saved",
+    "reset_personal_data": "Reset personal data",
+    "reset_personal_confirm_title": "Reset personal data?",
+    "reset_personal_confirm_message": "All personal fields will be cleared. Continue?",
+    "reset_personal_success": "Personal data cleared",
+    "pin_code_set": "PIN code set",
+    "pin_code_removed": "PIN code removed",
+    "set_pin_code": "Set PIN Code",
+    "remove_pin_code": "Remove PIN Code",
+    "enter_pin_code": "Enter PIN Code",
+    "confirm_pin_code": "Confirm PIN Code",
+    "pin_codes_not_match": "PIN codes do not match",
+    "pin_code_must_be_4_digits": "PIN code must be 4 digits",
+    "biometric_not_available": "Biometric authentication is not available on this device",
+    "enable_biometric_first": "Please set PIN code first",
+    "enable_security": "Enable Security",
+    "disable_security": "Disable Security"
+  },
+  "security": {
+    "biometric_auth": "Biometric Authentication",
+    "pin_code": "PIN Code",
+    "fingerprint": "Fingerprint",
+    "face_id": "Face ID",
+    "enable": "Enable Security",
+    "change_pin": "Change PIN"
+  },
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "remove": "Remove",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "finish": "Finish",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "refresh": "Refresh",
+    "share": "Share",
+    "export": "Export",
+    "import": "Import",
+    "clear_filters": "Clear Filters",
+    "clear": "Clear",
+    "create_project": "Create Project",
+    "retry": "Retry",
+    "all": "All",
+    "mark_paid": "Mark as paid",
+    "mark_unpaid": "Mark as unpaid",
+    "apply": "Apply"
+  },
+  "about": {
+    "version": "Version",
+    "build": "Build",
+    "developer": "Developer",
+    "privacy_policy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "support": "Support",
+    "feedback": "Feedback"
+  },
+  "currency": {
+    "title": "Currency converter",
+    "amount": "Amount",
+    "from": "From",
+    "to": "To",
+    "swap": "Swap",
+    "last_update": "Last update",
+    "result": "Result",
+    "favorites": "Favorites",
+    "history": "History",
+    "history_empty": "No conversions yet",
+    "add_to_favorites": "Add to favorites",
+    "remove_from_favorites": "Remove from favorites",
+    "use_pair": "Use this pair"
+  },
+  "messages": {
+    "success": "Success",
+    "error": "Error",
+    "warning": "Warning",
+    "info": "Info",
+    "loading": "Loading...",
+    "no_data": "No data",
+    "no_internet": "No internet connection",
+    "try_again": "Try again",
+    "feature_in_development": "Feature in development",
+    "unsaved_changes": "You have unsaved changes"
+  },
+  "financial_tips": {
+    "title": "Financial tips",
+    "search_placeholder": "Search tips",
+    "favorites_only": "Favorites only",
+    "empty": "No tips match your query",
+    "tip_of_the_day": "Tip of the day",
+    "added_to_favorites": "Added to favorites",
+    "removed_from_favorites": "Removed from favorites",
+    "categories": {
+      "all": "All",
+      "budget": "Budget and saving",
+      "loans": "Loans and credit",
+      "savings_investments": "Savings and investments",
+      "literacy": "Financial literacy",
+      "anti_fraud": "Anti‑fraud"
+    },
+    "samples": {
+      "budget_1": {
+        "title": "50/30/20 rule",
+        "content": "Allocate 50% of income to needs, 30% to wants, and 20% to savings and goals."
+      },
+      "budget_2": {
+        "title": "Categorize your spending",
+        "content": "Split expenses into categories and set monthly limits for each category."
+      },
+      "loans_1": {
+        "title": "Payment load under 30%",
+        "content": "Total monthly loan payments should not exceed 30% of your income."
+      },
+      "loans_2": {
+        "title": "Early repayment",
+        "content": "Whenever possible, pay towards principal — it reduces total overpayment."
+      },
+      "savings_1": {
+        "title": "Emergency fund 3–6 months",
+        "content": "Build an emergency fund covering 3–6 months of essential expenses."
+      },
+      "savings_2": {
+        "title": "Diversify investments",
+        "content": "Do not put all eggs in one basket. Spread capital across asset classes."
+      },
+      "literacy_1": {
+        "title": "Improve financial literacy",
+        "content": "Study monthly via books, courses, and articles to make informed decisions."
+      },
+      "anti_fraud_1": {
+        "title": "Never share codes and passwords",
+        "content": "Do not disclose one‑time codes or passwords to anyone, even if they claim to be bank staff."
+      }
+    }
+  },
+  "creditworthiness": {
+    "title": "Creditworthiness Assessment",
+    "description": "Simplified test for self-assessment of financial condition before taking a loan",
+    "step1_title": "Financial Position",
+    "step2_title": "Credit History",
+    "step3_title": "Financial Discipline",
+    "monthly_income": "Monthly Income",
+    "monthly_income_hint": "Enter monthly income amount",
+    "monthly_expenses": "Monthly Expenses",
+    "monthly_expenses_hint": "Enter monthly expenses amount",
+    "savings": "Savings",
+    "savings_hint": "Enter savings amount",
+    "has_regular_income": "Regular Income",
+    "has_current_loans": "Has Current Loans",
+    "current_loans_count": "Number of Current Loans",
+    "current_loans_total": "Total Amount of Current Loans",
+    "has_overdue_payments": "Has Overdue Payments",
+    "overdue_count": "Number of Overdue Payments",
+    "uses_budget_planning": "Uses Budget Planning",
+    "has_emergency_fund": "Has Emergency Fund",
+    "months_stability": "Months of Financial Stability",
+    "months_stability_hint": "How many months of stable financial position",
+    "result_title": "Assessment Results",
+    "score": "Total Score",
+    "score_label": {
+      "excellent": "Excellent",
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor"
+    },
+    "solvency_info": "Solvency",
+    "solvency_ratio": "Solvency Ratio",
+    "available_loan_amount": "Available Loan Amount",
+    "risk_level": "Risk Level",
+    "recommended_loan_amount": "Recommended Loan Amount",
+    "recommended_loan_term": "Recommended Loan Term",
+    "months": "months",
+    "recommendations": "Recommendations",
+    "strengths": "Strengths",
+    "weaknesses": "Weaknesses",
+    "history": "Assessment History",
+    "history_empty": "No assessments yet",
+    "delete_confirm": "Delete Assessment?",
+    "delete_confirm_message": "Are you sure you want to delete this assessment?",
+    "recommendation": {
+      "increase_income_or_reduce_expenses": "Increase income or reduce expenses",
+      "build_emergency_fund": "Build an emergency fund",
+      "resolve_overdue_payments": "Resolve overdue payments",
+      "reduce_current_debt": "Reduce current debt",
+      "start_budget_planning": "Start budget planning",
+      "improve_financial_stability": "Improve financial stability",
+      "loan_available": "Loan available",
+      "improve_before_loan": "Improve indicators before taking a loan"
+    },
+    "strength": {
+      "regular_income": "Regular income",
+      "good_solvency": "Good solvency",
+      "good_savings": "Good savings",
+      "no_current_loans": "No current loans",
+      "no_overdue": "No overdue payments",
+      "budget_planning": "Budget planning",
+      "emergency_fund": "Emergency fund",
+      "financial_stability": "Financial stability"
+    },
+    "weakness": {
+      "irregular_income": "Irregular income",
+      "low_solvency": "Low solvency",
+      "low_savings": "Low savings",
+      "many_loans": "Many current loans",
+      "has_overdue": "Has overdue payments",
+      "no_budget_planning": "No budget planning",
+      "no_emergency_fund": "No emergency fund",
+      "low_stability": "Low stability"
+    }
+  },
+  "expense_statistics": {
+    "title": "Expense Statistics",
+    "empty": "No expense data for the selected period",
+    "period_day": "Day",
+    "period_week": "Week",
+    "period_month": "Month",
+    "period_quarter": "Quarter",
+    "period_year": "Year",
+    "period_custom": "Custom",
+    "total_expenses": "Total Expenses",
+    "average_expense": "Average Expense",
+    "categories_count": "Categories",
+    "top_categories": "Top Categories",
+    "trends": "Trends",
+    "current_period": "Current Period",
+    "previous_period": "Previous Period",
+    "change": "Change",
+    "income_expense_comparison": "Income vs Expense Comparison",
+    "heatmap_title": "Expense Heatmap",
+    "filters": "Filters",
+    "compare_with_previous": "Compare with Previous Period",
+    "show_income_comparison": "Show Income Comparison",
+    "filter_by_category": "Filter by Category",
+    "export_message": "Statistics export will be implemented in the next version"
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "search_placeholder": "Search questions",
+    "favorites_only": "Favorites only",
+    "empty": "No questions match your query",
+    "added_to_favorites": "Added to favorites",
+    "removed_from_favorites": "Removed from favorites",
+    "was_helpful": "Was this helpful?",
+    "helpful": "Helpful",
+    "not_helpful": "Not helpful",
+    "rating_helpful": "Thank you for your feedback!",
+    "rating_not_helpful": "Thank you for your feedback! We will take your opinion into account.",
+    "ask_question": "Ask a question",
+    "ask_question_title": "Ask a question",
+    "ask_question_message": "If you did not find an answer to your question, you can contact support through \"Settings\" -> \"Support\".",
+    "ask_question_sent": "Your question has been sent to support",
+    "categories": {
+      "all": "All",
+      "general": "General questions about loans",
+      "application": "Loan application procedure",
+      "repayment": "Repayment and early repayment terms",
+      "rates": "Interest rates and fees",
+      "credit_history": "Credit history and creditworthiness",
+      "security": "Security and data protection",
+      "technical": "Technical questions about app usage"
+    },
+    "samples": {
+      "general_1": {
+        "question": "What is a loan?",
+        "answer": "A loan is a sum of money that a borrower receives from a lender for a certain period with an obligation to repay it with interest. Loans can be short-term (up to 30 days) and long-term (more than 30 days)."
+      },
+      "general_2": {
+        "question": "How does a microloan differ from a regular loan?",
+        "answer": "A microloan differs in a smaller amount (usually up to 30,000 rubles), faster processing (often within minutes), higher interest rates, and less strict requirements for the borrower. Microloans are issued for a short term."
+      },
+      "application_1": {
+        "question": "How to apply for a loan?",
+        "answer": "To apply for a loan, you need to fill out an online application in the app, providing personal information, loan amount and term. After reviewing the application and approval, funds will be transferred to the specified bank card."
+      },
+      "application_2": {
+        "question": "How long does it take to review an application?",
+        "answer": "Application review usually takes from a few minutes to 1 hour. In most cases, the decision is made automatically. After approval, funds are credited to the card within a few minutes."
+      },
+      "repayment_1": {
+        "question": "How to repay a loan early?",
+        "answer": "Early repayment is possible through the app in the \"Loans\" section. Select an active loan and click \"Early Repayment\". When repaying early, interest is recalculated, which may reduce the total overpayment."
+      },
+      "repayment_2": {
+        "question": "What to do in case of payment delay?",
+        "answer": "In case of payment delay, penalties and late fees are charged. It is recommended to repay the debt as soon as possible to avoid an increase in the debt amount. Contact support to clarify repayment terms."
+      },
+      "rates_1": {
+        "question": "What is the total cost of credit (TCC)?",
+        "answer": "TCC is the interest rate that includes all loan payments: interest, fees, insurance, and other expenses. TCC shows the real cost of the loan as an annual percentage and allows you to compare different offers."
+      },
+      "rates_2": {
+        "question": "What fees may be charged?",
+        "answer": "When applying for a loan, a one-time issuance fee, monthly service fee, early repayment fee (if provided by the contract), and insurance (if available) may be charged. All fees must be specified in the contract."
+      },
+      "credit_1": {
+        "question": "Is credit history checked when issuing a loan?",
+        "answer": "Yes, when considering a loan application, the lender may check your credit history with credit bureaus (CBI). A poor credit history may affect the loan approval decision or the terms of its provision."
+      },
+      "credit_2": {
+        "question": "How to improve creditworthiness?",
+        "answer": "To improve creditworthiness, it is recommended to: repay loans on time, avoid delays, maintain a stable income, reduce the number of active loans, create an emergency fund, and plan a budget."
+      },
+      "security_1": {
+        "question": "Is my personal data safe?",
+        "answer": "Yes, we use modern encryption and data protection methods. All personal data is processed in accordance with personal data protection legislation. We do not share your data with third parties without your consent."
+      },
+      "security_2": {
+        "question": "How is my financial data protected?",
+        "answer": "Financial data is protected using SSL encryption, two-factor authentication (if necessary), and regular security checks. It is recommended to use strong passwords and not share data with third parties."
+      },
+      "technical_1": {
+        "question": "The app is not working. What to do?",
+        "answer": "Try restarting the app, updating it to the latest version, checking your internet connection, and clearing the app cache. If the problem persists, contact support through \"Settings\" -> \"Support\"."
+      },
+      "technical_2": {
+        "question": "How to update the app?",
+        "answer": "App updates are available in the App Store (for iOS) and Google Play (for Android). Enable automatic updates in the app store settings or update the app manually when notifications appear."
+      }
+    }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome!",
+      "description": "Manage your finances easily and efficiently. Our app will help you calculate loans, manage your budget, and achieve financial goals."
+    },
+    "calculator": {
+      "title": "TCC Calculator",
+      "description": "Calculate the total cost of credit including all fees and payments. Get detailed repayment schedule and accurate calculations."
+    },
+    "budget": {
+      "title": "Budget Management",
+      "description": "Track income and expenses, create categories and plan your budget. Control your finances in real time."
+    },
+    "goals": {
+      "title": "Financial Goals",
+      "description": "Set goals and track your progress. Plan savings and get recommendations for achieving your goals."
+    },
+    "features": {
+      "title": "Additional Features",
+      "description": "Financial calendar, currency converter, creditworthiness assessment, expense statistics and more. All financial management tools in one place."
+    },
+    "next": "Next",
+    "skip": "Skip",
+    "get_started": "Get Started"
+  }
+}

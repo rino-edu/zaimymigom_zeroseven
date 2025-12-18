@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "776300326740",
+    "project_id": "com-budgetbox-finance",
+    "storage_bucket": "com-budgetbox-finance.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:776300326740:android:7824415abe0ff45aca62c1",
+        "android_client_info": {
+          "package_name": "com.budgetbox.finance"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_nqf0epHzFX3thbgp8K_tWgQvGlgsyUY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

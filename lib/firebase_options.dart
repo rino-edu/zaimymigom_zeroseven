@@ -24,12 +24,7 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-              'you can reconfigure this by running the FlutterFire CLI again.',
-        );
-/*      case TargetPlatform.android:
-        return android;*/
+        return android;
       case TargetPlatform.iOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -57,11 +52,11 @@ class DefaultFirebaseOptions {
     }
   }
 
-/*  static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCA6FEoYeKLly2SUd6ZN6t2yBTjc15BV8w',
-    appId: '1:930814021384:android:74a485e765ffcc9bb966bd',
-    messagingSenderId: '930814021384',
-    projectId: 'max-credit-zaym-app',
-    storageBucket: 'max-credit-zaym-app.firebasestorage.app',
-  );*/
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyA_nqf0epHzFX3thbgp8K_tWgQvGlgsyUY',
+    appId: '1:776300326740:android:7824415abe0ff45aca62c1',
+    messagingSenderId: '776300326740',
+    projectId: 'com-budgetbox-finance',
+    storageBucket: 'com-budgetbox-finance.firebasestorage.app',
+  );
 }

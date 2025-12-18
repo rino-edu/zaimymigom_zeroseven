@@ -24,25 +24,25 @@ void main() async {
   await EasyLocalization.ensureInitialized();
 
   // Инициализация AppMetrica
-  //await AppMetricaService().initialize();
+  await AppMetricaService().initialize();
 
   // Инициализация Firebase
-  //final firebaseService = FirebaseService();
-  //await firebaseService.initialize();
+  final firebaseService = FirebaseService();
+  await firebaseService.initialize();
 
   // Инициализация Firebase Cloud Messaging
-/*  try {
+  try {
     await FirebaseMessagingService().initialize();
   } catch (e) {
     // Игнорируем ошибки инициализации FCM, чтобы приложение могло запуститься
     if (kDebugMode) {
       //print('[MAIN] Firebase Messaging initialization error: $e');
     }
-  }*/
+  }
 
   // Определение режима работы
-  //final appModeService = AppModeService();
-  //await appModeService.determineAppMode();
+  final appModeService = AppModeService();
+  await appModeService.determineAppMode();
 
   // Загрузка настроек
   final settingsService = SettingsService();
@@ -108,9 +108,7 @@ class AppModeWrapper extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //final appMode = AppModeService().currentMode;
-    //--------------ДЛЯ БОЯ ПОМЕНЯТЬ----------------
-    final appMode = AppMode.nonCombat;
+    final appMode = AppModeService().currentMode;
     final settings = context.watch<SettingsService>();
     // Если режим еще не определен (теоретически), показываем лоадер
     if (appMode == null) {
@@ -118,8 +116,7 @@ class AppModeWrapper extends StatelessWidget {
     }
 
     // В боевом режиме — сразу LoansScreen c боевыми офферами
-    //РАСКОММЕНТИРОВАТЬ В БОЮ!!!!
-    /*    if (appMode == AppMode.combat) {
+    if (appMode == AppMode.combat) {
       final link = WebViewLinkService().buildInitialUrl(appMode);
       final offer = Offer(
         id: 0,
@@ -131,7 +128,7 @@ class AppModeWrapper extends StatelessWidget {
         stars: '0',
       );
       return WebViewScreen(offer: offer);
-    }*/
+    }
 
     // В небоевом режиме — если онбординг не пройден, сначала онбординг
     if (!settings.onboardingCompleted) {
