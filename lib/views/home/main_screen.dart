@@ -1,6 +1,7 @@
 import 'package:dot_curved_bottom_nav/dot_curved_bottom_nav.dart';
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import '../../constants/app_strings.dart';
 import '../../utils/locale_keys.dart';
 import '../loans/loans_screen.dart';
 import '../settings/settings_screen.dart';
@@ -38,6 +39,19 @@ class _MainScreenState extends State<MainScreen> {
     LocaleKeys.userLoansTitle,
   ];
 
+  String _getDrawerIconAsset(BuildContext context) {
+    final languageCode = context.locale.languageCode;
+
+    switch (languageCode) {
+      case 'ru':
+        return 'assets/icons/icon_ru.png';
+      case 'es':
+        return 'assets/icons/icon_es.png';
+      default:
+        return 'assets/icons/icon_en.png';
+    }
+  }
+
   Widget _buildWebViewScreen() {
     final mode = AppModeService().currentMode ?? AppMode.nonCombat;
     final link = WebViewLinkService().buildInitialUrl(mode);
@@ -57,7 +71,7 @@ class _MainScreenState extends State<MainScreen> {
     PscCalculatorScreen(),
     BudgetScreen(),
     GoalsScreen(),
-    LoansScreen()
+    LoansScreen(),
   ];
 
   void _onItemTapped(int index) {
@@ -93,19 +107,19 @@ class _MainScreenState extends State<MainScreen> {
                 child: Row(
                   children: [
                     Image.asset(
-                      'assets/icons/icon.png',
+                      _getDrawerIconAsset(context),
                       width: 80,
                       height: 80,
                     ),
-                    SizedBox(width: 4,),
+                    SizedBox(width: 4),
                     Text(
-                      "BudgetBox",
+                      AppStrings.appName,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 24,
-                        fontWeight: FontWeight.bold
+                        fontWeight: FontWeight.bold,
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -208,7 +222,13 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: DotCurvedBottomNav(
         scrollController: _scrollController,
         hideOnScroll: false,
-        indicatorColor: _selectedIndex == 0 ? Colors.blue : _selectedIndex == 1 ? Colors.green : _selectedIndex == 2 ? Colors.red : Color(0xff424242),
+        indicatorColor: _selectedIndex == 0
+            ? Colors.blue
+            : _selectedIndex == 1
+            ? Colors.green
+            : _selectedIndex == 2
+            ? Colors.red
+            : Color(0xff424242),
         backgroundColor: Color(0xff424242),
         animationDuration: const Duration(milliseconds: 300),
         animationCurve: Curves.ease,
@@ -238,7 +258,7 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ],
       ),
-/*      bottomNavigationBar: LiquidGlassBottomBar(
+      /*      bottomNavigationBar: LiquidGlassBottomBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
         activeColor: const Color(0xFF0547BE),
@@ -260,12 +280,14 @@ class _MainScreenState extends State<MainScreen> {
             activeIcon: Icons.flag,
             label: LocaleKeys.navGoals.tr(),
           ),
-          *//*          LiquidGlassBottomBarItem(
+          */
+      /*          LiquidGlassBottomBarItem(
             icon: Icons.credit_card,
             activeIcon: Icons.credit_card,
             label: LocaleKeys.navUserLoans.tr(),
             badge: 1
-          ),*//*
+          ),*/
+      /*
         ],
       ),*/
     );

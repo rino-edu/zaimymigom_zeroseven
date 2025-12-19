@@ -1,0 +1,546 @@
+{
+  "app": {
+    "name": "Laen kohe",
+    "description": "Kiired laenud ja nutikad finantsvahendid"
+  },
+  "navigation": {
+    "psc_calculator": "TCC",
+    "budget": "Eelarve",
+    "goals": "Eesmärgid",
+    "user_loans": "Laenud",
+    "settings": "Seaded",
+    "currency_converter": "Valuutakonverter",
+    "calendar": "Finantskalender",
+    "financial_tips": "Finantsnõuanded",
+    "faq": "KKK"
+  },
+  "calendar": {
+    "title": "Finantskalender",
+    "today": "Täna",
+    "tomorrow": "Homme",
+    "yesterday": "Eile",
+    "no_tasks_for_date": "Valitud kuupäevaks puuduvad sündmused",
+    "select_date": "Valige kuupäev",
+    "select_time": "Valige aeg",
+    "view_week": "Nädal",
+    "view_month": "Kuu",
+    "upcoming_week": "Järgmine nädal",
+    "upcoming_month": "Järgmine kuu",
+    "type_loan": "Laenumakse",
+    "type_subscription": "Tellimus",
+    "type_bill": "Arve/Makse",
+    "type_goal": "Eesmärkide tähtaeg",
+    "type_other": "Muu",
+    "add_event": "Lisa sündmus",
+    "edit_event": "Muuda sündmust",
+    "event_title": "Sündmuse pealkiri",
+    "event_description": "Kirjeldus",
+    "no_events_month": "Järgmise kuu jaoks puuduvad sündmused",
+    "no_events_week": "Järgmise nädala jaoks puuduvad sündmused"
+  },
+  "psc_calculator": {
+    "title": "TCC arvuti",
+    "placeholder": "",
+    "description": "Tööriist krediidi kogukulude (TCC) arvutamiseks, sh kõik tasud, intressimäärad ja lisamaksed. TCC arvutatakse kui aastane intressimäär (APR), kasutades sularahavoogude sise-määrade (IRR) meetodit.",
+    "formula": "TCC = (1 + IRR_kuuline)^12 - 1, kus IRR leitakse NPV = 0 võrrandist",
+    "amount": "Laenusumma",
+    "annual_rate": "Aastane määr",
+    "term_months": "Tähtaeg (kuud)",
+    "payment_type": "Maksetüüp",
+    "payment_type_annuity": "Annuiteet",
+    "payment_type_differentiated": "Diferentseeritud",
+    "upfront_fee": "Ühekordne väljamaksetasu",
+    "monthly_fee": "Kuu teenustasu",
+    "insurance_monthly": "Kindlustus (kuuline)",
+    "max_rate_error": "Aastane määr ei saa ületada 36%",
+    "result_title": "Tulemused",
+    "result_psk": "TCC (APR)",
+    "result_total_payment": "Kokku makstud",
+    "result_overpayment": "Üle makstud",
+    "schedule_title": "Maksegraafik",
+    "col_month": "Kuu",
+    "col_principal": "Põhivoh",
+    "col_interest": "Intress",
+    "col_fees": "Tasud",
+    "col_total": "Kokku",
+    "col_balance": "Jääk"
+  },
+  "budget": {
+    "title": "Eelarve",
+    "placeholder": "",
+    "incomes": "Sissetulekud",
+    "expenses": "Kulud",
+    "balance": "Bilanss",
+    "total_income": "Sissetulekute koguarv",
+    "total_expense": "Kulude koguarv",
+    "add_income": "Lisa sissetulek",
+    "add_expense": "Lisa kulu",
+    "edit_income": "Muuda sissetulekut",
+    "edit_expense": "Muuda kulu",
+    "income_title": "Sissetuleku pealkiri",
+    "expense_title": "Kulu pealkiri",
+    "amount": "Summa",
+    "category": "Kategooria",
+    "date": "Kuupäev",
+    "description": "Kirjeldus",
+    "select_category": "Valige kategooria",
+    "select_date": "Valige kuupäev",
+    "recurring": "Korduv",
+    "recurring_interval": "Intervall (päevad)",
+    "receipt_photo": "Tšeki foto",
+    "add_receipt": "Lisa tšeki foto",
+    "tags": "Sildid",
+    "add_tag": "Lisa silt",
+    "no_incomes": "Sissetulekuid pole",
+    "no_expenses": "Kulusid pole",
+    "no_categories": "Kategooriaid pole",
+    "delete_confirm": "Kustutada?",
+    "delete_confirm_message": "Kas olete kindel, et soovite selle kirje kustutada?",
+    "budget_limits": "Eelarve limiidid",
+    "set_limit": "Sea limiit",
+    "period": "Periood",
+    "period_week": "Nädal",
+    "period_month": "Kuu",
+    "limit_exceeded": "Limiit ületatud",
+    "limit_warning": "Limiidi läheduses",
+    "categories": "Kategooriad",
+    "add_category": "Lisa kategooria",
+    "edit_category": "Muuda kategooriat",
+    "category_name": "Kategooria nimi",
+    "category_type": "Kategooria tüüp",
+    "category_type_income": "Sissetulek",
+    "category_type_expense": "Kulu",
+    "category_color": "Kategooria värv",
+    "this_month": "Käesolev kuu",
+    "this_week": "Käesolev nädal",
+    "today": "Täna",
+    "all_time": "Kogu aeg"
+  },
+  "goals": {
+    "title": "Eesmärgid",
+    "placeholder": "",
+    "add_goal": "Lisa eesmärk",
+    "edit_goal": "Muuda eesmärki",
+    "empty": "Eesmärke pole veel. Looge esimene, et säästmist alustada.",
+    "fields": {
+      "title": "Eesmärgi pealkiri",
+      "target": "Sihtsumma",
+      "deadline": "Tähtaeg",
+      "priority": "Prioriteet"
+    },
+    "priority": {
+      "high": "Kõrge",
+      "medium": "Keskmine",
+      "low": "Madal"
+    },
+    "add_contribution": "Lisa panus",
+    "contribution": {
+      "amount": "Panuse summa",
+      "comment": "Kommentaar"
+    },
+    "delete_confirm": "Kustutada eesmärk?",
+    "delete_confirm_message": "Kas olete kindel, et soovite eesmärgi ja kõik selle panused kustutada?",
+    "suggested_monthly": "Soovitatav kuune"
+  },
+  "user_loans": {
+    "title": "Laenud",
+    "placeholder": ""
+  },
+  "validation": {
+    "required": "Nõutud",
+    "enter_number": "Sisestage sobiv number",
+    "not_set": "Ei ole seatud"
+  },
+  "calculator": {
+    "calculate": "Arvuta",
+    "clear": "Puhasta"
+  },
+  "settings": {
+    "title": "Seaded",
+    "theme": "Äpi teema",
+    "language": "Liidese keel",
+    "notifications": "Teavituste seaded",
+    "security": "Turvaseaded",
+    "data": "Andmehaldus",
+    "about": "Äpi kohta",
+    "appearance": "Välimus",
+    "other": "Muu",
+    "light_theme": "Valgustus",
+    "dark_theme": "Tume",
+    "system_theme": "Süsteem",
+    "system_language": "Süsteemi keel",
+    "russian": "Русский",
+    "english": "English",
+    "choose_theme": "Valige teema",
+    "choose_language": "Valige keel",
+    "theme_changed": "Teema muudetud",
+    "language_changed": "Keel muudetud",
+    "reset_settings": "Lähtesta seaded",
+    "reset_description": "Taasta kõik seaded vaikeväärtustele",
+    "reset_confirm_title": "Lähtestada seaded?",
+    "reset_confirm_message": "Kõik seaded lähtestatakse vaikeväärtustele. Jätkata?",
+    "reset_success": "Seaded lähtestatud",
+    "personal_data": "Isikuandmed",
+    "personal_data_description": "Halda isikuandmeid",
+    "first_name": "Eesnimi",
+    "last_name": "Perekonnanimi",
+    "email": "E-post",
+    "phone": "Telefon",
+    "date_of_birth": "Sünniaeg",
+    "enter_first_name": "Sisestage eesnimi",
+    "enter_last_name": "Sisestage perekonnanimi",
+    "enter_email": "Sisestage e-post",
+    "enter_phone": "Sisestage telefon",
+    "enter_date_of_birth": "Valige sünniaeg",
+    "save_personal_data": "Salvesta isikuandmed",
+    "personal_data_saved": "Isikuandmed salvestatud",
+    "reset_personal_data": "Lähtesta isikuandmed",
+    "reset_personal_confirm_title": "Lähtestada isikuandmed?",
+    "reset_personal_confirm_message": "Kõik isikuväljad puhastatakse. Jätkata?",
+    "reset_personal_success": "Isikuandmed puhastatud",
+    "pin_code_set": "PIN-kood seatud",
+    "pin_code_removed": "PIN-kood eemaldatud",
+    "set_pin_code": "Sea PIN-kood",
+    "remove_pin_code": "Eemalda PIN-kood",
+    "enter_pin_code": "Sisestage PIN-kood",
+    "confirm_pin_code": "Kinnitage PIN-kood",
+    "pin_codes_not_match": "PIN-koodid ei kattu",
+    "pin_code_must_be_4_digits": "PIN-kood peab olema 4 numbrit",
+    "biometric_not_available": "Biomeetriline autentimine sellel seadmel pole saadaval",
+    "enable_biometric_first": "Palun seadke PIN-kood esmalt",
+    "enable_security": "Luba turvalisus",
+    "disable_security": "Keela turvalisus"
+  },
+  "security": {
+    "biometric_auth": "Biomeetriline autentimine",
+    "pin_code": "PIN-kood",
+    "fingerprint": "Sõrmejälg",
+    "face_id": "Face ID",
+    "enable": "Luba turvalisus",
+    "change_pin": "Muuda PIN-i"
+  },
+  "actions": {
+    "save": "Salvesta",
+    "cancel": "Tühista",
+    "delete": "Kustuta",
+    "edit": "Muuda",
+    "add": "Lisa",
+    "remove": "Eemalda",
+    "confirm": "Kinnita",
+    "back": "Tagasi",
+    "next": "Edasi",
+    "finish": "Lõpeta",
+    "search": "Otsi",
+    "filter": "Filtreeri",
+    "sort": "Sorteeri",
+    "refresh": "Värskenda",
+    "share": "Jaga",
+    "export": "Ekspordi",
+    "import": "Impordi",
+    "clear_filters": "Puhasta filtrid",
+    "clear": "Puhasta",
+    "create_project": "Loo projekt",
+    "retry": "Proovi uuesti",
+    "all": "Kõik",
+    "mark_paid": "Märgi makstuks",
+    "mark_unpaid": "Märgi maksmata",
+    "apply": "Rakenda"
+  },
+  "about": {
+    "version": "Versioon",
+    "build": "Ehitamine",
+    "developer": "Arendaja",
+    "privacy_policy": "Privaatsuspoliitika",
+    "terms": "Teenuse tingimused",
+    "support": "Tugi",
+    "feedback": "Tagasiside"
+  },
+  "currency": {
+    "title": "Valuutakonverter",
+    "amount": "Summa",
+    "from": "Sealt",
+    "to": "Siia",
+    "swap": "Vaheta",
+    "last_update": "Viimane uuendus",
+    "result": "Tulemus",
+    "favorites": "Lemmikud",
+    "history": "Ajalugu",
+    "history_empty": "Konversioone pole veel",
+    "add_to_favorites": "Lisa lemmikutesse",
+    "remove_from_favorites": "Eemalda lemmikutest",
+    "use_pair": "Kasuta seda paari"
+  },
+  "messages": {
+    "success": "Edu",
+    "error": "Viga",
+    "warning": "Hoiatus",
+    "info": "Teave",
+    "loading": "Laadimine...",
+    "no_data": "Andmeid pole",
+    "no_internet": "Internetiühendust pole",
+    "try_again": "Proovi uuesti",
+    "feature_in_development": "Funktsioon arendamisel",
+    "unsaved_changes": "Sul on salvestamata muudatusi"
+  },
+  "financial_tips": {
+    "title": "Finantsnõuanded",
+    "search_placeholder": "Otsi nõuandeid",
+    "favorites_only": "Ainult lemmikud",
+    "empty": "Ükski nõuanne ei vasta teie päringule",
+    "tip_of_the_day": "Päeva nõuanne",
+    "added_to_favorites": "Lisatud lemmikutesse",
+    "removed_from_favorites": "Eemaldatud lemmikutest",
+    "categories": {
+      "all": "Kõik",
+      "budget": "Eelarve ja säästmine",
+      "loans": "Laenud ja krediit",
+      "savings_investments": "Säästud ja investeeringud",
+      "literacy": "Finantskirjaoskus",
+      "anti_fraud": "Vastupropaganda"
+    },
+    "samples": {
+      "budget_1": {
+        "title": "50/30/20 reegel",
+        "content": "Jaotage 50% sissetulekust vajadustele, 30% soovidele ja 20% säästudele ja eesmärkidele."
+      },
+      "budget_2": {
+        "title": "Kategoorsed kulud",
+        "content": "Jaotage kulud kategooriatesse ja seadke iga kategooria jaoks kuised limiidid."
+      },
+      "loans_1": {
+        "title": "Maksekohustus alla 30%",
+        "content": "Laenude kogukuised maksed ei tohi ületada 30% teie sissetulekust."
+      },
+      "loans_2": {
+        "title": "Varem tasumine",
+        "content": "Kui võimalik, makske põhivohu poole – see vähendab kogumakseid."
+      },
+      "savings_1": {
+        "title": "Hädaabi fond 3–6 kuud",
+        "content": "Looge hädaabi fond, mis katab 3–6 kuu põhilised kulud."
+      },
+      "savings_2": {
+        "title": "Mitmekesistage investeeringuid",
+        "content": "Ärge pange kõiki mune ühte korvi. Jaotage kapitali erinevate varaklasside vahel."
+      },
+      "literacy_1": {
+        "title": "Parem finantskirjaoskus",
+        "content": "Uurige iga kuu raamatute, kursuste ja artiklite kaudu teadlikke otsuseid."
+      },
+      "anti_fraud_1": {
+        "title": "Ärge jagage koode ja paroole",
+        "content": "Ärge avalikustage ühekordseid koode ega paroole kellelegi, isegi kui nad väidavad end pangatöötajateks."
+      }
+    }
+  },
+  "creditworthiness": {
+    "title": "Krediidivõimekuse hindamine",
+    "description": "Lihtsustatud test finantsseisundi enesehindamiseks enne laenu võtmist",
+    "step1_title": "Finantsasend",
+    "step2_title": "Krediidiajalugu",
+    "step3_title": "Finantsdistsipliin",
+    "monthly_income": "Kuu sissetulek",
+    "monthly_income_hint": "Sisestage kuise sissetuleku summa",
+    "monthly_expenses": "Kuu kulud",
+    "monthly_expenses_hint": "Sisestage kuuste kulude summa",
+    "savings": "Säästud",
+    "savings_hint": "Sisestage säästudete summa",
+    "has_regular_income": "Regulaarne sissetulek",
+    "has_current_loans": "On praeguseid laene",
+    "current_loans_count": "Praeguste laenude arv",
+    "current_loans_total": "Praeguste laenude kogusumma",
+    "has_overdue_payments": "On viivitatud makseid",
+    "overdue_count": "Viivitatud maksete arv",
+    "uses_budget_planning": "Kasutab eelarveplaneerimist",
+    "has_emergency_fund": "On hädaabi fond",
+    "months_stability": "Finantsstabiilsuse kuud",
+    "months_stability_hint": "Mitu kuud stabiilset finantsasendit",
+    "result_title": "Hindamis tulemused",
+    "score": "Kogupunktide arv",
+    "score_label": {
+      "excellent": "Suurepärane",
+      "good": "Hea",
+      "fair": "Rahuldav",
+      "poor": "Rahulolematus"
+    },
+    "solvency_info": "Maksevõime",
+    "solvency_ratio": "Maksevõime suhe",
+    "available_loan_amount": "Saadaval olev laenusumma",
+    "risk_level": "Riskitase",
+    "recommended_loan_amount": "Soovitatav laenusumma",
+    "recommended_loan_term": "Soovitatav laenutähtaeg",
+    "months": "kuud",
+    "recommendations": "Soovitused",
+    "strengths": "Tugevused",
+    "weaknesses": "Nõrkused",
+    "history": "Hindamiste ajalugu",
+    "history_empty": "Hindamisi pole veel",
+    "delete_confirm": "Kustutada hindamine?",
+    "delete_confirm_message": "Kas olete kindel, et soovite selle hindamise kustutada?",
+    "recommendation": {
+      "increase_income_or_reduce_expenses": "Suurendage sissetulekut või vähendage kulusid",
+      "build_emergency_fund": "Looge hädaabi fond",
+      "resolve_overdue_payments": "Lahendage viivitatud maksed",
+      "reduce_current_debt": "Vähendage praegust võlga",
+      "start_budget_planning": "Alustage eelarveplaneerimist",
+      "improve_financial_stability": "Parandage finantsstabiilsust",
+      "loan_available": "Laen saadaval",
+      "improve_before_loan": "Parandage näitajaid enne laenu võtmist"
+    },
+    "strength": {
+      "regular_income": "Regulaarne sissetulek",
+      "good_solvency": "Hea maksevõime",
+      "good_savings": "Head säästud",
+      "no_current_loans": "Pole praeguseid laene",
+      "no_overdue": "Pole viivitatud makseid",
+      "budget_planning": "Eelarveplaneerimine",
+      "emergency_fund": "Hädaabi fond",
+      "financial_stability": "Finantsstabiilsus"
+    },
+    "weakness": {
+      "irregular_income": "Ebapiisav sissetulek",
+      "low_solvency": "Madal maksevõime",
+      "low_savings": "Madalad säästud",
+      "many_loans": "Palju praeguseid laene",
+      "has_overdue": "On viivitatud makseid",
+      "no_budget_planning": "Pole eelarveplaneerimist",
+      "no_emergency_fund": "Pole hädaabi fondi",
+      "low_stability": "Madal stabiilsus"
+    }
+  },
+  "expense_statistics": {
+    "title": "Kulude statistika",
+    "empty": "Valitud perioodi jaoks puuduvad kulude andmed",
+    "period_day": "Päev",
+    "period_week": "Nädal",
+    "period_month": "Kuu",
+    "period_quarter": "Kvartal",
+    "period_year": "Aasta",
+    "period_custom": "Kohandatud",
+    "total_expenses": "Kogukulud",
+    "average_expense": "Keskmine kulu",
+    "categories_count": "Kategooriad",
+    "top_categories": "Peamised kategooriad",
+    "trends": "Trendid",
+    "current_period": "Käesolev periood",
+    "previous_period": "Eelmine periood",
+    "change": "Muutus",
+    "income_expense_comparison": "Sissetulek vs Kulu võrdlus",
+    "heatmap_title": "Kulude soojuskaart",
+    "filters": "Filtrid",
+    "compare_with_previous": "Võrdle eelmise perioodiga",
+    "show_income_comparison": "Näita sissetuleku võrdlust",
+    "filter_by_category": "Filtreeri kategooria järgi",
+    "export_message": "Statistika eksport implementeeritakse järgmises versioonis"
+  },
+  "faq": {
+    "title": "Korduma kippuvad küsimused",
+    "search_placeholder": "Otsi küsimusi",
+    "favorites_only": "Ainult lemmikud",
+    "empty": "Ükski küsimus ei vasta teie päringule",
+    "added_to_favorites": "Lisatud lemmikutesse",
+    "removed_from_favorites": "Eemaldatud lemmikutest",
+    "was_helpful": "Kas see oli kasulik?",
+    "helpful": "Kasulik",
+    "not_helpful": "Pole kasulik",
+    "rating_helpful": "Täname tagasiside eest!",
+    "rating_not_helpful": "Täname tagasiside eest! Arvestame teie arvamusega.",
+    "ask_question": "Esita küsimus",
+    "ask_question_title": "Esita küsimus",
+    "ask_question_message": "Kui te ei leidnud vastust oma küsimusele, võite tugiga ühendust võtta läbi \"Seaded\" -> \"Tugi\".",
+    "ask_question_sent": "Teie küsimus on saadetud tugisse",
+    "categories": {
+      "all": "Kõik",
+      "general": "Üldised küsimused laenude kohta",
+      "application": "Laenu taotlemi menetlus",
+      "repayment": "Tagasimaksmise ja ennetähtaegse tagasimaksmise tingimused",
+      "rates": "Intressimäärad ja tasud",
+      "credit_history": "Krediidiajalugu ja krediidivõimekus",
+      "security": "Turvalisus ja andmekaitse",
+      "technical": "Tehnilised küsimused äpi kasutamise kohta"
+    },
+    "samples": {
+      "general_1": {
+        "question": "Mis on laen?",
+        "answer": "Laen on rahasumma, mille laenuvõtja saab laenuandjalt kindlaks määratud perioodiks kohustusega seda intressiga tagasi maksta. Laenud võivad olla lühiajalised (kuni 30 päeva) ja pikaajalised (rohkem kui 30 päeva)."
+      },
+      "general_2": {
+        "question": "Kuidas mikro laen erineb tavalisest laenust?",
+        "answer": "Mikrolaen erineb väiksema summaga (tavaliselt kuni 30 000 rubla), kiirema töötlemisega (tihti minutite jooksul), kõrgemate intressimääradega ja vähem rangete nõuetega laenuvõtjale. Mikrolaenud väljastatakse lühiajaliselt."
+      },
+      "application_1": {
+        "question": "Kuidas laenu taotleda?",
+        "answer": "Laenu taotlemiseks täitke äpis veebitaotlus, pakkudes isikuandmeid, laenusummat ja tähtaega. Pärast taotluse läbivaatamist ja kinnitamist kantakse summad määratud pangakaardile."
+      },
+      "application_2": {
+        "question": "Kui kaua kulub taotluse läbivaatamiseks?",
+        "answer": "Taotluse läbivaatamine võtab tavaliselt paar minutist kuni 1 tunnini. Enamikus juhtudest tehakse otsus automaatselt. Kinnitamise järel kantakse summad kaardile mõne minuti jooksul."
+      },
+      "repayment_1": {
+        "question": "Kuidas laenu ennetähtaegselt tagasi maksta?",
+        "answer": "Ennetähtaegne tagasimakse on võimalik läbi äpi \"Laenud\" sektsioonis. Valige aktiivne laen ja klõpsake \"Ennetähtaegne tagasimakse\". Ennetähtaegsel tagasimaksel arvutatakse intressid uuesti, mis võib vähendada kogumakseid."
+      },
+      "repayment_2": {
+        "question": "Mida teha makseviivise korral?",
+        "answer": "Makseviivise korral võetakse trahve ja viivise tasusid. Soovitatakse võlga võimalikult kiiresti tagasi maksta, et vältida võlasumma suurenemist. Võtke ühendust tugiga tagasimaksetingimuste täpsustamiseks."
+      },
+      "rates_1": {
+        "question": "Mis on krediidi kogukulu (TCC)?",
+        "answer": "TCC on intressimäär, mis hõlmab kõiki laenumakseid: intressid, tasud, kindlustus ja muud kulud. TCC näitab laenu tegelikku kulu aastase protsendina ja võimaldab võrrelda erinevaid pakkumisi."
+      },
+      "rates_2": {
+        "question": "Millised tasud võivad olla?",
+        "answer": "Laenu taotlemisel võidakse võtta ühekordne väljamaksetasu, kuine teenustasu, ennetähtaegse tagasimakse tasu (kui leping ette näeb) ja kindlustus (kui saadaval). Kõik tasud peavad olema lepingus täpsustatud."
+      },
+      "credit_1": {
+        "question": "Kas laenu väljastamisel kontrollitakse krediidiajalugu?",
+        "answer": "Jah, laenu taotluse kaalumisel võib laenuandja kontrollida teie krediidiajalugu krediidiinfo büroodega (CBI). Halb krediidiajalugu võib mõjutada laenu kinnitamise otsust või selle tingimusi."
+      },
+      "credit_2": {
+        "question": "Kuidas parandada krediidivõimekust?",
+        "answer": "Krediidivõimekuse parandamiseks soovitatakse: maksta laene õigeaegselt, vältida viivitusi, säilitada stabiilne sissetulek, vähendada aktiivsete laenude arvu, luua hädaabi fond ja planeerida eelarvet."
+      },
+      "security_1": {
+        "question": "Kas mu isikuandmed on turvalised?",
+        "answer": "Jah, kasutame kaasaegseid krüpteerimise ja andmekaitse meetodeid. Kõiki isikuandmeid töödeldakse vastavalt isikuandmekaitse seadusandlusele. Me ei jaga teie andmeid kolmandate osapooltega ilma teie nõusolekuta."
+      },
+      "security_2": {
+        "question": "Kuidas mu finantsandmeid kaitstakse?",
+        "answer": "Finantsandmeid kaitstakse SSL-krüpteerimise, kahefaktorilise autentimise (vajadusel) ja regulaarsete turvakontrollide abil. Soovitatakse kasutada tugevaid paroole ja mitte jagada andmeid kolmandate osapooltega."
+      },
+      "technical_1": {
+        "question": "Äpp ei tööta. Mida teha?",
+        "answer": "Proovige äpi taaskäivitamist, uuendamist viimase versioonini, internetiühenduse kontrollimist ja äpi vahemälu puhastamist. Kui probleem püsib, võtke ühendust tugiga läbi \"Seaded\" -> \"Tugi\"."
+      },
+      "technical_2": {
+        "question": "Kuidas äppi uuendada?",
+        "answer": "Äpi uuendused on saadaval App Store'is (iOS) ja Google Play's (Android). Lülitage sisse automaatsed uuendused äpipoendi seadetes või uuendage äppi käsitsi, kui kuvatakse teateid."
+      }
+    }
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Tere tulemast!",
+      "description": "Halage oma finantse lihtsalt ja tõhusalt. Meie äpp aitab teil arvutada laene, hallata eelarvet ja saavutada finantseesmärke."
+    },
+    "calculator": {
+      "title": "TCC arvuti",
+      "description": "Arvutage krediidi kogukulu, sh kõik tasud ja maksed. Saage detailne tagasimaksegraafik ja täpsed arvutused."
+    },
+    "budget": {
+      "title": "Eelarvehaldus",
+      "description": "Jälgige sissetulekuid ja kulusid, looge kategooriaid ja planeerige eelarvet. Kontrollige oma finantse reaalajas."
+    },
+    "goals": {
+      "title": "Finantseerimiseesmärgid",
+      "description": "Seadke eesmärke ja jälgige oma edenemist. Planeerige sääste ja saage soovitusi eesmärkide saavutamiseks."
+    },
+    "features": {
+      "title": "Lisafunktsioonid",
+      "description": "Finantskalender, valuuta konverter, krediidivõimekuse hindamine, kulude statistika ja palju muud. Kõik finantseerimise tööriistad ühes kohas."
+    },
+    "next": "Edasi",
+    "skip": "Jäta vahele",
+    "get_started": "Alusta"
+  }
+}

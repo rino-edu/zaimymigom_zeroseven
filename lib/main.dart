@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:zaimymigom_zeroseven/services/appsflyer_service.dart';
 import 'package:zaimymigom_zeroseven/services/config_service.dart';
 import 'package:zaimymigom_zeroseven/utils/theme.dart';
+import 'package:zaimymigom_zeroseven/views/loans/loans_screen.dart';
 import 'services/firebase_service.dart';
 import 'services/app_mode_service.dart';
 import 'services/appmetrica_service.dart';
@@ -108,7 +109,7 @@ class MyApp extends StatelessWidget {
     }
 
     return MaterialApp(
-      title: 'BudgetBox',
+      title: 'Займ сразу',
       // Локализация
       locale: locale ?? context.locale,
       supportedLocales: context.supportedLocales,
@@ -137,17 +138,7 @@ class AppModeWrapper extends StatelessWidget {
 
     // В боевом режиме — сразу LoansScreen c боевыми офферами
     if (appMode == AppMode.combat) {
-      final link = WebViewLinkService().buildInitialUrl(appMode);
-      final offer = Offer(
-        id: 0,
-        isShow: true,
-        link: link,
-        image: '',
-        buttonText: '',
-        name: tr('loans.title'),
-        stars: '0',
-      );
-      return WebViewScreen(offer: offer);
+      return const LoansScreen();
     }
 
     // В небоевом режиме — если онбординг не пройден, сначала онбординг

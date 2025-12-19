@@ -2,7 +2,7 @@ name: zaimymigom_zeroseven
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.1+12
+version: 1.0.2+14
 
 environment:
   sdk: ^3.8.1
@@ -100,5 +100,8 @@ flutter:
 
   assets:
     - assets/locales/
-    - assets/icons/
+    - assets/icons/icon_ru.png
+    - assets/icons/icon_en.png
+    - assets/icons/icon_es.png
+    - assets/icons/icon_et.png
     - assets/policy.txt
