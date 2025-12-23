@@ -62,6 +62,9 @@ android {
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     implementation("com.google.android.material:material:1.13.0")
+    implementation("com.google.firebase:firebase-messaging:22.0.0")
+    implementation("com.google.android.gms:play-services-base:17.5.0")
+    implementation("com.facebook.android:facebook-android-sdk:16.3.0")
 }
 
 flutter {

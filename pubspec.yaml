@@ -100,6 +100,7 @@ flutter:
 
   assets:
     - assets/locales/
+    - assets/strings/config.json
     - assets/icons/icon_ru.png
     - assets/icons/icon_en.png
     - assets/icons/icon_es.png

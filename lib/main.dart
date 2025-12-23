@@ -27,6 +27,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
 
+  // Загрузка конфигурации
+  await ConfigService.loadConfig();
+
   // Инициализация AppMetrica
   await AppMetricaService().initialize();
 
