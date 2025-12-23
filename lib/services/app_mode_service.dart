@@ -34,7 +34,7 @@ class AppModeResult {
     //print('');
     //print('Check Details:');
     checks.forEach((key, value) {
-      final status = value == true ? '✅' : '❌';
+      //final status = value == true ? '✅' : '❌';
       //print('  $status $key: $value');
     });
     //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
@@ -262,6 +262,31 @@ class AppModeService {
       return result;
     }
 
+    // 8. Проверка коллекции boy_offers
+    //print('💼 Step 8: Checking boy_offers collection...');
+    final hasBoyOffers = await _checkBoyOffersCollection(userCountry);
+    checks['Boy Offers Collection'] = hasBoyOffers;
+
+    if (!hasBoyOffers) {
+      _currentMode = AppMode.nonCombat;
+      final result = AppModeResult(
+        mode: _currentMode!,
+        reason: 'Boy offers collection not found for country: $userCountry',
+        checks: checks,
+      );
+      _lastResult = result;
+      result.logResult();
+
+      // Отправляем событие в AppMetrica
+      _reportModeToAppMetrica(
+        AppMode.nonCombat,
+        'Boy offers collection not found',
+        userCountry: userCountry,
+      );
+
+      return result;
+    }
+
     // Все проверки пройдены - боевой режим
     _currentMode = AppMode.combat;
     final result = AppModeResult(
@@ -292,9 +317,10 @@ class AppModeService {
       }
 
       // Дополнительная проверка через HTTP запрос
+      // Увеличено время ожидания для медленного интернета (2G)
       final response = await http
           .get(Uri.parse('https://www.google.com'))
-          .timeout(const Duration(seconds: 5));
+          .timeout(const Duration(seconds: 30));
 
       final hasInternet = response.statusCode == 200;
 /*      //print(
@@ -330,9 +356,10 @@ class AppModeService {
   /// Определение страны пользователя по IP
   Future<String?> _getUserCountryByIp() async {
     try {
+      // Увеличено время ожидания для медленного интернета (2G)
       final response = await http
           .get(Uri.parse('https://ipinfo.io/json'))
-          .timeout(const Duration(seconds: 10));
+          .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
         final data = response.body;
@@ -352,6 +379,21 @@ class AppModeService {
     } catch (e) {
       //print('   ❌ Country detection failed: $e');
       return null;
+    }
+  }
+
+  /// Проверка наличия коллекции boy_offers для страны
+  Future<bool> _checkBoyOffersCollection(String countryCode) async {
+    try {
+      // Timeout уже установлен в getVisibleBoyOffers (30 секунд)
+      final offers = await _firebaseService.getVisibleBoyOffers(countryCode);
+
+      final hasOffers = offers.isNotEmpty;
+      //print('   ${hasOffers ? "✅" : "❌"} Boy offers collection: ${hasOffers ? "Found ${offers.length} offers" : "Empty or not found"}');
+      return hasOffers;
+    } catch (e) {
+      //print('   ❌ Boy offers collection check failed: $e');
+      return false;
     }
   }
 

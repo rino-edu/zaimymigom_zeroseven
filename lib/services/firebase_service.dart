@@ -122,7 +122,12 @@ class FirebaseService {
 
     try {
       //print('Fetching settings from Firestore...');
-      final doc = await _firestore.collection('settings').doc('general').get();
+      // Увеличено время ожидания для медленного интернета (2G)
+      final doc = await _firestore
+          .collection('settings')
+          .doc('general')
+          .get()
+          .timeout(const Duration(seconds: 30));
 
       if (!doc.exists) {
         //print('Settings document does not exist');
@@ -209,7 +214,11 @@ class FirebaseService {
       );*/
 
       // Загружаем все офферы без фильтрации и сортировки
-      final querySnapshot = await _firestore.collection(collectionName).get();
+      // Увеличено время ожидания для медленного интернета (2G)
+      final querySnapshot = await _firestore
+          .collection(collectionName)
+          .get()
+          .timeout(const Duration(seconds: 30));
 
       //print('Found ${querySnapshot.docs.length} total boy offers');
 
@@ -408,14 +417,15 @@ class FirebaseService {
     try {
       final startTime = DateTime.now();
 
+      // Увеличено время ожидания для медленного интернета (2G)
       final doc = await _firestore
           .collection('settings')
           .doc('general')
           .get()
           .timeout(
-            const Duration(seconds: 10),
+            const Duration(seconds: 30),
             onTimeout: () {
-              throw Exception('Connection timeout after 10 seconds');
+              throw Exception('Connection timeout after 30 seconds');
             },
           );
 

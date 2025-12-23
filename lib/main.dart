@@ -17,9 +17,7 @@ import 'services/calendar_provider.dart';
 import 'services/creditworthiness_provider.dart';
 import 'views/home/main_screen.dart';
 import 'views/onboarding/onboarding_screen.dart';
-import 'views/webview/webview_screen.dart';
-import 'models/offer.dart';
-import 'services/webview_link_service.dart';
+import 'views/splash/splash_screen.dart';
 import 'services/firebase_messaging_service.dart';
 import 'package:facebook_app_events/facebook_app_events.dart';
 
@@ -64,13 +62,12 @@ void main() async {
     }
   }
 
-  // Определение режима работы
-  final appModeService = AppModeService();
-  await appModeService.determineAppMode();
-
   // Загрузка настроек
   final settingsService = SettingsService();
   await settingsService.loadSettings();
+  
+  // Примечание: Определение режима работы теперь происходит в AppModeWrapper
+  // после показа SplashScreen, чтобы пользователь видел загрузку
 
   runApp(
     EasyLocalization(
@@ -127,20 +124,47 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class AppModeWrapper extends StatelessWidget {
+class AppModeWrapper extends StatefulWidget {
   const AppModeWrapper({super.key});
 
   @override
+  State<AppModeWrapper> createState() => _AppModeWrapperState();
+}
+
+class _AppModeWrapperState extends State<AppModeWrapper> {
+  bool _isLoading = true;
+  AppMode? _appMode;
+
+  @override
+  void initState() {
+    super.initState();
+    _determineAppMode();
+  }
+
+  Future<void> _determineAppMode() async {
+    // Определяем режим работы приложения
+    final appModeService = AppModeService();
+    await appModeService.determineAppMode();
+
+    if (mounted) {
+      setState(() {
+        _appMode = appModeService.currentMode;
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final appMode = AppModeService().currentMode;
     final settings = context.watch<SettingsService>();
-    // Если режим еще не определен (теоретически), показываем лоадер
-    if (appMode == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+
+    // Показываем SplashScreen до тех пор, пока не определится режим работы
+    if (_isLoading || _appMode == null) {
+      return const SplashScreen();
     }
 
     // В боевом режиме — сразу LoansScreen c боевыми офферами
-    if (appMode == AppMode.combat) {
+    if (_appMode == AppMode.combat) {
       return const LoansScreen();
     }
 
