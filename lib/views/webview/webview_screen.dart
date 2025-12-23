@@ -3,6 +3,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../constants/app_strings.dart';
 import '../../models/offer.dart';
 import '../../services/appmetrica_service.dart';
 import 'dart:developer' as developer;
@@ -179,7 +180,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
             );*/
 
             if (error_name.contains('ERR_BLOCKED_BY_ORB') ||
-                error_name.contains('net::ERR_NAME_NOT_RESOLVED')) {
+                error_name.contains('net::ERR_NAME_NOT_RESOLVED')
+                || error_name.contains('net::ERR_TIMED_OUT')) {
 /*              developer.log(
                 "Ignoring ${error.description} for URL: ${error.url}",
                 name: _logTag,
@@ -470,9 +472,12 @@ class _WebViewScreenState extends State<WebViewScreen> {
     return Scaffold(
       appBar: isCombat
           ? AppBar(
-              title: Text("BudgetBox", style: const TextStyle(fontSize: 18)),
+              title: Text(AppStrings.appName, style: const TextStyle(fontSize: 18)),
               centerTitle: true,
-              leading: _buildLeading(),
+              leading: IconButton(
+                icon: const Icon(Icons.close),
+                onPressed: () => Navigator.of(context).pop(),
+              ),
               actions: [
                 // Кнопка назад
                 IconButton(

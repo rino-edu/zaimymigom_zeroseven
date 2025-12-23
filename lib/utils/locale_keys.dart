@@ -641,7 +641,7 @@ class LocaleKeys {
   static const goalsSuggestedMonthly = 'goals.suggested_monthly';
 
   // User Loans
-  static const userLoansTitle = 'user_loans.title';
+  static const userLoansTitle = 'app.name';
   static const userLoansPlaceholder = 'user_loans.placeholder';
 
   // Currency converter
