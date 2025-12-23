@@ -73,7 +73,7 @@ void main() async {
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ru')],
       path: 'assets/locales',
-      fallbackLocale: const Locale('ru'),
+      fallbackLocale: const Locale('en'),
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider.value(value: settingsService),

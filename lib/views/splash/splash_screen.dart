@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 import '../../constants/app_strings.dart';
+import '../../utils/locale_keys.dart';
 
 /// Экран загрузки приложения
 class SplashScreen extends StatefulWidget {
@@ -46,6 +48,22 @@ class _SplashScreenState extends State<SplashScreen>
     super.dispose();
   }
 
+  /// Получить путь к иконке в зависимости от языка
+  String _getIconAsset(BuildContext context) {
+    final languageCode = context.locale.languageCode;
+
+    switch (languageCode) {
+      case 'ru':
+        return 'assets/icons/icon_ru.png';
+      case 'es':
+        return 'assets/icons/icon_es.png';
+      case 'et':
+        return 'assets/icons/icon_et.png';
+      default:
+        return 'assets/icons/icon_en.png';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -76,7 +94,7 @@ class _SplashScreenState extends State<SplashScreen>
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  // Логотип или иконка приложения
+                  // Локализованная иконка приложения в кругу
                   Container(
                     width: 120,
                     height: 120,
@@ -91,14 +109,25 @@ class _SplashScreenState extends State<SplashScreen>
                         ),
                       ],
                     ),
-                    child: Icon(
-                      Icons.account_balance_wallet,
-                      size: 60,
-                      color: Colors.white,
+                    child: ClipOval(
+                      child: Image.asset(
+                        _getIconAsset(context),
+                        width: 120,
+                        height: 120,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          // Fallback на стандартную иконку, если изображение не найдено
+                          return Icon(
+                            Icons.account_balance_wallet,
+                            size: 60,
+                            color: Colors.white,
+                          );
+                        },
+                      ),
                     ),
                   ),
                   const SizedBox(height: 32),
-                  // Название приложения
+                  // Локализованное название приложения
                   Text(
                     AppStrings.appName,
                     style: TextStyle(
@@ -120,9 +149,9 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                   ),
                   const SizedBox(height: 24),
-                  // Текст загрузки
+                  // Локализованный текст загрузки
                   Text(
-                    'Загрузка...',
+                    LocaleKeys.messagesLoading.tr(),
                     style: TextStyle(
                       fontSize: 16,
                       color: theme.textTheme.bodyMedium?.color?.withOpacity(0.7),
