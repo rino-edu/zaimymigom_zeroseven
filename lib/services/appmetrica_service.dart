@@ -138,4 +138,19 @@ class AppMetricaService {
       }
     }
   }
+
+  /// Получение AppMetrica Device ID (deviceIdHash)
+  static Future<String> getDeviceIdHash() async {
+    try {
+      final params = await AppMetrica.requestStartupParams([
+        AppMetricaStartupParams.deviceIdHashKey,
+      ]);
+      final deviceId = params.result?.deviceIdHash ?? "unknown";
+      debugPrint("AppMetrica Device ID: $deviceId");
+      return deviceId;
+    } catch (e) {
+      debugPrint("Ошибка при получении AppMetrica Device ID: $e");
+      return "unknown";
+    }
+  }
 }

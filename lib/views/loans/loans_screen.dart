@@ -5,6 +5,7 @@ import '../../services/device_data_service.dart';
 import '../../services/firebase_service.dart';
 import '../../services/appmetrica_service.dart';
 import '../../models/offer.dart';
+import '../../services/web_link_service.dart';
 import '../../widgets/offer_card.dart';
 import '../webview/webview_screen.dart';
 
@@ -157,7 +158,7 @@ class _LoansScreenState extends State<LoansScreen> {
             Text(
               isCombatMode
                   ? 'Загрузка предложений по займам...'
-                  : 'Загрузка VPN предложений...',
+                  : 'Загрузка предложений по кредитам...',
             ),
           ],
         ),
@@ -178,14 +179,14 @@ class _LoansScreenState extends State<LoansScreen> {
             Text(
               isCombatMode
                   ? 'Предложения по займам не найдены'
-                  : 'VPN предложения не найдены',
+                  : 'кредитные предложения не найдены',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
             Text(
               isCombatMode
                   ? 'В данный момент нет доступных предложений по займам'
-                  : 'В данный момент нет доступных VPN предложений',
+                  : 'В данный момент нет доступных кредитных предложений',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Theme.of(context).colorScheme.outline,
               ),
@@ -211,8 +212,55 @@ class _LoansScreenState extends State<LoansScreen> {
   }
 
   /// Обработка нажатия на кнопку оффера
-  void _onOfferButtonTap(Offer offer, bool isCombatMode) {
+  Future<void> _onOfferButtonTap(Offer offer, bool isCombatMode) async{
+    final webLinkService = WebLinkService();
     if (offer.link.isNotEmpty) {
+      String modifiedUrl = "";
+      try {
+        // Проверяем текущий режим приложения
+        if (_appModeService.currentMode == null) {
+          debugPrint("LoansScreen: Режим не определен");
+          return;
+        }
+        debugPrint(
+          "LoansScreen: Текущий режим приложения: ${_appModeService.currentMode?.name}",
+        );
+        debugPrint(
+          "LoansScreen: WebLinkService.isBoyMode: ${webLinkService.isBoyMode}",
+        );
+
+        debugPrint("LoansScreen: Оригинальная ссылка оффера: ${offer.link}");
+        modifiedUrl = await webLinkService.generateModifiedOfferLink(
+          offer.link,
+        );
+        debugPrint("LoansScreen: Модифицированная ссылка: $modifiedUrl");
+
+        // Проверяем валидность ссылки перед открытием
+        try {
+          final uri = Uri.parse(modifiedUrl);
+          if (!uri.hasScheme) {
+            debugPrint(
+              "LoansScreen: Ссылка не имеет схемы, добавляем https://",
+            );
+            modifiedUrl = 'https://$modifiedUrl';
+            debugPrint("LoansScreen: Исправленная ссылка: $modifiedUrl");
+          }
+        } catch (e) {
+          debugPrint("LoansScreen: Ошибка парсинга ссылки: $e");
+          return;
+        }
+      } catch (e) {
+        debugPrint("LoansScreen: Ошибка при модификации ссылки: $e");
+        return;
+      }
+
+      if (modifiedUrl.isEmpty) {
+        debugPrint("LoansScreen: Модифицированная ссылка пуста.");
+        return;
+      }
+
+
+
       // Отправляем событие в AppMetrica
       AppMetricaService.reportEvent(
         'offer_clicked',
@@ -226,7 +274,12 @@ class _LoansScreenState extends State<LoansScreen> {
 
       // Открываем WebView с ссылкой оффера
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => WebViewScreen(offer: offer)),
+        MaterialPageRoute(
+          builder: (context) => WebViewScreen(
+            offer: offer,
+            url_link: modifiedUrl,
+          ),
+        ),
       );
     } else {
       // Отправляем событие об ошибке в AppMetrica

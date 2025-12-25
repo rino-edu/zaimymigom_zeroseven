@@ -12,8 +12,9 @@ import '../../services/app_mode_service.dart';
 /// Экран WebView для отображения веб-страниц
 class WebViewScreen extends StatefulWidget {
   final Offer offer;
+  final String? url_link;
 
-  const WebViewScreen({super.key, required this.offer});
+  const WebViewScreen({super.key, required this.offer, this.url_link});
 
   @override
   State<WebViewScreen> createState() => _WebViewScreenState();
@@ -45,22 +46,22 @@ class _WebViewScreenState extends State<WebViewScreen> {
       parameters: {
         'offer_id': widget.offer.id.toString(),
         'offer_name': widget.offer.name,
-        'offer_link': widget.offer.link,
+        'offer_link': widget.url_link,
       },
     );
   }
 
   /// Инициализация WebView
   void _initializeWebView() {
-    //developer.log("Initializing WebView controller", name: _logTag);
+    developer.log("Initializing WebView controller", name: _logTag);
 
     late final PlatformWebViewControllerCreationParams params;
 
     if (WebViewPlatform.instance is AndroidWebViewPlatform) {
-      //developer.log("Using Android WebView creation params", name: _logTag);
+      developer.log("Using Android WebView creation params", name: _logTag);
       params = AndroidWebViewControllerCreationParams();
     } else {
-      //developer.log("Using default WebView creation params", name: _logTag);
+      developer.log("Using default WebView creation params", name: _logTag);
       params = const PlatformWebViewControllerCreationParams();
     }
 
@@ -76,11 +77,11 @@ class _WebViewScreenState extends State<WebViewScreen> {
             final String url = change.url ?? '';
             if (url.isEmpty || url == 'about:blank') return;
 
-            //developer.log("URL changed to: $url", name: _logTag);
+            developer.log("URL changed to: $url", name: _logTag);
             _currentUrl = url;
           },
           onPageStarted: (String url) {
-            //developer.log("Page started loading: $url", name: _logTag);
+            developer.log("Page started loading: $url", name: _logTag);
 
             setState(() {
               _isErrorState = false;
@@ -88,11 +89,11 @@ class _WebViewScreenState extends State<WebViewScreen> {
             });
           },
           onPageFinished: (String url) {
-            //developer.log("Page finished loading: $url", name: _logTag);
+            developer.log("Page finished loading: $url", name: _logTag);
 
             if (url == 'about:blank') return;
 
-            //developer.log("Page finished loading: $url", name: _logTag);
+            developer.log("Page finished loading: $url", name: _logTag);
             _currentUrl = url;
 
             // Инжектируем JavaScript для улучшения работы с файлами
@@ -163,7 +164,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
             }
           },
           onWebResourceError: (WebResourceError error) {
-            //developer.log("WebView error: ${error.description}", name: _logTag);
+            developer.log("WebView error: ${error.description}", name: _logTag);
 /*            developer.log(
               "WebView error code: ${error.errorCode}",
               name: _logTag,
@@ -205,13 +206,13 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
     // Настройка для Android WebView с поддержкой выбора файлов
     if (controller.platform is AndroidWebViewController) {
-      //developer.log("Configuring Android WebViewController", name: _logTag);
+      developer.log("Configuring Android WebViewController", name: _logTag);
       final androidController = controller.platform as AndroidWebViewController;
 
       androidController.setMediaPlaybackRequiresUserGesture(false);
 
       try {
-        //developer.log("Setting file selector handler", name: _logTag);
+        developer.log("Setting file selector handler", name: _logTag);
         androidController.setOnShowFileSelector(_handleFileSelector);
       } catch (e) {
 /*        developer.log(
@@ -228,27 +229,29 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   /// Загрузить начальный URL
   Future<void> _loadInitialUrl() async {
-    if (widget.offer.link.isNotEmpty) {
+    // Используем url_link если он передан, иначе используем offer.link
+    final urlToLoad = widget.url_link ?? widget.offer.link;
+    if (urlToLoad.isNotEmpty) {
       try {
-        final uri = Uri.parse(widget.offer.link);
+        final uri = Uri.parse(urlToLoad);
         if (uri.hasScheme) {
-          _initialUrl = widget.offer.link;
-/*          //developer.log(
-            "Loading initial URL: ${widget.offer.link}",
+          _initialUrl = urlToLoad;
+          developer.log(
+            "Loading initial URL: $urlToLoad",
             name: _logTag,
-          );*/
+          );
           await _controller.loadRequest(uri);
         } else {
-/*          //developer.log(
-            "Invalid URL scheme: ${widget.offer.link}",
+          developer.log(
+            "Invalid URL scheme: $urlToLoad",
             name: _logTag,
-          );*/
+          );
         }
       } catch (e) {
-/*        //developer.log(
-          "Error parsing URL: ${widget.offer.link}, error: $e",
+        developer.log(
+          "Error parsing URL: $urlToLoad, error: $e",
           name: _logTag,
-        );*/
+        );
       }
     }
   }
@@ -277,7 +280,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
                   try {
                     await _controller.loadRequest(Uri.parse(urlToLoad));
                   } catch (e) {
-                    //developer.log("Retry load failed: $e", name: _logTag);
+                    developer.log("Retry load failed: $e", name: _logTag);
                   }
                 } else {
                   _controller.reload();
@@ -292,7 +295,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   /// Обработка выбора файлов
   Future<List<String>> _handleFileSelector(FileSelectorParams params) async {
-/*    //developer.log(
+/*    developer.log(
       "File selector called with params: acceptTypes=${params.acceptTypes}, isCaptureEnabled=${params.isCaptureEnabled}",
       name: _logTag,
     );*/
@@ -303,28 +306,28 @@ class _WebViewScreenState extends State<WebViewScreen> {
           (type) => type.isEmpty || type == "*/*" || type.startsWith("image/"),
         );
 
-    //developer.log("acceptImage=$acceptImage", name: _logTag);
+    developer.log("acceptImage=$acceptImage", name: _logTag);
 
     if (!acceptImage) {
-      //developer.log("Not an image request, ignoring", name: _logTag);
+      developer.log("Not an image request, ignoring", name: _logTag);
       return [];
     }
 
     ImageSource? source;
 
     final bool captureEnabled = params.isCaptureEnabled;
-    //developer.log("captureEnabled=$captureEnabled", name: _logTag);
+    developer.log("captureEnabled=$captureEnabled", name: _logTag);
 
     if (captureEnabled) {
-      //developer.log("Direct camera capture requested", name: _logTag);
+      developer.log("Direct camera capture requested", name: _logTag);
       source = ImageSource.camera;
     } else {
       if (!mounted) {
-        //developer.log("Widget not mounted, cannot show dialog", name: _logTag);
+        developer.log("Widget not mounted, cannot show dialog", name: _logTag);
         return [];
       }
 
-      //developer.log("Showing source choice dialog", name: _logTag);
+      developer.log("Showing source choice dialog", name: _logTag);
       source = await showModalBottomSheet<ImageSource>(
         context: context,
         builder: (BuildContext context) {
@@ -348,33 +351,33 @@ class _WebViewScreenState extends State<WebViewScreen> {
         },
       );
 
-      //developer.log("User selected source: $source", name: _logTag);
+      developer.log("User selected source: $source", name: _logTag);
     }
 
     if (source != null) {
       try {
-        //developer.log("Attempting to pick image from $source", name: _logTag);
+        developer.log("Attempting to pick image from $source", name: _logTag);
         final XFile? photo = await _picker.pickImage(source: source);
 
         if (photo != null) {
           final String filePath = photo.path;
-          //developer.log("Image picked: $filePath", name: _logTag);
+          developer.log("Image picked: $filePath", name: _logTag);
 
           final String fileUri = Uri.file(filePath).toString();
-          //developer.log("Returning file URI: $fileUri", name: _logTag);
+          developer.log("Returning file URI: $fileUri", name: _logTag);
 
           return [fileUri];
         } else {
-          //developer.log("No image selected/captured", name: _logTag);
+          developer.log("No image selected/captured", name: _logTag);
         }
       } catch (e) {
-        //developer.log("Error picking image: $e", name: _logTag, error: e);
+        developer.log("Error picking image: $e", name: _logTag, error: e);
       }
     } else {
-      //developer.log("No source selected", name: _logTag);
+      developer.log("No source selected", name: _logTag);
     }
 
-    //developer.log("Returning empty result", name: _logTag);
+    developer.log("Returning empty result", name: _logTag);
     return [];
   }
 
@@ -433,7 +436,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
         onPressed: () async {
           try {
             final target = _firstRedirectUrl!;
-/*            //developer.log(
+/*            developer.log(
               "Leading pressed - loading first redirect: $target",
               name: _logTag,
             );*/
