@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -6,6 +7,7 @@ import 'package:zaimymigom_zeroseven/services/appsflyer_service.dart';
 import 'package:zaimymigom_zeroseven/services/config_service.dart';
 import 'package:zaimymigom_zeroseven/utils/theme.dart';
 import 'package:zaimymigom_zeroseven/views/loans/loans_screen.dart';
+import 'firebase_options.dart';
 import 'services/firebase_service.dart';
 import 'services/app_mode_service.dart';
 import 'services/appmetrica_service.dart';
@@ -24,6 +26,12 @@ import 'package:facebook_app_events/facebook_app_events.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+
+  // Инициализация Firebase Core ПЕРЕД runApp
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+    name: 'budgetbox',
+  );
 
   // Загрузка конфигурации
   await ConfigService.loadConfig();

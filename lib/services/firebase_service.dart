@@ -3,16 +3,18 @@ import 'package:firebase_core/firebase_core.dart';
 import '../firebase_options.dart';
 import '../models/firebase_settings.dart';
 import '../models/offer.dart';
+import 'firebase_crashlytics_service.dart';
 
 /// Сервис для работы с Firebase Firestore
 class FirebaseService {
   static final FirebaseService _instance = FirebaseService._internal();
   factory FirebaseService() => _instance;
   FirebaseService._internal();
-
+  final FirebaseCrashlyticsService _crashlyticsService =
+  FirebaseCrashlyticsService();
   late final FirebaseFirestore _firestore;
   bool _initialized = false;
-
+  FirebaseCrashlyticsService get crashlytics => _crashlyticsService;
   /// Инициализация Firebase
   Future<void> initialize() async {
     if (_initialized) {
@@ -27,10 +29,12 @@ class FirebaseService {
     try {
       // Шаг 1: Инициализация Firebase Core
       //print('📱 Step 1: Initializing Firebase Core...');
-      await Firebase.initializeApp(
+/*      await Firebase.initializeApp(
         options: DefaultFirebaseOptions.currentPlatform,
-      );
+      );*/
       //print('✅ Firebase Core initialized successfully');
+
+      await _crashlyticsService.init();
 
       // Шаг 2: Получение инстанса Firestore
       //print('🗄️  Step 2: Getting Firestore instance...');
@@ -59,6 +63,12 @@ class FirebaseService {
       //print('Error message: $e');
       //print('Stack trace: $stackTrace');
       //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+      // Попытка записать ошибку в Crashlytics, если он уже инициализирован
+      try {
+        await _crashlyticsService.recordError(e, stackTrace);
+      } catch (_) {
+        // Игнорируем ошибки при попытке записи в Crashlytics
+      }
       rethrow;
     }
   }
