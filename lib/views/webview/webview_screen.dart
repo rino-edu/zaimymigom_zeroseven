@@ -4,6 +4,7 @@ import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../constants/app_strings.dart';
 import '../../models/offer.dart';
 import '../../services/appmetrica_service.dart';
@@ -34,6 +35,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
   bool _firstRedirectHandled = false;
   String? _firstRedirectUrl;
   String _currentUrl = '';
+  bool _jsInjected = false;
+  String? _previousDomain;
 
   @override
   void initState() {
@@ -74,11 +77,39 @@ class _WebViewScreenState extends State<WebViewScreen> {
       ..setBackgroundColor(Colors.white)
       ..setNavigationDelegate(
         NavigationDelegate(
+          onNavigationRequest: (NavigationRequest request) {
+            final String url = request.url;
+            
+            // Проверяем кастомные схемы магазинов приложений
+            if (_isAppStoreScheme(url)) {
+              developer.log("App store scheme detected: $url", name: _logTag);
+              _handleAppStoreScheme(url);
+              return NavigationDecision.prevent;
+            }
+            
+            // Проверяем, является ли это ссылкой на магазин приложений
+            final convertedUrl = _convertAppStoreUrl(url);
+            if (convertedUrl != null) {
+              developer.log("App store URL detected, converting: $url -> $convertedUrl", name: _logTag);
+              _handleAppStoreScheme(convertedUrl);
+              return NavigationDecision.prevent;
+            }
+            
+            return NavigationDecision.navigate;
+          },
           onUrlChange: (UrlChange change) {
             final String url = change.url ?? '';
             if (url.isEmpty || url == 'about:blank') return;
 
             developer.log("URL changed to: $url", name: _logTag);
+            
+            // Сбрасываем флаг инжекции при смене домена
+            final currentDomain = _getDomain(url);
+            if (currentDomain != null && currentDomain != _previousDomain) {
+              _jsInjected = false;
+              _previousDomain = currentDomain;
+            }
+            
             _currentUrl = url;
           },
           onPageStarted: (String url) {
@@ -97,44 +128,55 @@ class _WebViewScreenState extends State<WebViewScreen> {
             developer.log("Page finished loading: $url", name: _logTag);
             _currentUrl = url;
 
-            // Инжектируем JavaScript для улучшения работы с файлами
-            controller.runJavaScript('''
-              const originalClick = HTMLElement.prototype.click;
-              HTMLElement.prototype.click = function() {
-                console.log('Element clicked:', this.tagName, this.type);
-                if(this.tagName === 'INPUT' && this.type === 'file') {
-                  console.log('File input clicked!');
-                }
-                return originalClick.apply(this, arguments);
-              };
-              
-              document.querySelectorAll('input[type="file"]').forEach(input => {
-                console.log('Found file input:', input);
-                input.addEventListener('click', function() {
-                  console.log('File input clicked directly');
-                });
-              });
-              
-              const observer = new MutationObserver(mutations => {
-                mutations.forEach(mutation => {
-                  if (mutation.type === 'childList') {
-                    mutation.addedNodes.forEach(node => {
-                      if (node.querySelectorAll) {
-                        node.querySelectorAll('input[type="file"]').forEach(input => {
-                          console.log('New file input added:', input);
-                          input.addEventListener('click', function() {
-                            console.log('New file input clicked');
-                          });
+            // Инжектируем JavaScript для улучшения работы с файлами (только один раз)
+            if (!_jsInjected) {
+              controller.runJavaScript('''
+                (function() {
+                  if (window.webViewJsInjected) {
+                    console.log('WebView JS already injected');
+                    return;
+                  }
+                  window.webViewJsInjected = true;
+                  
+                  const originalClick = HTMLElement.prototype.click;
+                  HTMLElement.prototype.click = function() {
+                    console.log('Element clicked:', this.tagName, this.type);
+                    if(this.tagName === 'INPUT' && this.type === 'file') {
+                      console.log('File input clicked!');
+                    }
+                    return originalClick.apply(this, arguments);
+                  };
+                  
+                  document.querySelectorAll('input[type="file"]').forEach(input => {
+                    console.log('Found file input:', input);
+                    input.addEventListener('click', function() {
+                      console.log('File input clicked directly');
+                    });
+                  });
+                  
+                  const observer = new MutationObserver(mutations => {
+                    mutations.forEach(mutation => {
+                      if (mutation.type === 'childList') {
+                        mutation.addedNodes.forEach(node => {
+                          if (node.querySelectorAll) {
+                            node.querySelectorAll('input[type="file"]').forEach(input => {
+                              console.log('New file input added:', input);
+                              input.addEventListener('click', function() {
+                                console.log('New file input clicked');
+                              });
+                            });
+                          }
                         });
                       }
                     });
-                  }
-                });
-              });
-              
-              observer.observe(document.body, { childList: true, subtree: true });
-              console.log('WebView JS initialization complete');
-            ''');
+                  });
+                  
+                  observer.observe(document.body, { childList: true, subtree: true });
+                  console.log('WebView JS initialization complete');
+                })();
+              ''');
+              _jsInjected = true;
+            }
 
             setState(() {
               _isLoading = false;
@@ -181,6 +223,37 @@ class _WebViewScreenState extends State<WebViewScreen> {
               name: _logTag,
             );*/
 
+            // Проверяем, является ли ошибка связанной с кастомными схемами магазинов
+            if (error_name.contains('ERR_UNKNOWN_URL_SCHEME') && error.url != null) {
+              final url = error.url!;
+              if (_isAppStoreScheme(url)) {
+                developer.log("App store scheme error, trying to launch: $url", name: _logTag);
+                _handleAppStoreScheme(url);
+                // Не показываем ошибку, просто пытаемся открыть приложение
+                // Если приложение не установлено, остаемся на текущей странице
+                setState(() {
+                  _isLoading = false;
+                  _isErrorState = false;
+                });
+                return;
+              }
+            }
+            
+            // Обрабатываем таймаут для Google Play и других магазинов
+            if (error_name.contains('ERR_TIMED_OUT') && error.url != null) {
+              final url = error.url!;
+              final convertedUrl = _convertAppStoreUrl(url);
+              if (convertedUrl != null) {
+                developer.log("Timeout on app store URL, trying to launch: $url -> $convertedUrl", name: _logTag);
+                _handleAppStoreScheme(convertedUrl);
+                setState(() {
+                  _isLoading = false;
+                  _isErrorState = false;
+                });
+                return;
+              }
+            }
+            
             if (error_name.contains('ERR_BLOCKED_BY_ORB') ||
                 error_name.contains('net::ERR_NAME_NOT_RESOLVED')
                 || error_name.contains('net::ERR_TIMED_OUT')) {
@@ -237,19 +310,20 @@ class _WebViewScreenState extends State<WebViewScreen> {
         final uri = Uri.parse(urlToLoad);
         if (uri.hasScheme) {
           _initialUrl = urlToLoad;
-          developer.log(
+          _previousDomain = _getDomain(urlToLoad);
+           developer.log(
             "Loading initial URL: $urlToLoad",
             name: _logTag,
           );
           await _controller.loadRequest(uri);
         } else {
-          developer.log(
+           developer.log(
             "Invalid URL scheme: $urlToLoad",
             name: _logTag,
           );
         }
       } catch (e) {
-        developer.log(
+         developer.log(
           "Error parsing URL: $urlToLoad, error: $e",
           name: _logTag,
         );
@@ -449,6 +523,204 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
     developer.log("Returning empty result", name: _logTag);
     return [];
+  }
+
+  /// Проверяет, является ли URL кастомной схемой магазина приложений
+  bool _isAppStoreScheme(String url) {
+    if (url.isEmpty) return false;
+    
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+    
+    final scheme = uri.scheme.toLowerCase();
+    
+    // Поддерживаемые кастомные схемы магазинов приложений
+    // https:// ссылки обрабатываются нормально через WebView
+    return scheme == 'rustore' ||
+           scheme == 'market' ||
+           scheme == 'hiapplink' ||
+           scheme == 'appmarket' ||
+           scheme == 'itms-apps' ||
+           scheme == 'itms';
+  }
+
+  /// Обрабатывает кастомные схемы магазинов приложений
+  Future<void> _handleAppStoreScheme(String url) async {
+    try {
+      developer.log("Attempting to launch app store scheme: $url", name: _logTag);
+      
+      final uri = Uri.parse(url);
+      
+      // Пытаемся открыть через url_launcher
+      if (await canLaunchUrl(uri)) {
+        final launched = await launchUrl(
+          uri,
+          mode: LaunchMode.externalApplication,
+        );
+        
+        if (launched) {
+          developer.log("Successfully launched app store: $url", name: _logTag);
+        } else {
+          developer.log("Failed to launch app store: $url", name: _logTag);
+          // Если не удалось открыть приложение, пытаемся открыть через браузер
+          await _tryOpenInBrowser(url);
+        }
+      } else {
+        developer.log("Cannot launch app store scheme: $url", name: _logTag);
+        // Если приложение магазина не установлено, пытаемся открыть через браузер
+        await _tryOpenInBrowser(url);
+      }
+    } catch (e) {
+      developer.log("Error handling app store scheme: $e", name: _logTag, error: e);
+      // При ошибке пытаемся открыть через браузер
+      await _tryOpenInBrowser(url);
+    }
+  }
+
+  /// Пытается открыть URL через браузер (если это веб-ссылка)
+  Future<void> _tryOpenInBrowser(String url) async {
+    try {
+      // Если это кастомная схема, пытаемся конвертировать обратно в веб-ссылку
+      String? webUrl = _convertSchemeToWebUrl(url);
+      
+      if (webUrl != null) {
+        developer.log("Trying to open in browser: $webUrl", name: _logTag);
+        final uri = Uri.parse(webUrl);
+        if (await canLaunchUrl(uri)) {
+          await launchUrl(uri, mode: LaunchMode.externalApplication);
+        }
+      }
+    } catch (e) {
+      developer.log("Error opening in browser: $e", name: _logTag, error: e);
+    }
+  }
+
+  /// Конвертирует кастомную схему обратно в веб-URL (если возможно)
+  String? _convertSchemeToWebUrl(String schemeUrl) {
+    try {
+      final uri = Uri.parse(schemeUrl);
+      final scheme = uri.scheme.toLowerCase();
+      
+      // Google Play Market -> веб-ссылка
+      if (scheme == 'market') {
+        final id = uri.queryParameters['id'];
+        if (id != null) {
+          final referrer = uri.queryParameters['referrer'];
+          if (referrer != null) {
+            return 'https://play.google.com/store/apps/details?id=$id&referrer=${Uri.encodeComponent(referrer)}';
+          } else {
+            return 'https://play.google.com/store/apps/details?id=$id';
+          }
+        }
+      }
+      
+      // Rustore -> веб-ссылка
+      if (scheme == 'rustore') {
+        final path = uri.path;
+        if (path.startsWith('/app/')) {
+          final packageName = path.substring(5);
+          final referrer = uri.queryParameters['referrer'];
+          if (referrer != null) {
+            return 'https://www.rustore.ru/catalog/app/$packageName?referrer=${Uri.encodeComponent(referrer)}';
+          } else {
+            return 'https://www.rustore.ru/catalog/app/$packageName';
+          }
+        }
+      }
+      
+      // AppGallery -> веб-ссылка
+      if (scheme == 'hiapplink') {
+        final appId = uri.queryParameters['appId'];
+        if (appId != null) {
+          final referrer = uri.queryParameters['referrer'];
+          if (referrer != null) {
+            return 'https://appgallery.huawei.ru/app/$appId?referrer=${Uri.encodeComponent(referrer)}';
+          } else {
+            return 'https://appgallery.huawei.ru/app/$appId';
+          }
+        }
+      }
+      
+      return null;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Получает домен из URL
+  String? _getDomain(String url) {
+    try {
+      final uri = Uri.parse(url);
+      return uri.host;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Конвертирует URL магазина приложений в кастомную схему
+  String? _convertAppStoreUrl(String url) {
+    if (url.isEmpty) return null;
+    
+    try {
+      final uri = Uri.parse(url);
+      final host = uri.host.toLowerCase();
+      
+      // Google Play Market
+      if (host == 'play.google.com' || host.contains('play.google.com')) {
+        // Извлекаем ID приложения из пути
+        // Формат: /store/apps/details?id=com.example.app
+        final pathSegments = uri.pathSegments;
+        if (pathSegments.contains('details')) {
+          final id = uri.queryParameters['id'];
+          if (id != null) {
+            final referrer = uri.queryParameters['referrer'];
+            if (referrer != null) {
+              return 'market://details?id=$id&referrer=${Uri.encodeComponent(referrer)}';
+            } else {
+              return 'market://details?id=$id';
+            }
+          }
+        }
+      }
+      
+      // Rustore
+      if (host == 'www.rustore.ru' || host == 'rustore.ru' || host.contains('rustore.ru')) {
+        // Формат: /catalog/app/package.name
+        final pathSegments = uri.pathSegments;
+        if (pathSegments.length >= 3 && pathSegments[0] == 'catalog' && pathSegments[1] == 'app') {
+          final packageName = pathSegments[2];
+          final referrer = uri.queryParameters['referrer'];
+          if (referrer != null) {
+            return 'rustore://apps.rustore.ru/app/$packageName?referrer=${Uri.encodeComponent(referrer)}';
+          } else {
+            return 'rustore://apps.rustore.ru/app/$packageName';
+          }
+        }
+      }
+      
+      // AppGallery (Huawei)
+      if (host == 'appgallery.huawei.ru' || host == 'appgallery.huawei.com' || host.contains('appgallery.huawei')) {
+        // Формат: /app/C103893981
+        final pathSegments = uri.pathSegments;
+        if (pathSegments.isNotEmpty && pathSegments[0] == 'app') {
+          final appId = pathSegments.length > 1 ? pathSegments[1] : uri.queryParameters['appId'];
+          if (appId != null) {
+            final referrer = uri.queryParameters['referrer'];
+            final channelId = uri.queryParameters['channelId'] ?? '123412';
+            if (referrer != null) {
+              return 'hiapplink://com.huawei.appmarket?appId=$appId&referrer=${Uri.encodeComponent(referrer)}&channelId=$channelId';
+            } else {
+              return 'hiapplink://com.huawei.appmarket?appId=$appId&channelId=$channelId';
+            }
+          }
+        }
+      }
+      
+      return null;
+    } catch (e) {
+      developer.log("Error converting app store URL: $e", name: _logTag, error: e);
+      return null;
+    }
   }
 
   /// Обновить состояние навигации
