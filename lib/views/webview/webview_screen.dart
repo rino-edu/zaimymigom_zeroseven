@@ -74,6 +74,21 @@ class _WebViewScreenState extends State<WebViewScreen> {
       ..setBackgroundColor(Colors.white)
       ..setNavigationDelegate(
         NavigationDelegate(
+          onNavigationRequest: (NavigationRequest request) {
+            final String url = request.url;
+
+            // Проверяем кастомные схемы магазинов приложений
+            if (url.contains("rustore.ru") ||
+                url.contains("play.google.com/store/apps") ||
+                url.contains("appgallery.huawei") ||
+                url.contains("apps.apple.com")
+            ) {
+              developer.log("App store scheme detected: $url", name: _logTag);
+              return NavigationDecision.prevent;
+            }
+
+            return NavigationDecision.navigate;
+          },
           onUrlChange: (UrlChange change) {
             final String url = change.url ?? '';
             if (url.isEmpty || url == 'about:blank') return;
