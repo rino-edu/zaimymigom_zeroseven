@@ -3,6 +3,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:file_picker/file_picker.dart';
 import '../../constants/app_strings.dart';
 import '../../models/offer.dart';
 import '../../services/appmetrica_service.dart';
@@ -295,40 +296,48 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   /// Обработка выбора файлов
   Future<List<String>> _handleFileSelector(FileSelectorParams params) async {
-/*    developer.log(
+    developer.log(
       "File selector called with params: acceptTypes=${params.acceptTypes}, isCaptureEnabled=${params.isCaptureEnabled}",
       name: _logTag,
-    );*/
+    );
 
-    final bool acceptImage =
-        params.acceptTypes.isEmpty ||
-        params.acceptTypes.any(
-          (type) => type.isEmpty || type == "*/*" || type.startsWith("image/"),
-        );
-
-    developer.log("acceptImage=$acceptImage", name: _logTag);
-
-    if (!acceptImage) {
-      developer.log("Not an image request, ignoring", name: _logTag);
+    if (!mounted) {
+      developer.log("Widget not mounted, cannot show file picker", name: _logTag);
       return [];
     }
 
-    ImageSource? source;
+    // Проверяем, является ли запрос только для изображений
+    final bool isImageOnly = params.acceptTypes.isNotEmpty &&
+        params.acceptTypes.every(
+          (type) => type.isEmpty || type == "*/*" || type.startsWith("image/"),
+        );
 
-    final bool captureEnabled = params.isCaptureEnabled;
-    developer.log("captureEnabled=$captureEnabled", name: _logTag);
+    // Проверяем, разрешены ли все типы файлов
+    final bool acceptAll = params.acceptTypes.isEmpty ||
+        params.acceptTypes.any((type) => type.isEmpty || type == "*/*");
 
-    if (captureEnabled) {
+    developer.log("isImageOnly=$isImageOnly, acceptAll=$acceptAll", name: _logTag);
+
+    // Если запрос только для изображений и включена камера - используем ImagePicker
+    if (isImageOnly && params.isCaptureEnabled) {
       developer.log("Direct camera capture requested", name: _logTag);
-      source = ImageSource.camera;
-    } else {
-      if (!mounted) {
-        developer.log("Widget not mounted, cannot show dialog", name: _logTag);
-        return [];
+      try {
+        final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+        if (photo != null) {
+          final String fileUri = Uri.file(photo.path).toString();
+          developer.log("Image captured: $fileUri", name: _logTag);
+          return [fileUri];
+        }
+      } catch (e) {
+        developer.log("Error capturing image: $e", name: _logTag, error: e);
       }
+      return [];
+    }
 
-      developer.log("Showing source choice dialog", name: _logTag);
-      source = await showModalBottomSheet<ImageSource>(
+    // Если запрос только для изображений - используем ImagePicker с выбором источника
+    if (isImageOnly) {
+      developer.log("Image file request, showing image picker", name: _logTag);
+      ImageSource? source = await showModalBottomSheet<ImageSource>(
         context: context,
         builder: (BuildContext context) {
           return SafeArea(
@@ -351,30 +360,91 @@ class _WebViewScreenState extends State<WebViewScreen> {
         },
       );
 
-      developer.log("User selected source: $source", name: _logTag);
+      if (source != null) {
+        try {
+          developer.log("Attempting to pick image from $source", name: _logTag);
+          final XFile? photo = await _picker.pickImage(source: source);
+          if (photo != null) {
+            final String fileUri = Uri.file(photo.path).toString();
+            developer.log("Image picked: $fileUri", name: _logTag);
+            return [fileUri];
+          }
+        } catch (e) {
+          developer.log("Error picking image: $e", name: _logTag, error: e);
+        }
+      }
+      return [];
     }
 
-    if (source != null) {
-      try {
-        developer.log("Attempting to pick image from $source", name: _logTag);
-        final XFile? photo = await _picker.pickImage(source: source);
+    // Для других типов файлов используем FilePicker
+    developer.log("Non-image file request, using FilePicker", name: _logTag);
+    try {
+      // Преобразуем acceptTypes в формат FilePicker
+      FileType fileType = FileType.any;
+      List<String>? allowedExtensions;
 
-        if (photo != null) {
-          final String filePath = photo.path;
-          developer.log("Image picked: $filePath", name: _logTag);
-
-          final String fileUri = Uri.file(filePath).toString();
-          developer.log("Returning file URI: $fileUri", name: _logTag);
-
-          return [fileUri];
-        } else {
-          developer.log("No image selected/captured", name: _logTag);
+      if (!acceptAll && params.acceptTypes.isNotEmpty) {
+        // Пытаемся определить тип файла из acceptTypes
+        final types = params.acceptTypes.where((type) => type.isNotEmpty && type != "*/*").toList();
+        
+        if (types.isNotEmpty) {
+          // Проверяем специфичные расширения
+          final extensions = <String>[];
+          for (final type in types) {
+            if (type.contains('/')) {
+              final parts = type.split('/');
+              if (parts.length == 2) {
+                final subtype = parts[1];
+                // Обрабатываем известные типы
+                if (subtype == 'pdf') {
+                  extensions.add('pdf');
+                } else if (subtype == 'msword' || subtype == 'vnd.openxmlformats-officedocument.wordprocessingml.document') {
+                  extensions.add('doc');
+                  extensions.add('docx');
+                } else if (subtype == 'vnd.ms-excel' || subtype == 'vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+                  extensions.add('xls');
+                  extensions.add('xlsx');
+                } else if (subtype == 'jpeg' || subtype == 'jpg') {
+                  extensions.add('jpg');
+                  extensions.add('jpeg');
+                } else if (subtype == 'png') {
+                  extensions.add('png');
+                } else if (subtype == 'gif') {
+                  extensions.add('gif');
+                } else if (subtype == 'plain' || subtype == 'text') {
+                  extensions.add('txt');
+                }
+              }
+            }
+          }
+          
+          if (extensions.isNotEmpty) {
+            allowedExtensions = extensions;
+            fileType = FileType.custom;
+          } else {
+            fileType = FileType.any;
+          }
         }
-      } catch (e) {
-        developer.log("Error picking image: $e", name: _logTag, error: e);
       }
-    } else {
-      developer.log("No source selected", name: _logTag);
+
+      developer.log("FilePicker params: fileType=$fileType, allowedExtensions=$allowedExtensions", name: _logTag);
+
+      FilePickerResult? result = await FilePicker.platform.pickFiles(
+        type: fileType,
+        allowedExtensions: allowedExtensions,
+        allowMultiple: false,
+      );
+
+      if (result != null && result.files.single.path != null) {
+        final String filePath = result.files.single.path!;
+        final String fileUri = Uri.file(filePath).toString();
+        developer.log("File picked: $fileUri", name: _logTag);
+        return [fileUri];
+      } else {
+        developer.log("No file selected", name: _logTag);
+      }
+    } catch (e) {
+      developer.log("Error picking file: $e", name: _logTag, error: e);
     }
 
     developer.log("Returning empty result", name: _logTag);
