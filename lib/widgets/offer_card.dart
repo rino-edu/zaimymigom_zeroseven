@@ -193,9 +193,8 @@ class _OfferCardState extends State<OfferCard> {
     );
   }
 
-  /// Раскрывающаяся область с полями
+  /// Статичная область с полями в две колонки
   Widget _buildExpandableFields(List<OfferField> fields) {
-    // Проверяем есть ли валидные поля (не пустые названия и значения)
     final validFields = fields
         .where(
           (field) =>
@@ -207,61 +206,53 @@ class _OfferCardState extends State<OfferCard> {
       return const SizedBox.shrink();
     }
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.grey[50], // Светлее основного цвета карточки
-        border: Border.all(color: Colors.grey[300]!),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
+    return Column(
+      children: validFields.asMap().entries.map((entry) {
+        final index = entry.key;
+        final field = entry.value;
+        return _buildFieldRow(field, isFirst: index == 0);
+      }).toList(),
+    );
+  }
+
+
+  /// Строка с полем: название слева (серое), значение справа (первое жирное)
+  Widget _buildFieldRow(OfferField field, {bool isFirst = false}) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+      child: Row(
         children: [
-          // Кнопка для раскрытия/сворачивания
-          InkWell(
-            onTap: () {
-              setState(() {
-                _isExpanded = !_isExpanded;
-              });
-            },
-            borderRadius: BorderRadius.circular(8),
+          // Левая колонка: название (серое, выровнено по левому краю)
+          Expanded(
             child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Row(
-                children: [
-                  // Всегда показываем первые 2 поля
-                  Expanded(
-                    child: _buildFieldsGrid(_getFirstValidFields(fields, 2)),
-                  ),
-                  // Анимированная стрелка
-                  AnimatedRotation(
-                    turns: _isExpanded ? 0.5 : 0,
-                    duration: const Duration(milliseconds: 300),
-                    child: Icon(
-                      size: 30,
-                      _isExpanded ? Icons.expand_circle_down : Icons.expand_circle_down_outlined,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
+              padding: const EdgeInsets.only(right: 16),
+              child: Text(
+                field.name.trim(),
+                style: TextStyle(
+                  color: Colors.grey[500],
+                  fontSize: 18,
+                ),
+                textAlign: TextAlign.left,
               ),
             ),
           ),
-
-          // Анимированное раскрытие дополнительных полей
-          AnimatedSize(
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-            child: _isExpanded
-                ? Container(
-              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-              child: _buildAdditionalFields(fields),
-            )
-                : const SizedBox.shrink(),
+          // Правая колонка: значение (первое жирное, выровнено по правому краю)
+          Expanded(
+            child: Text(
+              field.value.trim(),
+              style: TextStyle(
+                color: Colors.black87,
+                fontSize: 18,
+                fontWeight: isFirst ? FontWeight.w900 : FontWeight.normal,
+              ),
+              textAlign: TextAlign.right,
+            ),
           ),
         ],
       ),
     );
   }
+
 
   /// Получить первые N валидных полей
   List<OfferField> _getFirstValidFields(List<OfferField> fields, int count) {
@@ -367,26 +358,17 @@ class _OfferCardState extends State<OfferCard> {
   /// Кнопка действия
   Widget _buildActionButton() {
     return Padding(
-      padding: const EdgeInsets.only(top: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
       child: Container(
         width: double.infinity,
-        decoration: BoxDecoration(
-          borderRadius: const BorderRadius.only(
-            bottomLeft: Radius.circular(12),
-            bottomRight: Radius.circular(12),
-          ),
-        ),
         child: ElevatedButton(
           onPressed: () => _onButtonTap(),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green[600],
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(12),
-                bottomRight: Radius.circular(12),
-              ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
             ),
             elevation: 0, // Убираем тень чтобы кнопка была на уровне карточки
           ),

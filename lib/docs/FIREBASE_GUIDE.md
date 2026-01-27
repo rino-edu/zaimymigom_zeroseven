@@ -4,7 +4,7 @@
 
 В проекте реализована интеграция с Firebase Firestore для работы с тремя коллекциями:
 - `settings` - настройки приложения
-- `boy_offers_[код_региона]` - офферы для определенного региона
+- `boy_offers_new_[код_региона]` - офферы для определенного региона
 - `vpn_offers` - VPN офферы
 
 ## Структура
@@ -29,7 +29,7 @@
 
 #### 2. Offer (`lib/models/offer.dart`)
 
-Модель для работы с коллекциями `boy_offers_[код_региона]` и `vpn_offers`.
+Модель для работы с коллекциями `boy_offers_new_[код_региона]` и `vpn_offers`.
 
 **Основные поля:**
 - `id: int` - ID оффера (для сортировки)
@@ -142,7 +142,7 @@ await firebaseService.runFullDiagnostics(regionCode: 'RU');
 // Это выведет:
 // - Статус подключения
 // - Все настройки из settings
-// - Все офферы из boy_offers_RU (с полными полями)
+// - Все офферы из boy_offers_new_RU (с полными полями)
 // - Все VPN офферы из vpn_offers (с полными полями)
 ```
 
@@ -457,7 +457,7 @@ checkVPN: true
 location: RU
 ========================
 
-Fetching boy offers from collection: boy_offers_RU...
+Fetching boy offers from collection: boy_offers_new_RU...
 Found 5 boy offers
 === Offer ===
 id: 1
@@ -549,7 +549,7 @@ final usOffers = await firebaseService.getVisibleBoyOffers('US');
 final deOffers = await firebaseService.getVisibleBoyOffers('DE');
 
 // Имя коллекции формируется автоматически:
-// boy_offers_RU, boy_offers_US, boy_offers_DE
+// boy_offers_new_RU, boy_offers_new_US, boy_offers_new_DE
 ```
 
 ## Интеграция с другими сервисами

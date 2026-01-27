@@ -72,7 +72,7 @@ final isAllowed = allowedCountriesLower.contains(userCountry);
 
 ### 8. 💼 Проверка Коллекции boy_offers
 ```dart
-// Проверяет наличие коллекции boy_offers_[код_страны]
+// Проверяет наличие коллекции boy_offers_new_[код_страны]
 final hasBoyOffers = await _checkBoyOffersCollection(userCountry);
 ```
 **Результат**: Если коллекция не найдена → **небоевой режим**
@@ -286,7 +286,7 @@ if (currentMode == AppMode.combat) {
 - Приводит к нижнему регистру
 
 ### Проверка Коллекций
-- Проверяет наличие коллекции `boy_offers_[код_страны]`
+- Проверяет наличие коллекции `boy_offers_new_[код_страны]`
 - Использует метод `getBoyOffers()` из FirebaseService
 - Считает коллекцию существующей если есть видимые офферы
 

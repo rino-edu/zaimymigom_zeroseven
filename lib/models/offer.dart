@@ -1,5 +1,5 @@
 /// Модель оффера из Firebase Firestore
-/// Коллекции: boy_offers_[код региона] и vpn_offers
+/// Коллекции: boy_offers_new_[код региона] и vpn_offers
 class Offer {
   final int id;
   final bool isShow;

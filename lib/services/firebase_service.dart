@@ -183,13 +183,13 @@ class FirebaseService {
 
   // ========== BOY OFFERS ==========
 
-  /// Получение офферов для региона из коллекции boy_offers_[regionCode]
+  /// Получение офферов для региона из коллекции boy_offers_new_[regionCode]
   /// Сортировка по полю id по возрастанию
   Future<List<Offer>> getBoyOffers(String regionCode) async {
     _ensureInitialized();
 
     try {
-      final collectionName = 'boy_offers_$regionCode';
+      final collectionName = 'boy_offers_new_$regionCode';
       //print('Fetching boy offers from collection: $collectionName...');
 
       final querySnapshot = await _firestore
@@ -218,7 +218,7 @@ class FirebaseService {
     _ensureInitialized();
 
     try {
-      final collectionName = 'boy_offers_$regionCode';
+      final collectionName = 'boy_offers_new_$regionCode';
 /*      //print(
         'Fetching all boy offers from collection: $collectionName (will filter on client)...',
       );*/
@@ -256,7 +256,7 @@ class FirebaseService {
   Stream<List<Offer>> watchBoyOffers(String regionCode) {
     _ensureInitialized();
 
-    final collectionName = 'boy_offers_$regionCode';
+    final collectionName = 'boy_offers_new_$regionCode';
     //print('Watching boy offers from collection: $collectionName');
 
     return _firestore
@@ -281,7 +281,7 @@ class FirebaseService {
   Stream<List<Offer>> watchVisibleBoyOffers(String regionCode) {
     _ensureInitialized();
 
-    final collectionName = 'boy_offers_$regionCode';
+    final collectionName = 'boy_offers_new_$regionCode';
     //print('Watching visible boy offers from collection: $collectionName');
 
     return _firestore
