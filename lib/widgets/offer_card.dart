@@ -64,27 +64,35 @@ class _OfferCardState extends State<OfferCard> {
       child: Column(
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               // Логотип
               _buildLogo(),
               const SizedBox(width: 12),
-              Spacer(),
-              // Рейтинг
-              _buildRating(),
+              //Spacer(),
+              Text(
+                widget.offer.name,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w900,
+                  color: Colors.black,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ],
           ),
-          const SizedBox(height: 16),
-          // Название по центру под логотипом
-          Center(
-            child: Text(
-              widget.offer.name,
-              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[600],
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
+          // const SizedBox(height: 16),
+          // // Название по центру под логотипом
+          // Center(
+          //   child: Text(
+          //     widget.offer.name,
+          //     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
+          //       fontWeight: FontWeight.w600,
+          //       color: Colors.grey[600],
+          //     ),
+          //     textAlign: TextAlign.center,
+          //   ),
+          // ),
         ],
       ),
     );
@@ -92,9 +100,15 @@ class _OfferCardState extends State<OfferCard> {
 
   /// Логотип оффера
   Widget _buildLogo() {
-    return SizedBox(
-      width: 140, // Увеличиваем размер логотипа
-      height: 70,
+    return Container(
+      width: 60, // Увеличиваем размер логотипа
+      height: 60,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: Colors.black26,
+        )
+      ),
       child: _buildImage(),
     );
   }
@@ -103,37 +117,53 @@ class _OfferCardState extends State<OfferCard> {
   Widget _buildImage() {
     if (widget.offer.image.isEmpty) {
       // Заглушка если нет изображения
-      return Icon(Icons.business, color: Colors.grey[400], size: 80);
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          color: Colors.white,
+          child: Icon(Icons.business, color: Colors.grey[400], size: 80),
+        ),
+      );
     }
 
     if (widget.offer.isSvgImage) {
       // SVG изображение
-      return SvgPicture.network(
-        widget.offer.image,
-        fit: BoxFit.contain, // Изображение влезает полностью без обрезки
-        placeholderBuilder: (context) => Container(
-          color: Colors.grey[200],
-          child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: SvgPicture.network(
+          widget.offer.image,
+          fit: BoxFit.contain, // Изображение влезает полностью без обрезки
+          placeholderBuilder: (context) => Container(
+            color: Colors.white,
+            child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),
+          ),
+          errorBuilder: (context, error, stackTrace) => Container(
+            color: Colors.white,
+            child: Icon(Icons.error_outline, color: Colors.grey[400], size: 80),
+          ),
         ),
-        errorBuilder: (context, error, stackTrace) =>
-            Icon(Icons.error_outline, color: Colors.grey[400], size: 80),
       );
     } else {
       // PNG/JPG изображение
-      return Image.network(
-        widget.offer.image,
-        fit: BoxFit.contain, // Изображение влезает полностью без обрезки
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return Container(
-            color: Colors.grey[200],
-            child: const Center(
-              child: CircularProgressIndicator(strokeWidth: 2),
-            ),
-          );
-        },
-        errorBuilder: (context, error, stackTrace) =>
-            Icon(Icons.error_outline, color: Colors.grey[400], size: 80),
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Image.network(
+          widget.offer.image,
+          fit: BoxFit.contain, // Изображение влезает полностью без обрезки
+          loadingBuilder: (context, child, loadingProgress) {
+            if (loadingProgress == null) return child;
+            return Container(
+              color: Colors.white,
+              child: const Center(
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            );
+          },
+          errorBuilder: (context, error, stackTrace) => Container(
+            color: Colors.white,
+            child: Icon(Icons.error_outline, color: Colors.grey[400], size: 80),
+          ),
+        ),
       );
     }
   }
@@ -169,8 +199,8 @@ class _OfferCardState extends State<OfferCard> {
     final validFields = fields
         .where(
           (field) =>
-              field.name.trim().isNotEmpty && field.value.trim().isNotEmpty,
-        )
+      field.name.trim().isNotEmpty && field.value.trim().isNotEmpty,
+    )
         .toList();
 
     if (validFields.isEmpty) {
@@ -223,9 +253,9 @@ class _OfferCardState extends State<OfferCard> {
             curve: Curves.easeInOut,
             child: _isExpanded
                 ? Container(
-                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                    child: _buildAdditionalFields(fields),
-                  )
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+              child: _buildAdditionalFields(fields),
+            )
                 : const SizedBox.shrink(),
           ),
         ],
@@ -238,8 +268,8 @@ class _OfferCardState extends State<OfferCard> {
     final validFields = fields
         .where(
           (field) =>
-              field.name.trim().isNotEmpty && field.value.trim().isNotEmpty,
-        )
+      field.name.trim().isNotEmpty && field.value.trim().isNotEmpty,
+    )
         .toList();
 
     return validFields.take(count).toList();
@@ -250,8 +280,8 @@ class _OfferCardState extends State<OfferCard> {
     final validFields = fields
         .where(
           (field) =>
-              field.name.trim().isNotEmpty && field.value.trim().isNotEmpty,
-        )
+      field.name.trim().isNotEmpty && field.value.trim().isNotEmpty,
+    )
         .toList();
 
     // Возвращаем поля начиная с 3-го (индекс 2)
@@ -288,8 +318,8 @@ class _OfferCardState extends State<OfferCard> {
         final validFields = fields
             .where(
               (field) =>
-                  field.name.trim().isNotEmpty && field.value.trim().isNotEmpty,
-            )
+          field.name.trim().isNotEmpty && field.value.trim().isNotEmpty,
+        )
             .toList();
 
         return Wrap(
