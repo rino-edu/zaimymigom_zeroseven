@@ -8,6 +8,7 @@ import '../../models/offer.dart';
 import '../../services/web_link_service.dart';
 import '../../widgets/offer_card.dart';
 import '../webview/webview_screen.dart';
+import '../../services/server_data_service.dart';
 
 /// Экран "Займы"
 class LoansScreen extends StatefulWidget {
@@ -56,34 +57,70 @@ class _LoansScreenState extends State<LoansScreen> {
       final isCombatMode = _appModeService.currentMode == AppMode.combat;
       //print('LoansScreen: Loading offers, combat mode: $isCombatMode');
 
+      // Пытаемся сначала получить офферы с нашего сервера.
+      // Благодаря внутреннему кэшу ServerDataService, реальный GET-запрос
+      // будет выполнен только один раз (при первом вызове в AppModeService),
+      // а здесь мы, как правило, получим данные из кэша без повторного запроса.
+      ServerDataResponse? serverData;
+      try {
+        serverData = await ServerDataService().fetchAllData();
+      } catch (e) {
+        debugPrint('[LoansScreen] Ошибка загрузки данных с сервера: $e');
+      }
+
       if (isCombatMode) {
-        // Боевой режим - загружаем boy_offers
+        // Боевой режим - загружаем boy_offers (серваку отдаем приоритет).
         _userCountry = await _getUserCountry();
         //print('LoansScreen: User country: $_userCountry');
 
+        List<Offer> offers = [];
+
         if (_userCountry != null) {
-          final offers = await _firebaseService.getVisibleBoyOffers(
-            _userCountry!,
-          );
-          //print('LoansScreen: Loaded ${offers.length} boy offers');
-          setState(() {
-            _offers = offers; // Уже отфильтрованы и отсортированы в сервисе
-            _isLoading = false;
-          });
-        } else {
-          //print('LoansScreen: User country is null, setting empty offers');
-          setState(() {
-            _offers = [];
-            _isLoading = false;
-          });
+          final regionCode = _userCountry!.toLowerCase();
+
+          // 1. Пробуем взять офферы из serverData (boy_offers_<region>).
+          final serverOffers = serverData?.boyOffersByRegion[regionCode] ?? [];
+          if (serverOffers.isNotEmpty) {
+            offers = serverOffers;
+            debugPrint(
+              '[LoansScreen] Используем boy_offers из сервера для региона $regionCode: ${offers.length} офферов',
+            );
+          } else {
+            // 2. Фоллбек на Firestore.
+            final firestoreOffers = await _firebaseService.getVisibleBoyOffers(
+              _userCountry!,
+            );
+            offers = firestoreOffers;
+            debugPrint(
+              '[LoansScreen] Используем boy_offers из Firestore для региона $_userCountry: ${offers.length} офферов',
+            );
+          }
         }
-      } else {
-        // Небоевой режим - загружаем vpn_offers
-        //print('LoansScreen: Loading VPN offers');
-        final offers = await _firebaseService.getVisibleVpnOffers();
-        //print('LoansScreen: Loaded ${offers.length} VPN offers');
+
         setState(() {
-          _offers = offers; // Уже отфильтрованы и отсортированы в сервисе
+          _offers = offers;
+          _isLoading = false;
+        });
+      } else {
+        // Небоевой режим - сначала пробуем VPN офферы с сервера, затем Firestore.
+        List<Offer> offers = [];
+
+        final serverVpnOffers = serverData?.vpnOffers ?? [];
+        if (serverVpnOffers.isNotEmpty) {
+          offers = serverVpnOffers;
+          debugPrint(
+            '[LoansScreen] Используем vpn_offers из сервера: ${offers.length} офферов',
+          );
+        } else {
+          final firestoreOffers = await _firebaseService.getVisibleVpnOffers();
+          offers = firestoreOffers;
+          debugPrint(
+            '[LoansScreen] Используем vpn_offers из Firestore: ${offers.length} офферов',
+          );
+        }
+
+        setState(() {
+          _offers = offers;
           _isLoading = false;
         });
       }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
@@ -41,11 +43,19 @@ void main() async {
 
   // Инициализация Firebase
   final firebaseService = FirebaseService();
-  await firebaseService.initialize();
+  unawaited(firebaseService.initialize());
 
   // Инициализация Firebase Cloud Messaging
   try {
-    await FirebaseMessagingService().initialize();
+    unawaited(
+      FirebaseMessagingService()
+          .initialize()
+          .catchError((e) {
+        if (kDebugMode) {
+          //print('[MAIN] Firebase Messaging initialization error: $e');
+        }
+      }),
+    );
   } catch (e) {
     // Игнорируем ошибки инициализации FCM, чтобы приложение могло запуститься
     if (kDebugMode) {
@@ -54,8 +64,10 @@ void main() async {
   }
 
   try {
-    final facebookAppEvents = FacebookAppEvents();
-    facebookAppEvents.setAutoLogAppEventsEnabled(true);
+    unawaited(Future<void>(() async {
+      final facebookAppEvents = FacebookAppEvents();
+      facebookAppEvents.setAutoLogAppEventsEnabled(true);
+    }));
   } catch (e) {
     debugPrint('[PostFrame] Facebook events init error: $e');
   }
@@ -64,7 +76,11 @@ void main() async {
   final afDevKey = ConfigService.getKey('af_dev_key');
   if (afDevKey != null) {
     try {
-      await AppsFlyerService.initialize(afDevKey);
+      unawaited(
+        AppsFlyerService.initialize(afDevKey).catchError((e) {
+          debugPrint('[PostFrame] AppsFlyer init error: $e');
+        }),
+      );
     } catch (e) {
       debugPrint('[PostFrame] AppsFlyer init error: $e');
     }

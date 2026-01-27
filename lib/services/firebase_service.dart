@@ -1,6 +1,6 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
-import '../firebase_options.dart';
 import '../models/firebase_settings.dart';
 import '../models/offer.dart';
 import 'firebase_crashlytics_service.dart';
@@ -12,107 +12,56 @@ class FirebaseService {
   FirebaseService._internal();
   final FirebaseCrashlyticsService _crashlyticsService =
   FirebaseCrashlyticsService();
+  Completer<void>? _initializationCompleter;
   late final FirebaseFirestore _firestore;
-  bool _initialized = false;
+  bool _initialized = false; // базовая инициализация (Crashlytics)
+  bool _firestoreInitialized = false; // ленивая инициализация Firestore
   FirebaseCrashlyticsService get crashlytics => _crashlyticsService;
   /// Инициализация Firebase
-  Future<void> initialize() async {
+  Future<void> initialize() {
+    // Если инициализация уже успешно завершена — возвращаем завершённый Future
     if (_initialized) {
-      //print('⚠️  Firebase already initialized');
-      return;
+      return Future.value();
     }
 
+    // Если инициализация уже запущена — просто ждём тот же Completer
+    if (_initializationCompleter != null) {
+      return _initializationCompleter!.future;
+    }
+
+    // Первый запуск инициализации
+    _initializationCompleter = Completer<void>();
+
     //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    //print('🚀 Starting Firebase initialization...');
+    //print('🚀 Starting FirebaseService base initialization (Crashlytics only)...');
     //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
-    try {
-      // Шаг 1: Инициализация Firebase Core
-      //print('📱 Step 1: Initializing Firebase Core...');
-/*      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );*/
-      //print('✅ Firebase Core initialized successfully');
-
-      await _crashlyticsService.init();
-
-      // Шаг 2: Получение инстанса Firestore
-      //print('🗄️  Step 2: Getting Firestore instance...');
-      _firestore = FirebaseFirestore.instance;
-      _initialized = true;
-      //print('✅ Firestore instance obtained');
-
-      // Шаг 3: Проверка реального подключения к Firestore
-      //print('🔌 Step 3: Testing Firestore connection...');
-      final connectionSuccessful = await _testFirestoreConnection();
-
-      if (connectionSuccessful) {
-        //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        //print('✅ Firebase Firestore connection SUCCESSFUL');
-        //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      } else {
-        //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        //print('⚠️  Firebase initialized but Firestore connection FAILED');
-        //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      }
-    } catch (e, stackTrace) {
-      //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      //print('❌ Firebase initialization FAILED');
-      //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      //print('Error type: ${e.runtimeType}');
-      //print('Error message: $e');
-      //print('Stack trace: $stackTrace');
-      //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      // Попытка записать ошибку в Crashlytics, если он уже инициализирован
+    () async {
       try {
-        await _crashlyticsService.recordError(e, stackTrace);
-      } catch (_) {
-        // Игнорируем ошибки при попытке записи в Crashlytics
+        // Лёгкая инициализация Crashlytics
+        await _crashlyticsService.init();
+        _initialized = true;
+        //print('✅ FirebaseService base initialization completed (Crashlytics ready)');
+        _initializationCompleter?.complete();
+      } catch (e, stackTrace) {
+        //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        //print('❌ Firebase initialization FAILED');
+        //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        //print('Error type: ${e.runtimeType}');
+        //print('Error message: $e');
+        //print('Stack trace: $stackTrace');
+        //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+        // Попытка записать ошибку в Crashlytics, если он уже инициализирован
+        try {
+          await _crashlyticsService.recordError(e, stackTrace);
+        } catch (_) {
+          // Игнорируем ошибки при попытке записи в Crashlytics
+        }
+        _initializationCompleter?.completeError(e, stackTrace);
       }
-      rethrow;
-    }
-  }
+    }();
 
-  /// Тестирование реального подключения к Firestore
-  Future<bool> _testFirestoreConnection() async {
-    try {
-      // Пытаемся получить доступ к коллекции settings
-      final doc = await _firestore
-          .collection('settings')
-          .doc('general')
-          .get()
-          .timeout(
-            const Duration(seconds: 10),
-            onTimeout: () {
-              throw Exception('Connection timeout after 10 seconds');
-            },
-          );
-
-      //print('   ✓ Successfully connected to Firestore');
-      //print('   ✓ Settings document ${doc.exists ? "EXISTS" : "NOT FOUND"}');
-
-      // Если документ существует, выводим его содержимое
-      if (doc.exists && doc.data() != null) {
-        final data = doc.data()!;
-        //print('   ✓ Document has ${data.length} fields');
-        //print('   📄 Document content:');
-        data.forEach((key, value) {
-          //print('      • $key: $value');
-        });
-
-        // Создаем объект настроек и выводим через logData()
-        final settings = FirebaseSettings.fromFirestore(data);
-        //print('   📋 Parsed settings:');
-        settings.logData();
-      } else {
-        //print('   ⚠️  Settings document is empty or does not exist');
-      }
-
-      return true;
-    } catch (e) {
-      //print('   ✗ Firestore connection test failed: $e');
-      return false;
-    }
+    return _initializationCompleter!.future;
   }
 
   /// Проверка инициализации
@@ -124,11 +73,48 @@ class FirebaseService {
     }
   }
 
+  /// Ленивая инициализация Firestore с учётом Completer и возможных ошибок.
+  ///
+  /// - Если базовая инициализация ещё идёт, ждём её завершения
+  /// - Если она завершилась с ошибкой, пробуем инициализировать повторно
+  /// - После успешной базовой инициализации получаем `FirebaseFirestore.instance`
+  Future<void> _ensureFirestoreInitialized() async {
+    // Если Firestore уже инициализирован, выходим
+    if (_firestoreInitialized) {
+      return;
+    }
+
+    // Если инициализация уже запущена — ждём её
+    if (_initializationCompleter != null) {
+      try {
+        await _initializationCompleter!.future;
+      } catch (_) {
+        // Предыдущая попытка инициализации завершилась с ошибкой — сбрасываем Completer
+        _initializationCompleter = null;
+      }
+    }
+
+    // Если после ожидания базовая инициализация всё ещё не прошла — пробуем ещё раз
+    if (!_initialized) {
+      await initialize();
+    }
+
+    // На этом этапе базовая инициализация должна быть завершена (или упасть исключением)
+    if (_firestoreInitialized) {
+      return;
+    }
+
+    //print('🗄️  Lazy Firestore initialization started...');
+    _firestore = FirebaseFirestore.instance;
+    _firestoreInitialized = true;
+    //print('✅ Firestore instance lazily initialized');
+  }
+
   // ========== SETTINGS ==========
 
   /// Получение настроек из коллекции settings, документ general
   Future<FirebaseSettings?> getSettings() async {
-    _ensureInitialized();
+    await _ensureFirestoreInitialized();
 
     try {
       //print('Fetching settings from Firestore...');
@@ -162,10 +148,10 @@ class FirebaseService {
   }
 
   /// Слушать изменения настроек в реальном времени
-  Stream<FirebaseSettings?> watchSettings() {
-    _ensureInitialized();
+  Stream<FirebaseSettings?> watchSettings() async* {
+    await _ensureFirestoreInitialized();
 
-    return _firestore.collection('settings').doc('general').snapshots().map((
+    yield* _firestore.collection('settings').doc('general').snapshots().map((
       snapshot,
     ) {
       if (!snapshot.exists || snapshot.data() == null) {
@@ -186,7 +172,7 @@ class FirebaseService {
   /// Получение офферов для региона из коллекции boy_offers_new_[regionCode]
   /// Сортировка по полю id по возрастанию
   Future<List<Offer>> getBoyOffers(String regionCode) async {
-    _ensureInitialized();
+    await _ensureFirestoreInitialized();
 
     try {
       final collectionName = 'boy_offers_new_$regionCode';
@@ -215,7 +201,7 @@ class FirebaseService {
 
   /// Получение только видимых офферов для региона (is_show = true)
   Future<List<Offer>> getVisibleBoyOffers(String regionCode) async {
-    _ensureInitialized();
+    await _ensureFirestoreInitialized();
 
     try {
       final collectionName = 'boy_offers_new_$regionCode';
@@ -253,13 +239,13 @@ class FirebaseService {
   }
 
   /// Слушать изменения офферов для региона в реальном времени
-  Stream<List<Offer>> watchBoyOffers(String regionCode) {
-    _ensureInitialized();
+  Stream<List<Offer>> watchBoyOffers(String regionCode) async* {
+    await _ensureFirestoreInitialized();
 
     final collectionName = 'boy_offers_new_$regionCode';
     //print('Watching boy offers from collection: $collectionName');
 
-    return _firestore
+    yield* _firestore
         .collection(collectionName)
         .orderBy('id', descending: false)
         .snapshots()
@@ -278,13 +264,13 @@ class FirebaseService {
   }
 
   /// Слушать изменения только видимых офферов для региона
-  Stream<List<Offer>> watchVisibleBoyOffers(String regionCode) {
-    _ensureInitialized();
+  Stream<List<Offer>> watchVisibleBoyOffers(String regionCode) async* {
+    await _ensureFirestoreInitialized();
 
     final collectionName = 'boy_offers_new_$regionCode';
     //print('Watching visible boy offers from collection: $collectionName');
 
-    return _firestore
+    yield* _firestore
         .collection(collectionName)
         .where('is_show', isEqualTo: true)
         .orderBy('id', descending: false)
@@ -308,7 +294,7 @@ class FirebaseService {
   /// Получение VPN офферов из коллекции vpn_offers
   /// Сортировка по полю id по возрастанию
   Future<List<Offer>> getVpnOffers() async {
-    _ensureInitialized();
+    await _ensureFirestoreInitialized();
 
     try {
       //print('Fetching VPN offers...');
@@ -336,7 +322,7 @@ class FirebaseService {
 
   /// Получение только видимых VPN офферов (is_show = true)
   Future<List<Offer>> getVisibleVpnOffers() async {
-    _ensureInitialized();
+    await _ensureFirestoreInitialized();
 
     try {
       //print('Fetching all VPN offers (will filter on client)...');
@@ -367,12 +353,12 @@ class FirebaseService {
   }
 
   /// Слушать изменения VPN офферов в реальном времени
-  Stream<List<Offer>> watchVpnOffers() {
-    _ensureInitialized();
+  Stream<List<Offer>> watchVpnOffers() async* {
+    await _ensureFirestoreInitialized();
 
     //print('Watching VPN offers');
 
-    return _firestore
+    yield* _firestore
         .collection('vpn_offers')
         .orderBy('id', descending: false)
         .snapshots()
@@ -391,12 +377,12 @@ class FirebaseService {
   }
 
   /// Слушать изменения только видимых VPN офферов
-  Stream<List<Offer>> watchVisibleVpnOffers() {
-    _ensureInitialized();
+  Stream<List<Offer>> watchVisibleVpnOffers() async* {
+    await _ensureFirestoreInitialized();
 
     //print('Watching visible VPN offers');
 
-    return _firestore
+    yield* _firestore
         .collection('vpn_offers')
         .where('is_show', isEqualTo: true)
         .orderBy('id', descending: false)
@@ -419,7 +405,7 @@ class FirebaseService {
 
   /// Проверка доступности Firestore
   Future<bool> checkConnection() async {
-    _ensureInitialized();
+    await _ensureFirestoreInitialized();
 
     //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     //print('🔌 Checking Firestore connection...');
@@ -440,10 +426,10 @@ class FirebaseService {
           );
 
       final endTime = DateTime.now();
-      final duration = endTime.difference(startTime).inMilliseconds;
+      final _ = endTime.difference(startTime).inMilliseconds;
 
       //print('✅ Firestore connection SUCCESSFUL');
-      //print('   ✓ Response time: ${duration}ms');
+      //print('   ✓ Response time: ${_}ms');
       //print('   ✓ Settings document ${doc.exists ? "EXISTS" : "NOT FOUND"}');
       if (doc.exists && doc.data() != null) {
         //print('   ✓ Document has ${doc.data()!.length} fields');
@@ -461,7 +447,7 @@ class FirebaseService {
 
   /// Получение всех доступных коллекций boy_offers
   Future<List<String>> getBoyOffersCollections() async {
-    _ensureInitialized();
+    await _ensureFirestoreInitialized();
 
     try {
       //print('Fetching all boy offers collections...');
@@ -492,6 +478,7 @@ class FirebaseService {
     }
 
     try {
+      await _ensureFirestoreInitialized();
       final startTime = DateTime.now();
 
       final doc = await _firestore
