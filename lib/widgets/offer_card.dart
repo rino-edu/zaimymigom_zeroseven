@@ -46,13 +46,46 @@ class _OfferCardState extends State<OfferCard> {
         children: [
           // Заголовок карточки с логотипом, названием и рейтингом
           _buildCardHeader(),
-
+          _buildField8Badge(),
           // Раскрывающаяся область с полями
           _buildExpandableFields(fields),
 
           // Кнопка действия (во всю ширину карточки)
           _buildActionButton(),
         ],
+      ),
+    );
+  }
+
+  /// Контейнер с field8Name
+  Widget _buildField8Badge() {
+    // Если field8Name пустой, не показываем контейнер
+    if (widget.offer.field1Name == null || widget.offer.field1Name!.isEmpty) {
+      debugPrint("пустой field1Name");
+      return const SizedBox.shrink();
+    }
+
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          begin: Alignment.bottomLeft,
+          end: Alignment.topRight,
+          colors: [
+            Color(0xFFEFEFEF), // #3DB592
+            Color(0xFFDDDDDD), // #3AB08E
+          ],
+        ),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        widget.offer.field1Name!,
+        style: const TextStyle(
+          fontSize: 14,
+          color: Colors.black,
+          fontWeight: FontWeight.w800, // Полужирный
+        ),
       ),
     );
   }
@@ -364,7 +397,7 @@ class _OfferCardState extends State<OfferCard> {
         child: ElevatedButton(
           onPressed: () => _onButtonTap(),
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.green[600],
+            backgroundColor: Color(0xff7DB265),
             foregroundColor: Colors.white,
             padding: const EdgeInsets.symmetric(vertical: 14),
             shape: RoundedRectangleBorder(
