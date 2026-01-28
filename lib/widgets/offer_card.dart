@@ -69,14 +69,7 @@ class _OfferCardState extends State<OfferCard> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       decoration: BoxDecoration(
-        gradient: const LinearGradient(
-          begin: Alignment.bottomLeft,
-          end: Alignment.topRight,
-          colors: [
-            Color(0xFFEFEFEF), // #3DB592
-            Color(0xFFDDDDDD), // #3AB08E
-          ],
-        ),
+        color: Color(0xffE5F0E0),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Text(
@@ -95,6 +88,7 @@ class _OfferCardState extends State<OfferCard> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -102,30 +96,29 @@ class _OfferCardState extends State<OfferCard> {
               // Логотип
               _buildLogo(),
               const SizedBox(width: 12),
-              //Spacer(),
-              Text(
-                widget.offer.name,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                  color: Colors.black,
+              // Название оффера
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.offer.name,
+                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
+                          ),
+                      textAlign: TextAlign.left,
+                    ),
+                    const SizedBox(height: 4),
+                    // Рейтинг прямо под названием
+                    _buildRating(),
+                  ],
                 ),
-                textAlign: TextAlign.center,
               ),
             ],
           ),
-          // const SizedBox(height: 16),
-          // // Название по центру под логотипом
-          // Center(
-          //   child: Text(
-          //     widget.offer.name,
-          //     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-          //       fontWeight: FontWeight.w600,
-          //       color: Colors.grey[600],
-          //     ),
-          //     textAlign: TextAlign.center,
-          //   ),
-          // ),
         ],
       ),
     );
@@ -139,7 +132,7 @@ class _OfferCardState extends State<OfferCard> {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: Colors.black26,
+          color: Color(0xffebebeb),
         )
       ),
       child: _buildImage(),
@@ -204,22 +197,25 @@ class _OfferCardState extends State<OfferCard> {
   /// Рейтинг оффера
   Widget _buildRating() {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Stack(
-          alignment: AlignmentDirectional.center,
-          children: [
-            Icon(Icons.star, color: Colors.black54, size: 28),
-            Icon(Icons.star, color: Colors.yellow, size: 22),
-          ],
+        SvgPicture.asset(
+          'assets/icons/star.svg',
+          width: 18,
+          height: 18,
         ),
         const SizedBox(width: 6),
-        Text(
-          widget.offer.stars,
-          style: TextStyle(
-            fontWeight: FontWeight.w900, // Жирнее
-            color: Colors.grey[600],
-            fontSize: 18, // Больше
+        Padding(
+          padding: const EdgeInsets.only(top: 2.0),
+          child: Text(
+            widget.offer.stars,
+            style: TextStyle(
+              fontWeight: FontWeight.w700, // Жирнее
+              color: Colors.black,
+              fontSize: 18,
+              height: 1// Больше
+            ),
           ),
         ),
       ],
@@ -243,14 +239,25 @@ class _OfferCardState extends State<OfferCard> {
       children: validFields.asMap().entries.map((entry) {
         final index = entry.key;
         final field = entry.value;
-        return _buildFieldRow(field, isFirst: index == 0);
+        final isThirdField4Value = widget.offer.field4Value != null &&
+            field.value.trim() == widget.offer.field4Value!.trim();
+
+        return _buildFieldRow(
+          field,
+          isFirst: index == 0,
+          isHighlightedThird: isThirdField4Value,
+        );
       }).toList(),
     );
   }
 
 
   /// Строка с полем: название слева (серое), значение справа (первое жирное)
-  Widget _buildFieldRow(OfferField field, {bool isFirst = false}) {
+  Widget _buildFieldRow(
+    OfferField field, {
+    bool isFirst = false,
+    bool isHighlightedThird = false,
+  }) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
       child: Row(
@@ -274,9 +281,11 @@ class _OfferCardState extends State<OfferCard> {
             child: Text(
               field.value.trim(),
               style: TextStyle(
-                color: Colors.black87,
+                color: isHighlightedThird
+                    ? const Color(0xFF7CB264)
+                    : Colors.black87,
                 fontSize: 18,
-                fontWeight: isFirst ? FontWeight.w900 : FontWeight.normal,
+                fontWeight: isFirst ? FontWeight.w900 : isHighlightedThird ? FontWeight.w900 : FontWeight.normal,
               ),
               textAlign: TextAlign.right,
             ),

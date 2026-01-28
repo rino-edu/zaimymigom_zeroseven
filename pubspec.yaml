@@ -106,4 +106,5 @@ flutter:
     - assets/icons/icon_en.png
     - assets/icons/icon_es.png
     - assets/icons/icon_et.png
+    - assets/icons/star.svg
     - assets/policy.txt
