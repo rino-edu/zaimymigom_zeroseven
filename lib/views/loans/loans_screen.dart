@@ -1,23 +1,22 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
-import '../../constants/app_strings.dart';
+import '../../models/firebase_settings.dart';
+import '../../models/offer.dart';
 import '../../services/app_mode_service.dart';
 import '../../services/device_data_service.dart';
 import '../../services/firebase_service.dart';
 import '../../services/appmetrica_service.dart';
-import '../../models/offer.dart';
 import '../../services/web_link_service.dart';
+import '../../services/server_data_service.dart';
+import '../../utils/locale_keys.dart';
 import '../../widgets/offer_card.dart';
 import '../webview/webview_screen.dart';
-import '../../services/server_data_service.dart';
 
 /// Экран "Займы"
 class LoansScreen extends StatefulWidget {
   final bool withScaffold;
-  
-  const LoansScreen({
-    super.key,
-    this.withScaffold = true,
-  });
+
+  const LoansScreen({super.key, this.withScaffold = true});
 
   @override
   State<LoansScreen> createState() => _LoansScreenState();
@@ -29,6 +28,7 @@ class _LoansScreenState extends State<LoansScreen> {
   List<Offer> _offers = [];
   bool _isLoading = true;
   String? _userCountry;
+  FirebaseSettings? _appSettings;
 
   @override
   void initState() {
@@ -97,8 +97,11 @@ class _LoansScreenState extends State<LoansScreen> {
           }
         }
 
+        final appSettings =
+            serverData?.settings ?? await _firebaseService.getSettings();
         setState(() {
           _offers = offers;
+          _appSettings = appSettings;
           _isLoading = false;
         });
       } else {
@@ -119,8 +122,11 @@ class _LoansScreenState extends State<LoansScreen> {
           );
         }
 
+        final appSettings =
+            serverData?.settings ?? await _firebaseService.getSettings();
         setState(() {
           _offers = offers;
+          _appSettings = appSettings;
           _isLoading = false;
         });
       }
@@ -131,6 +137,126 @@ class _LoansScreenState extends State<LoansScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  Widget _buildBanner(Color bannerColor) {
+    final lang = context.locale.languageCode;
+    final String rawBannerText =
+        (_appSettings?.getShowcaseTitleForLocale(lang).isNotEmpty == true)
+        ? _appSettings!.getShowcaseTitleForLocale(lang)
+        : LocaleKeys.appName.tr();
+    // Обрабатываем '\n' как перенос строки, если с сервера пришла последовательность '\' + 'n'
+    final String bannerText = rawBannerText.replaceAll(r'\n', '\n');
+
+    final List<String> lines = bannerText.split('\n');
+    final String firstLine = lines.isNotEmpty ? lines.first : '';
+    final String? restText = (lines.length > 1)
+        ? lines.sublist(1).join('\n')
+        : null;
+
+    return Container(
+      width: double.infinity,
+      color: bannerColor,
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      child: RichText(
+        textAlign: TextAlign.left,
+        text: TextSpan(
+          style: const TextStyle(color: Colors.white, height: 1.4),
+          children: <TextSpan>[
+            TextSpan(
+              text: firstLine,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w700),
+            ),
+            if (restText != null && restText.isNotEmpty)
+              TextSpan(
+                text: '\n$restText',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUsefulAdviceCard() {
+    return Container(
+      margin: const EdgeInsets.only(top: 8, bottom: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            LocaleKeys.loansUsefulAdviceTitle.tr(),
+            textAlign: TextAlign.left,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF7DB265),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            LocaleKeys.loansUsefulAdviceSubtitle.tr(),
+            textAlign: TextAlign.left,
+            style: const TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w900,
+              color: Colors.black,
+              height: 1.2,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: LocaleKeys.loansUsefulAdviceBodyPrefix.tr(),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                    height: 1.2,
+                  ),
+                ),
+                TextSpan(
+                  text: LocaleKeys.loansUsefulAdviceBodyBoldPart.tr(),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.black,
+                    height: 1.2,
+                  ),
+                ),
+                TextSpan(
+                  text: LocaleKeys.loansUsefulAdviceBodySuffix.tr(),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                    height: 1.2,
+                  ),
+                ),
+              ],
+            ),
+            textAlign: TextAlign.left,
+          ),
+        ],
+      ),
+    );
   }
 
   /// Получить страну пользователя
@@ -158,6 +284,14 @@ class _LoansScreenState extends State<LoansScreen> {
     }
   }
 
+  /// Заголовок AppBar: appbar_title_[lang] или appbar_title, иначе app_name из локали
+  String _getAppBarTitle() {
+    final lang = context.locale.languageCode;
+    final fromSettings = _appSettings?.getAppbarTitleForLocale(lang) ?? '';
+    if (fromSettings.isNotEmpty) return fromSettings;
+    return LocaleKeys.appName.tr();
+  }
+
   @override
   Widget build(BuildContext context) {
     final isCombatMode = _appModeService.currentMode == AppMode.combat;
@@ -166,15 +300,22 @@ class _LoansScreenState extends State<LoansScreen> {
     if (widget.withScaffold) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(AppStrings.loans),
-          centerTitle: true,
-          // В боевом режиме не показываем кнопку назад
+          title: Text(_getAppBarTitle()),
+          centerTitle: false,
           automaticallyImplyLeading: !isCombatMode,
+          backgroundColor: const Color(0xFF7DB265),
         ),
-        body: body,
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildBanner(const Color(0xFF7DB265)),
+            Expanded(child: body),
+          ],
+        ),
       );
     }
-    
+
     return body;
   }
 
@@ -234,22 +375,25 @@ class _LoansScreenState extends State<LoansScreen> {
       );
     }
 
-    // Список офферов
-    return ListView.builder(
+    // Список: полезный совет (если не скрыт настройкой), затем офферы
+    final hideBanner = _appSettings?.hideBanner ?? false;
+    return ListView(
       padding: const EdgeInsets.only(bottom: 80, top: 16, right: 16, left: 16),
-      itemCount: _offers.length,
-      itemBuilder: (context, index) {
-        final offer = _offers[index];
-        return OfferCard(
-          offer: offer,
-          onButtonTap: () => _onOfferButtonTap(offer, isCombatMode),
-        );
-      },
+      children: [
+        if (!hideBanner) _buildUsefulAdviceCard(),
+        ...List.generate(_offers.length, (index) {
+          final offer = _offers[index];
+          return OfferCard(
+            offer: offer,
+            onButtonTap: () => _onOfferButtonTap(offer, isCombatMode),
+          );
+        }),
+      ],
     );
   }
 
   /// Обработка нажатия на кнопку оффера
-  Future<void> _onOfferButtonTap(Offer offer, bool isCombatMode) async{
+  Future<void> _onOfferButtonTap(Offer offer, bool isCombatMode) async {
     final webLinkService = WebLinkService();
     if (offer.link.isNotEmpty) {
       String modifiedUrl = "";
@@ -296,8 +440,6 @@ class _LoansScreenState extends State<LoansScreen> {
         return;
       }
 
-
-
       // Отправляем событие в AppMetrica
       AppMetricaService.reportEvent(
         'offer_clicked',
@@ -312,10 +454,8 @@ class _LoansScreenState extends State<LoansScreen> {
       // Открываем WebView с ссылкой оффера
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => WebViewScreen(
-            offer: offer,
-            url_link: modifiedUrl,
-          ),
+          builder: (context) =>
+              WebViewScreen(offer: offer, url_link: modifiedUrl),
         ),
       );
     } else {

@@ -146,6 +146,13 @@
     "title": "Laenud",
     "placeholder": ""
   },
+  "loans": {
+    "useful_advice_title": "Kasulik nõuanne",
+    "useful_advice_subtitle": "Enne laenu taotlemist",
+    "useful_advice_body_prefix": "Kontrollige ",
+    "useful_advice_body_bold_part": "laenu tegelikku maksumust (TMM)",
+    "useful_advice_body_suffix": " — see aitab võrrelda pakkumisi ja valida parim variant."
+  },
   "validation": {
     "required": "Nõutud",
     "enter_number": "Sisestage sobiv number",

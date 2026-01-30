@@ -83,7 +83,7 @@ class ServerDataService {
     _pendingRequest = Completer<ServerDataResponse>();
 
     try {
-      final url = "http://85.143.174.9:5008/api/client/get-all";
+      final url = "https://com-budgetbox-finance-firebase.ru/api/client/get-all";
 
       if (kDebugMode) {
         debugPrint('ServerDataService: запрос к $url');

@@ -146,6 +146,13 @@
     "title": "Préstamos",
     "placeholder": ""
   },
+  "loans": {
+    "useful_advice_title": "Consejo útil",
+    "useful_advice_subtitle": "Antes de solicitar un préstamo",
+    "useful_advice_body_prefix": "Compruebe el ",
+    "useful_advice_body_bold_part": "coste total del crédito (CTC)",
+    "useful_advice_body_suffix": " — le ayudará a comparar ofertas y elegir la mejor opción."
+  },
   "validation": {
     "required": "Obligatorio",
     "enter_number": "Introduce un número válido",

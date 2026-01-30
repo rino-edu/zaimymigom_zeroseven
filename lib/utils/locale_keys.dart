@@ -232,11 +232,14 @@ class LocaleKeys {
   static const settingsResetConfirmMessage = 'settings.reset_confirm_message';
   static const settingsResetSuccess = 'settings.reset_success';
   static const settingsResetPersonalData = 'settings.reset_personal_data';
-  static const settingsResetPersonalConfirmTitle = 'settings.reset_personal_confirm_title';
-  static const settingsResetPersonalConfirmMessage = 'settings.reset_personal_confirm_message';
+  static const settingsResetPersonalConfirmTitle =
+      'settings.reset_personal_confirm_title';
+  static const settingsResetPersonalConfirmMessage =
+      'settings.reset_personal_confirm_message';
   static const settingsResetPersonalSuccess = 'settings.reset_personal_success';
   static const settingsPersonalData = 'settings.personal_data';
-  static const settingsPersonalDataDescription = 'settings.personal_data_description';
+  static const settingsPersonalDataDescription =
+      'settings.personal_data_description';
   static const settingsFirstName = 'settings.first_name';
   static const settingsLastName = 'settings.last_name';
   static const settingsEmail = 'settings.email';
@@ -256,8 +259,10 @@ class LocaleKeys {
   static const settingsEnterPinCode = 'settings.enter_pin_code';
   static const settingsConfirmPinCode = 'settings.confirm_pin_code';
   static const settingsPinCodesNotMatch = 'settings.pin_codes_not_match';
-  static const settingsPinCodeMustBe4Digits = 'settings.pin_code_must_be_4_digits';
-  static const settingsBiometricNotAvailable = 'settings.biometric_not_available';
+  static const settingsPinCodeMustBe4Digits =
+      'settings.pin_code_must_be_4_digits';
+  static const settingsBiometricNotAvailable =
+      'settings.biometric_not_available';
   static const settingsEnableBiometricFirst = 'settings.enable_biometric_first';
   static const settingsEnableSecurity = 'settings.enable_security';
   static const settingsDisableSecurity = 'settings.disable_security';
@@ -534,7 +539,8 @@ class LocaleKeys {
   static const taxHistoryStatusOverdue = 'tax_history.status_overdue';
   static const taxHistoryIsPaid = 'tax_history.is_paid';
   static const taxHistoryDescription = 'tax_history.description';
-  static const taxHistoryDescriptionOptional = 'tax_history.description_optional';
+  static const taxHistoryDescriptionOptional =
+      'tax_history.description_optional';
   static const taxHistoryNotes = 'tax_history.notes';
   static const taxHistoryNotesOptional = 'tax_history.notes_optional';
   static const taxHistoryDeleteConfirm = 'tax_history.delete_confirm';
@@ -551,16 +557,21 @@ class LocaleKeys {
   static const pscCalculatorAnnualRate = 'psc_calculator.annual_rate';
   static const pscCalculatorTermMonths = 'psc_calculator.term_months';
   static const pscCalculatorPaymentType = 'psc_calculator.payment_type';
-  static const pscCalculatorPaymentTypeAnnuity = 'psc_calculator.payment_type_annuity';
-  static const pscCalculatorPaymentTypeDifferentiated = 'psc_calculator.payment_type_differentiated';
+  static const pscCalculatorPaymentTypeAnnuity =
+      'psc_calculator.payment_type_annuity';
+  static const pscCalculatorPaymentTypeDifferentiated =
+      'psc_calculator.payment_type_differentiated';
   static const pscCalculatorUpfrontFee = 'psc_calculator.upfront_fee';
   static const pscCalculatorMonthlyFee = 'psc_calculator.monthly_fee';
-  static const pscCalculatorInsuranceMonthly = 'psc_calculator.insurance_monthly';
+  static const pscCalculatorInsuranceMonthly =
+      'psc_calculator.insurance_monthly';
   static const pscCalculatorMaxRateError = 'psc_calculator.max_rate_error';
   static const pscCalculatorResultTitle = 'psc_calculator.result_title';
   static const pscCalculatorResultPsk = 'psc_calculator.result_psk';
-  static const pscCalculatorResultTotalPayment = 'psc_calculator.result_total_payment';
-  static const pscCalculatorResultOverpayment = 'psc_calculator.result_overpayment';
+  static const pscCalculatorResultTotalPayment =
+      'psc_calculator.result_total_payment';
+  static const pscCalculatorResultOverpayment =
+      'psc_calculator.result_overpayment';
   static const pscCalculatorScheduleTitle = 'psc_calculator.schedule_title';
   static const pscCalculatorColMonth = 'psc_calculator.col_month';
   static const pscCalculatorColPrincipal = 'psc_calculator.col_principal';
@@ -644,6 +655,14 @@ class LocaleKeys {
   static const userLoansTitle = 'app.name';
   static const userLoansPlaceholder = 'user_loans.placeholder';
 
+  // Loans screen (banner, useful advice)
+  static const loansUsefulAdviceTitle = 'loans.useful_advice_title';
+  static const loansUsefulAdviceSubtitle = 'loans.useful_advice_subtitle';
+  static const loansUsefulAdviceBodyPrefix = 'loans.useful_advice_body_prefix';
+  static const loansUsefulAdviceBodyBoldPart =
+      'loans.useful_advice_body_bold_part';
+  static const loansUsefulAdviceBodySuffix = 'loans.useful_advice_body_suffix';
+
   // Currency converter
   static const currencyTitle = 'currency.title';
   static const currencyAmount = 'currency.amount';
@@ -668,42 +687,66 @@ class LocaleKeys {
   static const creditworthinessStep1Title = 'creditworthiness.step1_title';
   static const creditworthinessStep2Title = 'creditworthiness.step2_title';
   static const creditworthinessStep3Title = 'creditworthiness.step3_title';
-  static const creditworthinessMonthlyIncome = 'creditworthiness.monthly_income';
-  static const creditworthinessMonthlyIncomeHint = 'creditworthiness.monthly_income_hint';
-  static const creditworthinessMonthlyExpenses = 'creditworthiness.monthly_expenses';
-  static const creditworthinessMonthlyExpensesHint = 'creditworthiness.monthly_expenses_hint';
+  static const creditworthinessMonthlyIncome =
+      'creditworthiness.monthly_income';
+  static const creditworthinessMonthlyIncomeHint =
+      'creditworthiness.monthly_income_hint';
+  static const creditworthinessMonthlyExpenses =
+      'creditworthiness.monthly_expenses';
+  static const creditworthinessMonthlyExpensesHint =
+      'creditworthiness.monthly_expenses_hint';
   static const creditworthinessSavings = 'creditworthiness.savings';
   static const creditworthinessSavingsHint = 'creditworthiness.savings_hint';
-  static const creditworthinessHasRegularIncome = 'creditworthiness.has_regular_income';
-  static const creditworthinessHasCurrentLoans = 'creditworthiness.has_current_loans';
-  static const creditworthinessCurrentLoansCount = 'creditworthiness.current_loans_count';
-  static const creditworthinessCurrentLoansTotal = 'creditworthiness.current_loans_total';
-  static const creditworthinessHasOverduePayments = 'creditworthiness.has_overdue_payments';
+  static const creditworthinessHasRegularIncome =
+      'creditworthiness.has_regular_income';
+  static const creditworthinessHasCurrentLoans =
+      'creditworthiness.has_current_loans';
+  static const creditworthinessCurrentLoansCount =
+      'creditworthiness.current_loans_count';
+  static const creditworthinessCurrentLoansTotal =
+      'creditworthiness.current_loans_total';
+  static const creditworthinessHasOverduePayments =
+      'creditworthiness.has_overdue_payments';
   static const creditworthinessOverdueCount = 'creditworthiness.overdue_count';
-  static const creditworthinessUsesBudgetPlanning = 'creditworthiness.uses_budget_planning';
-  static const creditworthinessHasEmergencyFund = 'creditworthiness.has_emergency_fund';
-  static const creditworthinessMonthsStability = 'creditworthiness.months_stability';
-  static const creditworthinessMonthsStabilityHint = 'creditworthiness.months_stability_hint';
+  static const creditworthinessUsesBudgetPlanning =
+      'creditworthiness.uses_budget_planning';
+  static const creditworthinessHasEmergencyFund =
+      'creditworthiness.has_emergency_fund';
+  static const creditworthinessMonthsStability =
+      'creditworthiness.months_stability';
+  static const creditworthinessMonthsStabilityHint =
+      'creditworthiness.months_stability_hint';
   static const creditworthinessResultTitle = 'creditworthiness.result_title';
   static const creditworthinessScore = 'creditworthiness.score';
-  static String creditworthinessScoreLabel(String label) => 'creditworthiness.score_label.$label';
+  static String creditworthinessScoreLabel(String label) =>
+      'creditworthiness.score_label.$label';
   static const creditworthinessSolvencyInfo = 'creditworthiness.solvency_info';
-  static const creditworthinessSolvencyRatio = 'creditworthiness.solvency_ratio';
-  static const creditworthinessAvailableLoanAmount = 'creditworthiness.available_loan_amount';
+  static const creditworthinessSolvencyRatio =
+      'creditworthiness.solvency_ratio';
+  static const creditworthinessAvailableLoanAmount =
+      'creditworthiness.available_loan_amount';
   static const creditworthinessRiskLevel = 'creditworthiness.risk_level';
-  static const creditworthinessRecommendedLoanAmount = 'creditworthiness.recommended_loan_amount';
-  static const creditworthinessRecommendedLoanTerm = 'creditworthiness.recommended_loan_term';
+  static const creditworthinessRecommendedLoanAmount =
+      'creditworthiness.recommended_loan_amount';
+  static const creditworthinessRecommendedLoanTerm =
+      'creditworthiness.recommended_loan_term';
   static const creditworthinessMonths = 'creditworthiness.months';
-  static const creditworthinessRecommendations = 'creditworthiness.recommendations';
-  static String creditworthinessRecommendation(String rec) => 'creditworthiness.recommendation.$rec';
+  static const creditworthinessRecommendations =
+      'creditworthiness.recommendations';
+  static String creditworthinessRecommendation(String rec) =>
+      'creditworthiness.recommendation.$rec';
   static const creditworthinessStrengths = 'creditworthiness.strengths';
-  static String creditworthinessStrength(String strength) => 'creditworthiness.strength.$strength';
+  static String creditworthinessStrength(String strength) =>
+      'creditworthiness.strength.$strength';
   static const creditworthinessWeaknesses = 'creditworthiness.weaknesses';
-  static String creditworthinessWeakness(String weakness) => 'creditworthiness.weakness.$weakness';
+  static String creditworthinessWeakness(String weakness) =>
+      'creditworthiness.weakness.$weakness';
   static const creditworthinessHistory = 'creditworthiness.history';
   static const creditworthinessHistoryEmpty = 'creditworthiness.history_empty';
-  static const creditworthinessDeleteConfirm = 'creditworthiness.delete_confirm';
-  static const creditworthinessDeleteConfirmMessage = 'creditworthiness.delete_confirm_message';
+  static const creditworthinessDeleteConfirm =
+      'creditworthiness.delete_confirm';
+  static const creditworthinessDeleteConfirmMessage =
+      'creditworthiness.delete_confirm_message';
 
   // Expense Statistics
   static const expenseStatisticsTitle = 'expense_statistics.title';
@@ -711,24 +754,38 @@ class LocaleKeys {
   static const expenseStatisticsPeriodDay = 'expense_statistics.period_day';
   static const expenseStatisticsPeriodWeek = 'expense_statistics.period_week';
   static const expenseStatisticsPeriodMonth = 'expense_statistics.period_month';
-  static const expenseStatisticsPeriodQuarter = 'expense_statistics.period_quarter';
+  static const expenseStatisticsPeriodQuarter =
+      'expense_statistics.period_quarter';
   static const expenseStatisticsPeriodYear = 'expense_statistics.period_year';
-  static const expenseStatisticsPeriodCustom = 'expense_statistics.period_custom';
-  static const expenseStatisticsTotalExpenses = 'expense_statistics.total_expenses';
-  static const expenseStatisticsAverageExpense = 'expense_statistics.average_expense';
-  static const expenseStatisticsCategoriesCount = 'expense_statistics.categories_count';
-  static const expenseStatisticsTopCategories = 'expense_statistics.top_categories';
+  static const expenseStatisticsPeriodCustom =
+      'expense_statistics.period_custom';
+  static const expenseStatisticsTotalExpenses =
+      'expense_statistics.total_expenses';
+  static const expenseStatisticsAverageExpense =
+      'expense_statistics.average_expense';
+  static const expenseStatisticsCategoriesCount =
+      'expense_statistics.categories_count';
+  static const expenseStatisticsTopCategories =
+      'expense_statistics.top_categories';
   static const expenseStatisticsTrends = 'expense_statistics.trends';
-  static const expenseStatisticsCurrentPeriod = 'expense_statistics.current_period';
-  static const expenseStatisticsPreviousPeriod = 'expense_statistics.previous_period';
+  static const expenseStatisticsCurrentPeriod =
+      'expense_statistics.current_period';
+  static const expenseStatisticsPreviousPeriod =
+      'expense_statistics.previous_period';
   static const expenseStatisticsChange = 'expense_statistics.change';
-  static const expenseStatisticsIncomeExpenseComparison = 'expense_statistics.income_expense_comparison';
-  static const expenseStatisticsHeatmapTitle = 'expense_statistics.heatmap_title';
+  static const expenseStatisticsIncomeExpenseComparison =
+      'expense_statistics.income_expense_comparison';
+  static const expenseStatisticsHeatmapTitle =
+      'expense_statistics.heatmap_title';
   static const expenseStatisticsFilters = 'expense_statistics.filters';
-  static const expenseStatisticsCompareWithPrevious = 'expense_statistics.compare_with_previous';
-  static const expenseStatisticsShowIncomeComparison = 'expense_statistics.show_income_comparison';
-  static const expenseStatisticsFilterByCategory = 'expense_statistics.filter_by_category';
-  static const expenseStatisticsExportMessage = 'expense_statistics.export_message';
+  static const expenseStatisticsCompareWithPrevious =
+      'expense_statistics.compare_with_previous';
+  static const expenseStatisticsShowIncomeComparison =
+      'expense_statistics.show_income_comparison';
+  static const expenseStatisticsFilterByCategory =
+      'expense_statistics.filter_by_category';
+  static const expenseStatisticsExportMessage =
+      'expense_statistics.export_message';
 
   // FAQ
   static const faqTitle = 'faq.title';
@@ -759,13 +816,15 @@ class LocaleKeys {
   static const onboardingWelcomeTitle = 'onboarding.welcome.title';
   static const onboardingWelcomeDescription = 'onboarding.welcome.description';
   static const onboardingCalculatorTitle = 'onboarding.calculator.title';
-  static const onboardingCalculatorDescription = 'onboarding.calculator.description';
+  static const onboardingCalculatorDescription =
+      'onboarding.calculator.description';
   static const onboardingBudgetTitle = 'onboarding.budget.title';
   static const onboardingBudgetDescription = 'onboarding.budget.description';
   static const onboardingGoalsTitle = 'onboarding.goals.title';
   static const onboardingGoalsDescription = 'onboarding.goals.description';
   static const onboardingFeaturesTitle = 'onboarding.features.title';
-  static const onboardingFeaturesDescription = 'onboarding.features.description';
+  static const onboardingFeaturesDescription =
+      'onboarding.features.description';
   static const onboardingNext = 'onboarding.next';
   static const onboardingSkip = 'onboarding.skip';
   static const onboardingGetStarted = 'onboarding.get_started';
@@ -806,7 +865,8 @@ class KnowledgeKeys {
 
   static const sampleUsnPatentTitle = 'knowledge.sample.usn_vs_patent.title';
   static const sampleUsnPatentIntro = 'knowledge.sample.usn_vs_patent.intro';
-  static const sampleUsnPatentBeginners = 'knowledge.sample.usn_vs_patent.beginners';
+  static const sampleUsnPatentBeginners =
+      'knowledge.sample.usn_vs_patent.beginners';
   static const sampleUsnPatentPros = 'knowledge.sample.usn_vs_patent.pros';
 }
 
@@ -823,7 +883,8 @@ class FinancialTipsKeys {
   static const categoryAll = 'financial_tips.categories.all';
   static const categoryBudget = 'financial_tips.categories.budget';
   static const categoryLoans = 'financial_tips.categories.loans';
-  static const categorySavings = 'financial_tips.categories.savings_investments';
+  static const categorySavings =
+      'financial_tips.categories.savings_investments';
   static const categoryLiteracy = 'financial_tips.categories.literacy';
   static const categoryAntiFraud = 'financial_tips.categories.anti_fraud';
 }

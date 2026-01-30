@@ -146,6 +146,13 @@
     "title": "Кредиты",
     "placeholder": ""
   },
+  "loans": {
+    "useful_advice_title": "Полезный совет!",
+    "useful_advice_subtitle": "Подайте заявки в несколько компаний",
+    "useful_advice_body_prefix": "для ",
+    "useful_advice_body_bold_part": "100% получения",
+    "useful_advice_body_suffix": " необходимой суммы."
+  },
   "validation": {
     "required": "Обязательное поле",
     "enter_number": "Введите корректное число",

@@ -146,6 +146,13 @@
     "title": "Loans",
     "placeholder": ""
   },
+  "loans": {
+    "useful_advice_title": "Useful tip",
+    "useful_advice_subtitle": "Before applying for a loan",
+    "useful_advice_body_prefix": "Check the ",
+    "useful_advice_body_bold_part": "total cost of credit (TCC)",
+    "useful_advice_body_suffix": " — it helps compare offers and choose the best option."
+  },
   "validation": {
     "required": "Required",
     "enter_number": "Enter a valid number",
