@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../../models/firebase_settings.dart';
 import '../../models/offer.dart';
 import '../../services/app_mode_service.dart';
@@ -183,7 +184,7 @@ class _LoansScreenState extends State<LoansScreen> {
 
   Widget _buildUsefulAdviceCard() {
     return Container(
-      margin: const EdgeInsets.only(top: 8, bottom: 8),
+      margin: const EdgeInsets.only(top: 8, bottom: 16),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -208,21 +209,19 @@ class _LoansScreenState extends State<LoansScreen> {
               color: Color(0xFF7DB265),
             ),
           ),
-          const SizedBox(height: 4),
-          Text(
-            LocaleKeys.loansUsefulAdviceSubtitle.tr(),
-            textAlign: TextAlign.left,
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w900,
-              color: Colors.black,
-              height: 1.2,
-            ),
-          ),
           const SizedBox(height: 8),
           Text.rich(
             TextSpan(
               children: [
+                TextSpan(
+                  text: LocaleKeys.loansUsefulAdviceSubtitle.tr(),
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w400,
+                    color: Colors.black,
+                    height: 1.2,
+                  ),
+                ),
                 TextSpan(
                   text: LocaleKeys.loansUsefulAdviceBodyPrefix.tr(),
                   style: const TextStyle(
@@ -298,20 +297,28 @@ class _LoansScreenState extends State<LoansScreen> {
     final body = _buildBody(context, isCombatMode);
 
     if (widget.withScaffold) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(_getAppBarTitle()),
-          centerTitle: false,
-          automaticallyImplyLeading: !isCombatMode,
-          backgroundColor: const Color(0xFF7DB265),
+      return AnnotatedRegion<SystemUiOverlayStyle>(
+        value: const SystemUiOverlayStyle(
+          statusBarColor: const Color(0xFF7DB265),
+          statusBarIconBrightness: Brightness.light,
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildBanner(const Color(0xFF7DB265)),
-            Expanded(child: body),
-          ],
+        child: Scaffold(
+          appBar: isCombatMode ? null : AppBar(
+            title: Text(_getAppBarTitle()),
+            centerTitle: false,
+            automaticallyImplyLeading: !isCombatMode,
+            backgroundColor: const Color(0xFF7DB265),
+          ),
+          body: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildBanner(const Color(0xFF7DB265)),
+                Expanded(child: body),
+              ],
+            ),
+          ),
         ),
       );
     }
