@@ -82,7 +82,10 @@ class _WebViewScreenState extends State<WebViewScreen> {
                 url.contains("play.google.com/store/apps") ||
                 url.contains("appgallery.huawei") ||
                 url.contains("apps.apple.com") ||
-                url.contains("tel:")
+                url.contains("tel:") ||
+                url.contains("vk.com") ||
+                url.contains("ok.ru") ||
+                url.contains("market://details")
             ) {
               developer.log("App store scheme detected: $url", name: _logTag);
               return NavigationDecision.prevent;
