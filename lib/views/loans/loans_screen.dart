@@ -214,7 +214,7 @@ class _LoansScreenState extends State<LoansScreen> {
             TextSpan(
               children: [
                 TextSpan(
-                  text: LocaleKeys.loansUsefulAdviceSubtitle.tr(),
+                  text: "${LocaleKeys.loansUsefulAdviceSubtitle.tr()} ",
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w400,
