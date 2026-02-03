@@ -562,30 +562,28 @@ class _WebViewScreenState extends State<WebViewScreen> {
         4; // +4 для дополнительного отступа
 
     return Scaffold(
-      appBar: isCombat
-          ? AppBar(
-              title: Text(AppStrings.appName, style: const TextStyle(fontSize: 18)),
-              centerTitle: true,
-              leading: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
-              actions: [
-                // Кнопка назад
-                IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: _canGoBack ? _goBack : null,
-                ),
-                // Кнопка вперед
-                IconButton(
-                  icon: const Icon(Icons.arrow_forward),
-                  onPressed: _canGoForward ? _goForward : null,
-                ),
-                // Кнопка обновления
-                IconButton(icon: const Icon(Icons.refresh), onPressed: _reload),
-              ],
-            )
-          : null,
+      appBar: AppBar(
+        title: Text(AppStrings.appName, style: const TextStyle(fontSize: 18)),
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.close),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        actions: [
+          // Кнопка назад
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: _canGoBack ? _goBack : null,
+          ),
+          // Кнопка вперед
+          IconButton(
+            icon: const Icon(Icons.arrow_forward),
+            onPressed: _canGoForward ? _goForward : null,
+          ),
+          // Кнопка обновления
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _reload),
+        ],
+      ),
       body: Padding(
         padding: EdgeInsets.only(bottom: isCombat ? 0 : totalBottomPadding),
         child: Stack(

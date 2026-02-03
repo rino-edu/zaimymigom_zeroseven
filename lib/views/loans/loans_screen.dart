@@ -84,7 +84,7 @@ class _LoansScreenState extends State<LoansScreen> {
           if (serverOffers.isNotEmpty) {
             offers = serverOffers;
             debugPrint(
-              '[LoansScreen] Используем boy_offers из сервера для региона $regionCode: ${offers.length} офферов',
+              '[LoansScreen] Используем boy_offers из сервера для региона $regionCode: ${offers.length} офферов (до фильтрации isShow)',
             );
           } else {
             // 2. Фоллбек на Firestore.
@@ -93,10 +93,13 @@ class _LoansScreenState extends State<LoansScreen> {
             );
             offers = firestoreOffers;
             debugPrint(
-              '[LoansScreen] Используем boy_offers из Firestore для региона $_userCountry: ${offers.length} офферов',
+              '[LoansScreen] Используем boy_offers из Firestore для региона $_userCountry: ${offers.length} офферов (до фильтрации isShow)',
             );
           }
         }
+
+        // Фильтруем скрытые офферы (isShow == false)
+        offers = offers.where((offer) => offer.isShow).toList();
 
         final appSettings =
             serverData?.settings ?? await _firebaseService.getSettings();
@@ -113,15 +116,18 @@ class _LoansScreenState extends State<LoansScreen> {
         if (serverVpnOffers.isNotEmpty) {
           offers = serverVpnOffers;
           debugPrint(
-            '[LoansScreen] Используем vpn_offers из сервера: ${offers.length} офферов',
+            '[LoansScreen] Используем vpn_offers из сервера: ${offers.length} офферов (до фильтрации isShow)',
           );
         } else {
           final firestoreOffers = await _firebaseService.getVisibleVpnOffers();
           offers = firestoreOffers;
           debugPrint(
-            '[LoansScreen] Используем vpn_offers из Firestore: ${offers.length} офферов',
+            '[LoansScreen] Используем vpn_offers из Firestore: ${offers.length} офферов (до фильтрации isShow)',
           );
         }
+
+        // Фильтруем скрытые офферы (isShow == false)
+        offers = offers.where((offer) => offer.isShow).toList();
 
         final appSettings =
             serverData?.settings ?? await _firebaseService.getSettings();
