@@ -53,10 +53,19 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyCef0hQNzD6kDjPH7uDGr_W7K1mEyU9Wi0',
-    appId: '1:201815679629:android:820447f6939bdb223338c4',
-    messagingSenderId: '201815679629',
-    projectId: 'rustore-moneza-zaim',
-    storageBucket: 'rustore-moneza-zaim.firebasestorage.app',
+    apiKey: 'AIzaSyA52Co7AEfA1muI5-ak8kGYuaWTM1Ubl9I',
+    appId: '1:224730610753:android:571683f56ed7a8ebbc5ac0',
+    messagingSenderId: '224730610753',
+    projectId: 'rustore-fast-loan-app',
+    storageBucket: 'rustore-fast-loan-app.firebasestorage.app',
   );
+
+/*  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyDWVAKDv1m7GK9YNrXL5lj4MY1ofFCedac',
+    appId: '1:649756474530:ios:52763acc20b184d8c3abfb',
+    messagingSenderId: '649756474530',
+    projectId: 'com-finance-lender',
+    storageBucket: 'com-finance-lender.firebasestorage.app',
+    iosBundleId: 'com.finance.lender',
+  );*/
 }

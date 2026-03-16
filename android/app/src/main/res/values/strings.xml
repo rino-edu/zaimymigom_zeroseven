@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Мани Займ</string>
+    <string name="app_name">Быстрый Заём</string>
+    <string name="facebook_app_id" translatable="false">
+        not_used
+    </string>
+    <string name="facebook_client_token" translatable="false">
+        not_used
+    </string>
 </resources>

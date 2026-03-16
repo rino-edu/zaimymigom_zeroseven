@@ -45,7 +45,7 @@ void main() async {
     EasyLocalization(
       supportedLocales: const [Locale('en'), Locale('ru')],
       path: 'assets/locales',
-      fallbackLocale: const Locale('en'),
+      fallbackLocale: const Locale('ru'),
       child: MultiProvider(
         providers: [
           ChangeNotifierProvider.value(value: settingsService),
@@ -81,7 +81,7 @@ class MyApp extends StatelessWidget {
     }
 
     return MaterialApp(
-      title: 'Мани Займ',
+      title: 'Быстрый Заём',
       // Локализация
       locale: locale ?? context.locale,
       supportedLocales: context.supportedLocales,

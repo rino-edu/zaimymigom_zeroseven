@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "201815679629",
-    "project_id": "rustore-moneza-zaim",
-    "storage_bucket": "rustore-moneza-zaim.firebasestorage.app"
+    "project_number": "224730610753",
+    "project_id": "rustore-fast-loan-app",
+    "storage_bucket": "rustore-fast-loan-app.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:201815679629:android:820447f6939bdb223338c4",
+        "mobilesdk_app_id": "1:224730610753:android:571683f56ed7a8ebbc5ac0",
         "android_client_info": {
-          "package_name": "rustore.moneza.zaim"
+          "package_name": "rustore.fast.loan.app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCef0hQNzD6kDjPH7uDGr_W7K1mEyU9Wi0"
+          "current_key": "AIzaSyA52Co7AEfA1muI5-ak8kGYuaWTM1Ubl9I"
         }
       ],
       "services": {

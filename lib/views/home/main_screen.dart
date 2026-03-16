@@ -79,7 +79,7 @@ class _MainScreenState extends State<MainScreen> {
             DrawerHeader(
               padding: EdgeInsets.all(4),
               decoration: const BoxDecoration(
-                color: Color(0xFF6B66FF),
+                color: Color(0xFF9DF176),
               ),
               child: Align(
                 alignment: Alignment.bottomLeft,
@@ -190,7 +190,7 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: LiquidGlassBottomBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        activeColor: const Color(0xFF00B0FF),
+        activeColor: const Color(0xFF57E11A),
         barBlurSigma: 10,
         activeBlurSigma: 24,
         items: [
