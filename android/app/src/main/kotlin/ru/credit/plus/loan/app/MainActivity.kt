@@ -1,4 +1,4 @@
-package rustore.fast.loan.app
+package ru.credit.plus.loan.app
 
 import io.flutter.embedding.android.FlutterActivity
 

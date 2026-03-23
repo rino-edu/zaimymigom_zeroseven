@@ -1,26 +1,36 @@
 {
   "project_info": {
-    "project_number": "224730610753",
-    "project_id": "rustore-fast-loan-app",
-    "storage_bucket": "rustore-fast-loan-app.firebasestorage.app"
+    "project_number": "642004822679",
+    "project_id": "ru-credit-plus-loan-app",
+    "storage_bucket": "ru-credit-plus-loan-app.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:224730610753:android:571683f56ed7a8ebbc5ac0",
+        "mobilesdk_app_id": "1:642004822679:android:bea093bc1aa70eda5c57d2",
         "android_client_info": {
-          "package_name": "rustore.fast.loan.app"
+          "package_name": "ru.credit.plus.loan.app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "642004822679-dvm1ai4vd1osqocev5psncemfchh6kdn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyA52Co7AEfA1muI5-ak8kGYuaWTM1Ubl9I"
+          "current_key": "AIzaSyAUhKrAB7jGKJKEwLlJFJ2CBem6u52jEDM"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "642004822679-dvm1ai4vd1osqocev5psncemfchh6kdn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

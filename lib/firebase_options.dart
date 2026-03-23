@@ -53,11 +53,11 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA52Co7AEfA1muI5-ak8kGYuaWTM1Ubl9I',
-    appId: '1:224730610753:android:571683f56ed7a8ebbc5ac0',
-    messagingSenderId: '224730610753',
-    projectId: 'rustore-fast-loan-app',
-    storageBucket: 'rustore-fast-loan-app.firebasestorage.app',
+    apiKey: 'AIzaSyAUhKrAB7jGKJKEwLlJFJ2CBem6u52jEDM',
+    appId: '1:642004822679:android:bea093bc1aa70eda5c57d2',
+    messagingSenderId: '642004822679',
+    projectId: 'ru-credit-plus-loan-app',
+    storageBucket: 'ru-credit-plus-loan-app.firebasestorage.app',
   );
 
 /*  static const FirebaseOptions ios = FirebaseOptions(

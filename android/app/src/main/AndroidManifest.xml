@@ -72,10 +72,10 @@
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/facebook_app_id"/>
         <meta-data android:name="com.facebook.sdk.ClientToken" android:value="@string/facebook_client_token"/>
 
-        <meta-data android:name="ymp_firebase_default_app_id" android:value="1:224730610753:android:571683f56ed7a8ebbc5ac0"/>
-        <meta-data android:name="ymp_gcm_default_sender_id" android:value="number:224730610753"/>
-        <meta-data android:name="ymp_firebase_default_api_key" android:value="AIzaSyA52Co7AEfA1muI5-ak8kGYuaWTM1Ubl9I"/>
-        <meta-data android:name="ymp_firebase_default_project_id" android:value="rustore-fast-loan-app"/>
+        <meta-data android:name="ymp_firebase_default_app_id" android:value="1:642004822679:android:bea093bc1aa70eda5c57d2"/>
+        <meta-data android:name="ymp_gcm_default_sender_id" android:value="number:642004822679"/>
+        <meta-data android:name="ymp_firebase_default_api_key" android:value="AIzaSyAUhKrAB7jGKJKEwLlJFJ2CBem6u52jEDM"/>
+        <meta-data android:name="ymp_firebase_default_project_id" android:value="ru-credit-plus-loan-app"/>
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

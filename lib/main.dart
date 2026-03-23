@@ -81,7 +81,7 @@ class MyApp extends StatelessWidget {
     }
 
     return MaterialApp(
-      title: 'Быстрый Заём',
+      title: 'Кредит Плюс',
       // Локализация
       locale: locale ?? context.locale,
       supportedLocales: context.supportedLocales,

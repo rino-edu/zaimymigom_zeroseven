@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 /// Сервис для работы с AppMetrica
 class AppMetricaService {
   static const String _apiKey =
-      'ef811029-7d2a-42d0-b044-b1fff269e9e3'; // Замените на ваш API ключ
+      '578c188a-a177-4fef-a1e1-673f1345de0a'; // Замените на ваш API ключ
 
   /// Инициализация AppMetrica
   static Future<void> initialize() async {
