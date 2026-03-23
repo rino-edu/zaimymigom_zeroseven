@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../../utils/locale_keys.dart';
 import '../settings/settings_screen.dart';
 import 'psc_calculator_screen.dart';
@@ -79,19 +80,19 @@ class _MainScreenState extends State<MainScreen> {
             DrawerHeader(
               padding: EdgeInsets.all(4),
               decoration: const BoxDecoration(
-                color: Color(0xFF9DF176),
+                color: Color(0xFF98CA4C),
               ),
               child: Align(
-                alignment: Alignment.bottomLeft,
+                alignment: Alignment.center,
                 child: Image.asset(
                   'assets/icons/icon.png',
-                  width: 80,
-                  height: 80,
+                  width: 200,
+                  height: 200,
                 ),
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.event),
+              leading: FaIcon(FontAwesomeIcons.calendar),
               title: Text(LocaleKeys.navCalendar.tr()),
               onTap: () {
                 Navigator.pop(context);
@@ -104,7 +105,7 @@ class _MainScreenState extends State<MainScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.currency_exchange),
+              leading: FaIcon(FontAwesomeIcons.moneyBillTransfer),
               title: Text(LocaleKeys.navCurrencyConverter.tr()),
               onTap: () {
                 Navigator.pop(context);
@@ -117,7 +118,7 @@ class _MainScreenState extends State<MainScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.assessment),
+              leading: FaIcon(FontAwesomeIcons.chartLine),
               title: Text(LocaleKeys.creditworthinessTitle.tr()),
               onTap: () {
                 Navigator.pop(context);
@@ -130,7 +131,7 @@ class _MainScreenState extends State<MainScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.tips_and_updates),
+              leading: FaIcon(FontAwesomeIcons.lightbulb),
               title: Text(LocaleKeys.navFinancialTips.tr()),
               onTap: () {
                 Navigator.pop(context);
@@ -143,7 +144,7 @@ class _MainScreenState extends State<MainScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.analytics),
+              leading: FaIcon(FontAwesomeIcons.chartSimple),
               title: Text(LocaleKeys.expenseStatisticsTitle.tr()),
               onTap: () {
                 Navigator.pop(context);
@@ -156,7 +157,7 @@ class _MainScreenState extends State<MainScreen> {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.help_outline),
+              leading: FaIcon(FontAwesomeIcons.circleQuestion),
               title: Text(LocaleKeys.navFaq.tr()),
               onTap: () {
                 Navigator.pop(context);
@@ -170,7 +171,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.settings),
+              leading: FaIcon(FontAwesomeIcons.gear),
               title: Text(LocaleKeys.navSettings.tr()),
               onTap: () {
                 Navigator.pop(context);
@@ -190,7 +191,7 @@ class _MainScreenState extends State<MainScreen> {
       bottomNavigationBar: LiquidGlassBottomBar(
         currentIndex: _selectedIndex,
         onTap: _onItemTapped,
-        activeColor: const Color(0xFF57E11A),
+        activeColor: const Color(0xFF98CA4C),
         barBlurSigma: 10,
         activeBlurSigma: 24,
         items: [

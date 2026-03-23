@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class AppColors {
   // Основные цвета
   static const Color primary = Color(0xFF4BAD07); // Зеленый - цвет строительства
-  static const Color primaryLight = Color(0xFFAEFB81);
+  static const Color primaryLight = Color(0xFF98CA4C);
   static const Color primaryDark = Color(0xFF388602);
   
   // Вторичные цвета
