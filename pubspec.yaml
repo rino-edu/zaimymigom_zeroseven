@@ -2,7 +2,7 @@ name: zaimymigom_zeroseven
 description: "A new Flutter project."
 publish_to: 'none'
 
-version: 1.0.4+19
+version: 1.0.4+4
 
 environment:
   sdk: ^3.8.1
