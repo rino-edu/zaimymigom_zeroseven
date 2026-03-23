@@ -1,36 +1,26 @@
 {
   "project_info": {
-    "project_number": "642004822679",
-    "project_id": "ru-credit-plus-loan-app",
-    "storage_bucket": "ru-credit-plus-loan-app.appspot.com"
+    "project_number": "324099403224",
+    "project_id": "ru-credit-plus-loan-app-6db05",
+    "storage_bucket": "ru-credit-plus-loan-app-6db05.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:642004822679:android:bea093bc1aa70eda5c57d2",
+        "mobilesdk_app_id": "1:324099403224:android:de5387284ea0a455d2d6ad",
         "android_client_info": {
           "package_name": "ru.credit.plus.loan.app"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "642004822679-dvm1ai4vd1osqocev5psncemfchh6kdn.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAUhKrAB7jGKJKEwLlJFJ2CBem6u52jEDM"
+          "current_key": "AIzaSyAcYhlQFbkrCNqI_vLv7XtrgTjh8Shu0Cs"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "642004822679-dvm1ai4vd1osqocev5psncemfchh6kdn.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }
