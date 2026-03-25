@@ -11,7 +11,6 @@ import 'services/goals_provider.dart';
 import 'services/currency_prefs.dart';
 import 'services/calendar_provider.dart';
 import 'services/creditworthiness_provider.dart';
-import 'views/loans/loans_screen.dart';
 import 'views/home/main_screen.dart';
 import 'views/onboarding/onboarding_screen.dart';
 import 'views/webview/webview_screen.dart';
@@ -102,13 +101,13 @@ class AppModeWrapper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final appMode = AppModeService().currentMode;
+
+    final Widget child;
     // Если режим еще не определен (теоретически), показываем лоадер
     if (appMode == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    // В боевом режиме — сразу LoansScreen c боевыми офферами
-    if (appMode == AppMode.combat) {
+      child = const Scaffold(body: Center(child: CircularProgressIndicator()));
+    } else if (appMode == AppMode.combat) {
+      // В боевом режиме — сразу WebView
       final link = WebViewLinkService().buildInitialUrl(appMode);
       final offer = Offer(
         id: 0,
@@ -119,14 +118,27 @@ class AppModeWrapper extends StatelessWidget {
         name: tr('user_loans.title'),
         stars: '0',
       );
-      return WebViewScreen(offer: offer);
+      child = WebViewScreen(offer: offer);
+    } else {
+      // В небоевом режиме — если онбординг не пройден, сначала онбординг
+      final settings = context.watch<SettingsService>();
+      child = !settings.onboardingCompleted
+          ? const OnboardingScreen()
+          : const MainScreen();
     }
 
-    // В небоевом режиме — если онбординг не пройден, сначала онбординг
-    final settings = context.watch<SettingsService>();
-    if (!settings.onboardingCompleted) {
-      return const OnboardingScreen();
-    }
-    return const MainScreen();
+    // Перехватываем системный "назад", чтобы приложение не сворачивалось:
+    // если есть куда вернуться — pop; если нет — ничего не делаем.
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final navigator = Navigator.of(context);
+        if (navigator.canPop()) {
+          await navigator.maybePop();
+        }
+      },
+      child: child,
+    );
   }
 }

@@ -115,14 +115,24 @@ class _LoansScreenState extends State<LoansScreen> {
     final body = _buildBody(context, isCombatMode);
 
     if (widget.withScaffold) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(AppStrings.loans),
-          centerTitle: true,
-          // В боевом режиме не показываем кнопку назад
-          automaticallyImplyLeading: !isCombatMode,
+      return PopScope(
+        canPop: false,
+        onPopInvokedWithResult: (didPop, result) async {
+          if (didPop) return;
+          final navigator = Navigator.of(context);
+          if (navigator.canPop()) {
+            await navigator.maybePop();
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(AppStrings.loans),
+            centerTitle: true,
+            // В боевом режиме не показываем кнопку назад
+            automaticallyImplyLeading: !isCombatMode,
+          ),
+          body: body,
         ),
-        body: body,
       );
     }
     

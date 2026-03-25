@@ -467,48 +467,69 @@ class _WebViewScreenState extends State<WebViewScreen> {
         systemBottomPadding +
         4; // +4 для дополнительного отступа
 
-    return Scaffold(
-      appBar: isCombat
-          ? AppBar(
-              title: Text("Кредит Плюс", style: const TextStyle(fontSize: 18)),
-              centerTitle: true,
-              leading: _buildLeading(),
-              actions: [
-                // Кнопка назад
-                IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: _canGoBack ? _goBack : null,
-                ),
-                // Кнопка вперед
-                IconButton(
-                  icon: const Icon(Icons.arrow_forward),
-                  onPressed: _canGoForward ? _goForward : null,
-                ),
-                // Кнопка обновления
-                IconButton(icon: const Icon(Icons.refresh), onPressed: _reload),
-              ],
-            )
-          : null,
-      body: Padding(
-        padding: EdgeInsets.only(bottom: isCombat ? 0 : totalBottomPadding),
-        child: Stack(
-          children: [
-            // WebView
-            WebViewWidget(controller: _controller),
+    return PopScope(
+      // Если есть история WebView — перехватываем системный back и не даём роуту закрыться.
+      // Если истории нет — разрешаем pop (predictive back будет работать).
+      canPop: !_canGoBack,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
 
-            // Индикатор загрузки
-            if (_isLoading)
-              const Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(height: 16),
-                    Text('Загрузка...'),
-                  ],
+        // Если есть история внутри WebView — навигируем назад по страницам.
+        // Если истории нет, но pop почему-то не случился — ничего не делаем,
+        // чтобы не зациклить попытки pop на том же route.
+        try {
+          if (await _controller.canGoBack()) {
+            await _controller.goBack();
+            await _updateNavigationState();
+          }
+        } catch (_) {
+          // игнорируем ошибки webview
+        }
+      },
+      child: Scaffold(
+        appBar: isCombat
+            ? AppBar(
+                title:
+                    Text("Кредит Плюс", style: const TextStyle(fontSize: 18)),
+                centerTitle: true,
+                leading: _buildLeading(),
+                actions: [
+                  // Кнопка назад
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: _canGoBack ? _goBack : null,
+                  ),
+                  // Кнопка вперед
+                  IconButton(
+                    icon: const Icon(Icons.arrow_forward),
+                    onPressed: _canGoForward ? _goForward : null,
+                  ),
+                  // Кнопка обновления
+                  IconButton(icon: const Icon(Icons.refresh), onPressed: _reload),
+                ],
+              )
+            : null,
+        body: Padding(
+          padding: EdgeInsets.only(bottom: isCombat ? 0 : totalBottomPadding),
+          child: Stack(
+            children: [
+              // WebView
+              WebViewWidget(controller: _controller),
+
+              // Индикатор загрузки
+              if (_isLoading)
+                const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(height: 16),
+                      Text('Загрузка...'),
+                    ],
+                  ),
                 ),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

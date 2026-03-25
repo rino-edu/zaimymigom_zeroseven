@@ -70,13 +70,22 @@ class _MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      appBar: AppBar(title: Text(_getAppBarTitle())),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (didPop) return;
+        final navigator = Navigator.of(context);
+        if (navigator.canPop()) {
+          await navigator.maybePop();
+        }
+      },
+      child: Scaffold(
+        extendBody: true,
+        appBar: AppBar(title: Text(_getAppBarTitle())),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            children: [
             DrawerHeader(
               padding: EdgeInsets.all(4),
               decoration: const BoxDecoration(
@@ -184,39 +193,40 @@ class _MainScreenState extends State<MainScreen> {
               },
             ),
             const Divider(),
+            ],
+          ),
+        ),
+        body: _screens[_selectedIndex],
+        bottomNavigationBar: LiquidGlassBottomBar(
+          currentIndex: _selectedIndex,
+          onTap: _onItemTapped,
+          activeColor: const Color(0xFF98CA4C),
+          barBlurSigma: 10,
+          activeBlurSigma: 24,
+          items: [
+            LiquidGlassBottomBarItem(
+              icon: Icons.calculate,
+              activeIcon: Icons.calculate,
+              label: LocaleKeys.navPscCalculator.tr(),
+            ),
+            LiquidGlassBottomBarItem(
+              icon: Icons.account_balance_wallet,
+              activeIcon: Icons.account_balance_wallet,
+              label: LocaleKeys.navBudget.tr(),
+            ),
+            LiquidGlassBottomBarItem(
+              icon: Icons.flag,
+              activeIcon: Icons.flag,
+              label: LocaleKeys.navGoals.tr(),
+            ),
+            LiquidGlassBottomBarItem(
+              icon: Icons.credit_card,
+              activeIcon: Icons.credit_card,
+              label: LocaleKeys.navUserLoans.tr(),
+              badge: 1,
+            ),
           ],
         ),
-      ),
-      body: _screens[_selectedIndex],
-      bottomNavigationBar: LiquidGlassBottomBar(
-        currentIndex: _selectedIndex,
-        onTap: _onItemTapped,
-        activeColor: const Color(0xFF98CA4C),
-        barBlurSigma: 10,
-        activeBlurSigma: 24,
-        items: [
-          LiquidGlassBottomBarItem(
-            icon: Icons.calculate,
-            activeIcon: Icons.calculate,
-            label: LocaleKeys.navPscCalculator.tr(),
-          ),
-          LiquidGlassBottomBarItem(
-            icon: Icons.account_balance_wallet,
-            activeIcon: Icons.account_balance_wallet,
-            label: LocaleKeys.navBudget.tr(),
-          ),
-          LiquidGlassBottomBarItem(
-            icon: Icons.flag,
-            activeIcon: Icons.flag,
-            label: LocaleKeys.navGoals.tr(),
-          ),
-          LiquidGlassBottomBarItem(
-            icon: Icons.credit_card,
-            activeIcon: Icons.credit_card,
-            label: LocaleKeys.navUserLoans.tr(),
-            badge: 1
-          ),
-        ],
       ),
     );
   }
