@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'package:zaimymigom_zeroseven/utils/theme.dart';
 import 'package:zaimymigom_zeroseven/widgets/connectivity_listener.dart';
 import 'services/firebase_service.dart';
+import 'services/fcm_service.dart';
 import 'services/app_mode_service.dart';
 import 'services/appmetrica_service.dart';
 import 'services/settings_service.dart';
@@ -20,12 +22,16 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
 
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
   // Инициализация AppMetrica
   await AppMetricaService.initialize();
 
   // Инициализация Firebase
   final firebaseService = FirebaseService();
   await firebaseService.initialize();
+
+  await FCMService.instance.initialize();
 
   // Определение режима работы
   final appModeService = AppModeService();
