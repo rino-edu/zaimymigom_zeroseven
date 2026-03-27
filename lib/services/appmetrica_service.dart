@@ -1,13 +1,13 @@
 import 'package:appmetrica_plugin/appmetrica_plugin.dart';
+import 'package:appmetrica_push_plugin/appmetrica_push_plugin.dart';
 import 'package:flutter/foundation.dart';
 
 /// Сервис для работы с AppMetrica
 class AppMetricaService {
-  static const String _apiKey =
-      'c828e376-a236-497e-9d06-af7a0d0cbc9e'; // Замените на ваш API ключ
+  static final String _apiKey = "c828e376-a236-497e-9d06-af7a0d0cbc9e"; // Замените на ваш API ключ
 
   /// Инициализация AppMetrica
-  static Future<void> initialize() async {
+  Future<void> initialize() async {
     try {
       // Конфигурация AppMetrica
       final config = AppMetricaConfig(
@@ -26,14 +26,33 @@ class AppMetricaService {
 
       // Инициализация AppMetrica
       await AppMetrica.activate(config);
-
+      // Инициализация AppMetrica Push SDK
+      await _initPush();
       if (kDebugMode) {
-        //print('AppMetrica initialized successfully');
+        print('AppMetrica initialized successfully');
       }
     } catch (e) {
       if (kDebugMode) {
-        //print('Error initializing AppMetrica: $e');
+        print('Error initializing AppMetrica: $e');
       }
+    }
+  }
+
+  /// Инициализация AppMetrica Push SDK
+  Future<void> _initPush() async {
+    try {
+      debugPrint('AppMetricaService: инициализация Push SDK');
+
+      // Инициализация Push SDK
+      await AppMetricaPush.activate();
+      debugPrint('AppMetricaService: Push SDK активирован');
+
+      // Получение токена Firebase и настройка слушателя токенов
+      AppMetricaPush.tokenStream.listen((tokens) {
+        debugPrint('AppMetricaService: получены новые токены: $tokens');
+      });
+    } catch (e) {
+      debugPrint('AppMetricaService: ошибка при инициализации Push SDK: $e');
     }
   }
 
@@ -53,11 +72,11 @@ class AppMetricaService {
         await AppMetrica.reportEvent(eventName);
       }
       if (kDebugMode) {
-        //print('AppMetrica event sent: $eventName with params: $parameters');
+        print('AppMetrica event sent: $eventName with params: $parameters');
       }
     } catch (e) {
       if (kDebugMode) {
-        //print('Error sending AppMetrica event: $e');
+        print('Error sending AppMetrica event: $e');
       }
     }
   }
@@ -70,11 +89,11 @@ class AppMetricaService {
         {'screen_name': screenName} as Map<String, Object>,
       );
       if (kDebugMode) {
-        //print('AppMetrica screen reported: $screenName');
+        print('AppMetrica screen reported: $screenName');
       }
     } catch (e) {
       if (kDebugMode) {
-        //print('Error reporting AppMetrica screen: $e');
+        print('Error reporting AppMetrica screen: $e');
       }
     }
   }
@@ -89,11 +108,11 @@ class AppMetricaService {
             as Map<String, Object>,
       );
       if (kDebugMode) {
-        //print('AppMetrica user attribute set: $key = $value');
+        print('AppMetrica user attribute set: $key = $value');
       }
     } catch (e) {
       if (kDebugMode) {
-        //print('Error setting AppMetrica user attribute: $e');
+        print('Error setting AppMetrica user attribute: $e');
       }
     }
   }
@@ -107,12 +126,27 @@ class AppMetricaService {
         {'error': error, 'reason': reason ?? 'Unknown'} as Map<String, Object>,
       );
       if (kDebugMode) {
-        //print('AppMetrica error reported: $error, reason: $reason');
+        print('AppMetrica error reported: $error, reason: $reason');
       }
     } catch (e) {
       if (kDebugMode) {
-        //print('Error reporting AppMetrica error: $e');
+        print('Error reporting AppMetrica error: $e');
       }
+    }
+  }
+
+  /// Получение AppMetrica Device ID (deviceIdHash)
+  static Future<String> getDeviceIdHash() async {
+    try {
+      final params = await AppMetrica.requestStartupParams([
+        AppMetricaStartupParams.deviceIdHashKey,
+      ]);
+      final deviceId = params.result?.deviceIdHash ?? "unknown";
+      debugPrint("AppMetrica Device ID: $deviceId");
+      return deviceId;
+    } catch (e) {
+      debugPrint("Ошибка при получении AppMetrica Device ID: $e");
+      return "unknown";
     }
   }
 }

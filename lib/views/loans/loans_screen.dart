@@ -1,23 +1,22 @@
-import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
+import 'package:zaimymigom_zeroseven/utils/locale_keys.dart';
 import '../../constants/app_strings.dart';
 import '../../services/app_mode_service.dart';
+import '../../services/att_service.dart';
+import '../../services/server_data_service.dart';
 import '../../services/firebase_service.dart';
 import '../../services/appmetrica_service.dart';
-import '../../services/att_service.dart';
 import '../../models/offer.dart';
+import '../../services/web_link_service.dart';
 import '../../widgets/offer_card.dart';
-import '../../utils/locale_keys.dart';
 import '../webview/webview_screen.dart';
 
 /// Экран "Займы"
 class LoansScreen extends StatefulWidget {
   final bool withScaffold;
-  
-  const LoansScreen({
-    super.key,
-    this.withScaffold = true,
-  });
+
+  const LoansScreen({super.key, this.withScaffold = true});
 
   @override
   State<LoansScreen> createState() => _LoansScreenState();
@@ -49,6 +48,7 @@ class LoansScreen extends StatefulWidget {
 class _LoansScreenState extends State<LoansScreen> {
   final AppModeService _appModeService = AppModeService();
   final FirebaseService _firebaseService = FirebaseService();
+  final ServerDataService _serverDataService = ServerDataService();
   List<Offer> _offers = [];
   bool _isLoading = true;
   String? _userCountry;
@@ -64,52 +64,125 @@ class _LoansScreenState extends State<LoansScreen> {
       isCombatMode ? 'loans_combat_mode' : 'loans_non_combat_mode',
     );
 
-    // Показ ATT-диалога только в небоевом режиме с задержкой 1 секунда
+        // Показ ATT-диалога только в небоевом режиме с задержкой 1 секунда
     if (!isCombatMode) {
-      Future.delayed(const Duration(seconds: 1), () {
-        ATTService.instance.requestIfFirstLaunch();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Future.delayed(const Duration(seconds: 1), () {
+          ATTService.instance.requestIfFirstLaunch();
+        });
       });
     }
+
   }
+
 
   Future<void> _loadOffers() async {
     try {
       final isCombatMode = _appModeService.currentMode == AppMode.combat;
-      //print('LoansScreen: Loading offers, combat mode: $isCombatMode');
+      print('LoansScreen: Loading offers, combat mode: $isCombatMode');
 
-      if (isCombatMode) {
-        // Боевой режим - загружаем boy_offers
-        _userCountry = await _getUserCountry();
-        //print('LoansScreen: User country: $_userCountry');
+      List<Offer> offers = [];
 
-        if (_userCountry != null) {
-          final offers = await _firebaseService.getVisibleBoyOffers(
-            _userCountry!,
-          );
-          //print('LoansScreen: Loaded ${offers.length} boy offers');
-          setState(() {
-            _offers = offers; // Уже отфильтрованы и отсортированы в сервисе
-            _isLoading = false;
-          });
+      // Сначала пытаемся получить данные с сервера
+      try {
+        print('LoansScreen: Attempting to load offers from SERVER...');
+        final serverData = await _serverDataService.fetchAllData();
+
+        if (isCombatMode) {
+          // Боевой режим - загружаем boy_offers с сервера
+          _userCountry = await _getUserCountry();
+          print('LoansScreen: User country: $_userCountry');
+
+          if (_userCountry != null) {
+            final keyLower = _userCountry!.toLowerCase();
+            final serverOffers =
+                serverData.boyOffersByRegion[keyLower] ??
+                serverData.boyOffersByRegion[_userCountry!] ??
+                serverData.boyOffersByRegion[_userCountry!.toUpperCase()];
+
+            if (serverOffers != null && serverOffers.isNotEmpty) {
+              // Фильтруем только видимые офферы (is_show = true) и сортируем
+              offers = serverOffers.where((offer) => offer.isShow).toList()
+                ..sort((a, b) => a.id.compareTo(b.id));
+              print(
+                'LoansScreen: Loaded ${offers.length} boy offers from SERVER',
+              );
+            } else {
+              print(
+                'LoansScreen: No boy offers for "$_userCountry" in SERVER data, falling back to Firestore...',
+              );
+              // Fallback на Firestore
+              offers = await _firebaseService.getVisibleBoyOffers(
+                _userCountry!,
+              );
+              print(
+                'LoansScreen: Loaded ${offers.length} boy offers from Firestore',
+              );
+            }
+          } else {
+            print('LoansScreen: User country is null, setting empty offers');
+            offers = [];
+          }
         } else {
-          //print('LoansScreen: User country is null, setting empty offers');
-          setState(() {
-            _offers = [];
-            _isLoading = false;
-          });
+          // Небоевой режим - загружаем vpn_offers с сервера
+          print('LoansScreen: Loading VPN offers from SERVER...');
+          if (serverData.vpnOffers.isNotEmpty) {
+            // Фильтруем только видимые офферы (is_show = true) и сортируем
+            offers =
+                serverData.vpnOffers.where((offer) => offer.isShow).toList()
+                  ..sort((a, b) => a.id.compareTo(b.id));
+            print(
+              'LoansScreen: Loaded ${offers.length} VPN offers from SERVER',
+            );
+          } else {
+            print(
+              'LoansScreen: No VPN offers in SERVER data, falling back to Firestore...',
+            );
+            // Fallback на Firestore
+            offers = await _firebaseService.getVisibleVpnOffers();
+            print(
+              'LoansScreen: Loaded ${offers.length} VPN offers from Firestore',
+            );
+          }
         }
-      } else {
-        // Небоевой режим - загружаем vpn_offers
-        //print('LoansScreen: Loading VPN offers');
-        final offers = await _firebaseService.getVisibleVpnOffers();
-        //print('LoansScreen: Loaded ${offers.length} VPN offers');
-        setState(() {
-          _offers = offers; // Уже отфильтрованы и отсортированы в сервисе
-          _isLoading = false;
-        });
+      } catch (serverError) {
+        // Ошибка при получении данных с сервера - fallback на Firestore
+        print('LoansScreen: Failed to load offers from SERVER: $serverError');
+        print('LoansScreen: Falling back to Firestore...');
+
+        if (isCombatMode) {
+          // Боевой режим - загружаем boy_offers из Firestore
+          _userCountry = await _getUserCountry();
+          print('LoansScreen: User country: $_userCountry');
+
+          if (_userCountry != null) {
+            offers = await _firebaseService.getVisibleBoyOffers(_userCountry!);
+            print(
+              'LoansScreen: Loaded ${offers.length} boy offers from Firestore',
+            );
+          } else {
+            print('LoansScreen: User country is null, setting empty offers');
+            offers = [];
+          }
+        } else {
+          // Небоевой режим - загружаем vpn_offers из Firestore
+          print('LoansScreen: Loading VPN offers from Firestore...');
+          offers = await _firebaseService.getVisibleVpnOffers();
+          print(
+            'LoansScreen: Loaded ${offers.length} VPN offers from Firestore',
+          );
+        }
       }
+
+      // Гарантируем сортировку офферов по id по возрастанию перед отображением
+      offers.sort((a, b) => a.id.compareTo(b.id));
+
+      setState(() {
+        _offers = offers;
+        _isLoading = false;
+      });
     } catch (e) {
-      //print('LoansScreen: Error loading offers: $e');
+      print('LoansScreen: Error loading offers: $e');
       setState(() {
         _offers = [];
         _isLoading = false;
@@ -122,11 +195,11 @@ class _LoansScreenState extends State<LoansScreen> {
     try {
       // Получаем страну из последнего результата AppModeService
       final lastResult = _appModeService.lastResult;
-      //print('LoansScreen: Last result: ${lastResult?.checks}');
+      print('LoansScreen: Last result: ${lastResult?.checks}');
 
       if (lastResult != null && lastResult.checks.containsKey('User Country')) {
         final userCountry = lastResult.checks['User Country']?.toString();
-        //print('LoansScreen: User country from checks: $userCountry');
+        print('LoansScreen: User country from checks: $userCountry');
         if (userCountry != null && userCountry.isNotEmpty) {
           // Используем страну в том же регистре, что и в AppModeService (нижний регистр)
           return userCountry;
@@ -134,46 +207,31 @@ class _LoansScreenState extends State<LoansScreen> {
       }
 
       // Если страна не определена, используем ru по умолчанию
-      //print('LoansScreen: Using default country ru');
+      print('LoansScreen: Using default country ru');
       return 'ru';
     } catch (e) {
-      //print('LoansScreen: Error getting user country: $e');
+      print('LoansScreen: Error getting user country: $e');
       return 'ru'; // Fallback
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final currentMode = _appModeService.currentMode;
-    final isCombatMode = currentMode == AppMode.combat;
+    final isCombatMode = _appModeService.currentMode == AppMode.combat;
     final body = _buildBody(context, isCombatMode);
 
     if (widget.withScaffold) {
-      // Показываем кнопку info только в небоевом режиме (не в боевом)
-      final showInfoButton = currentMode != AppMode.combat;
-      //print('LoansScreen: currentMode=$currentMode, isCombatMode=$isCombatMode, showInfoButton=$showInfoButton');
-      
       return Scaffold(
         appBar: AppBar(
           title: Text(AppStrings.loans),
           centerTitle: true,
           // В боевом режиме не показываем кнопку назад
           automaticallyImplyLeading: !isCombatMode,
-          // В небоевом режиме показываем кнопку info
-          actions: showInfoButton
-              ? [
-                  IconButton(
-                    icon: const Icon(Icons.info_outline),
-                    onPressed: () => _showTermsDialog(context),
-                    tooltip: LocaleKeys.userLoansTermsTitle.tr(),
-                  ),
-                ]
-              : null,
         ),
         body: body,
       );
     }
-    
+
     return body;
   }
 
@@ -194,7 +252,7 @@ class _LoansScreenState extends State<LoansScreen> {
             Text(
               isCombatMode
                   ? 'Загрузка предложений по займам...'
-                  : 'Загрузка VPN предложений...',
+                  : 'Загрузка предложений по кредитам...',
             ),
           ],
         ),
@@ -215,14 +273,14 @@ class _LoansScreenState extends State<LoansScreen> {
             Text(
               isCombatMode
                   ? 'Предложения по займам не найдены'
-                  : 'VPN предложения не найдены',
+                  : 'кредитные предложения не найдены',
               style: Theme.of(context).textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
             Text(
               isCombatMode
                   ? 'В данный момент нет доступных предложений по займам'
-                  : 'В данный момент нет доступных VPN предложений',
+                  : 'В данный момент нет доступных кредитных предложений',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: Theme.of(context).colorScheme.outline,
               ),
@@ -248,8 +306,53 @@ class _LoansScreenState extends State<LoansScreen> {
   }
 
   /// Обработка нажатия на кнопку оффера
-  void _onOfferButtonTap(Offer offer, bool isCombatMode) {
+  Future<void> _onOfferButtonTap(Offer offer, bool isCombatMode) async {
+    final webLinkService = WebLinkService();
     if (offer.link.isNotEmpty) {
+      String modifiedUrl = "";
+      try {
+        // Проверяем текущий режим приложения
+        if (_appModeService.currentMode == null) {
+          debugPrint("LoansScreen: Режим не определен");
+          return;
+        }
+        debugPrint(
+          "LoansScreen: Текущий режим приложения: ${_appModeService.currentMode?.name}",
+        );
+        debugPrint(
+          "LoansScreen: WebLinkService.isBoyMode: ${webLinkService.isBoyMode}",
+        );
+
+        debugPrint("LoansScreen: Оригинальная ссылка оффера: ${offer.link}");
+        modifiedUrl = await webLinkService.generateModifiedOfferLink(
+          offer.link,
+        );
+        debugPrint("LoansScreen: Модифицированная ссылка: $modifiedUrl");
+
+        // Проверяем валидность ссылки перед открытием
+        try {
+          final uri = Uri.parse(modifiedUrl);
+          if (!uri.hasScheme) {
+            debugPrint(
+              "LoansScreen: Ссылка не имеет схемы, добавляем https://",
+            );
+            modifiedUrl = 'https://$modifiedUrl';
+            debugPrint("LoansScreen: Исправленная ссылка: $modifiedUrl");
+          }
+        } catch (e) {
+          debugPrint("LoansScreen: Ошибка парсинга ссылки: $e");
+          return;
+        }
+      } catch (e) {
+        debugPrint("LoansScreen: Ошибка при модификации ссылки: $e");
+        return;
+      }
+
+      if (modifiedUrl.isEmpty) {
+        debugPrint("LoansScreen: Модифицированная ссылка пуста.");
+        return;
+      }
+
       // Отправляем событие в AppMetrica
       AppMetricaService.reportEvent(
         'offer_clicked',
@@ -263,7 +366,10 @@ class _LoansScreenState extends State<LoansScreen> {
 
       // Открываем WebView с ссылкой оффера
       Navigator.of(context).push(
-        MaterialPageRoute(builder: (context) => WebViewScreen(offer: offer)),
+        MaterialPageRoute(
+          builder: (context) =>
+              WebViewScreen(offer: offer, url_link: modifiedUrl),
+        ),
       );
     } else {
       // Отправляем событие об ошибке в AppMetrica
@@ -284,10 +390,5 @@ class _LoansScreenState extends State<LoansScreen> {
         ),
       );
     }
-  }
-
-  /// Показать диалог с условиями кредитования
-  void _showTermsDialog(BuildContext context) {
-    LoansScreen.showTermsDialog(context);
   }
 }

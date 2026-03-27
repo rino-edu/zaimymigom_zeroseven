@@ -25,7 +25,7 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   // Инициализация AppMetrica
-  await AppMetricaService.initialize();
+  await AppMetricaService().initialize();
 
   // Инициализация Firebase
   final firebaseService = FirebaseService();

@@ -2,7 +2,6 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:vpn_detector/vpn_detector.dart';
 import 'package:http/http.dart' as http;
 import 'firebase_service.dart';
-import 'appmetrica_service.dart';
 
 /// Режимы работы приложения
 enum AppMode {
@@ -26,18 +25,18 @@ class AppModeResult {
   });
 
   void logResult() {
-    //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    //print('🎯 APP MODE DETERMINATION RESULT');
-    //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    //print('Mode: ${mode == AppMode.combat ? "🔥 COMBAT" : "🛡️ NON-COMBAT"}');
-    //print('Reason: $reason');
-    //print('');
-    //print('Check Details:');
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('🎯 APP MODE DETERMINATION RESULT');
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('Mode: ${mode == AppMode.combat ? "🔥 COMBAT" : "🛡️ NON-COMBAT"}');
+    print('Reason: $reason');
+    print('');
+    print('Check Details:');
     checks.forEach((key, value) {
       final status = value == true ? '✅' : '❌';
-      //print('  $status $key: $value');
+      print('  $status $key: $value');
     });
-    //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
   }
 
   @override
@@ -62,32 +61,16 @@ class AppModeService {
   /// Последний результат определения режима
   AppModeResult? get lastResult => _lastResult;
 
-  /// Отправить событие в AppMetrica о результате определения режима
-  void _reportModeToAppMetrica(
-    AppMode mode,
-    String reason, {
-    String? userCountry,
-  }) {
-    AppMetricaService.reportEvent(
-      'app_mode_determined',
-      parameters: {
-        'mode': mode == AppMode.combat ? 'combat' : 'non_combat',
-        'reason': reason,
-        if (userCountry != null) 'user_country': userCountry,
-      },
-    );
-  }
-
   /// Определить режим работы приложения
   Future<AppModeResult> determineAppMode() async {
-    //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    //print('🎯 STARTING APP MODE DETERMINATION');
-    //print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    print('🎯 STARTING APP MODE DETERMINATION');
+    print('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
     final checks = <String, dynamic>{};
 
     // 1. Проверка интернета
-    //print('📡 Step 1: Checking internet connection...');
+    print('📡 Step 1: Checking internet connection...');
     final hasInternet = await _checkInternetConnection();
     checks['Internet Connection'] = hasInternet;
 
@@ -100,15 +83,11 @@ class AppModeService {
       );
       _lastResult = result;
       result.logResult();
-
-      // Отправляем событие в AppMetrica
-      _reportModeToAppMetrica(AppMode.nonCombat, 'No internet connection');
-
       return result;
     }
 
     // 2. Проверка подключения к Firebase Firestore
-    //print('🔥 Step 2: Checking Firebase Firestore connection...');
+    print('🔥 Step 2: Checking Firebase Firestore connection...');
     final hasFirebaseConnection = await _firebaseService.checkConnection();
     checks['Firebase Connection'] = hasFirebaseConnection;
 
@@ -121,18 +100,11 @@ class AppModeService {
       );
       _lastResult = result;
       result.logResult();
-
-      // Отправляем событие в AppMetrica
-      _reportModeToAppMetrica(
-        AppMode.nonCombat,
-        'No Firebase Firestore connection',
-      );
-
       return result;
     }
 
     // 3. Получение настроек из Firebase
-    //print('⚙️ Step 3: Loading Firebase settings...');
+    print('⚙️ Step 3: Loading Firebase settings...');
     final settings = await _firebaseService.getSettings();
 
     if (settings == null) {
@@ -144,18 +116,11 @@ class AppModeService {
       );
       _lastResult = result;
       result.logResult();
-
-      // Отправляем событие в AppMetrica
-      _reportModeToAppMetrica(
-        AppMode.nonCombat,
-        'Failed to load Firebase settings',
-      );
-
       return result;
     }
 
     // 4. Проверка VPN (с учетом настроек)
-    //print('🔒 Step 4: Checking VPN status...');
+    print('🔒 Step 4: Checking VPN status...');
     final hasVpn = await _checkVpnStatus(settings.checkVPN);
     checks['VPN Status'] = hasVpn;
 
@@ -168,18 +133,11 @@ class AppModeService {
       );
       _lastResult = result;
       result.logResult();
-
-      // Отправляем событие в AppMetrica
-      _reportModeToAppMetrica(
-        AppMode.nonCombat,
-        'VPN is enabled (blocks combat mode)',
-      );
-
       return result;
     }
 
     // 5. Проверка настройки checkLocation
-    //print('📍 Step 5: Checking location check setting...');
+    print('📍 Step 5: Checking location check setting...');
     final locationCheckEnabled = settings.checkLocation;
     checks['Location Check Enabled'] = locationCheckEnabled;
 
@@ -192,18 +150,11 @@ class AppModeService {
       );
       _lastResult = result;
       result.logResult();
-
-      // Отправляем событие в AppMetrica
-      _reportModeToAppMetrica(
-        AppMode.nonCombat,
-        'Location check is disabled in settings',
-      );
-
       return result;
     }
 
     // 6. Определение страны пользователя по IP
-    //print('🌍 Step 6: Determining user country...');
+    print('🌍 Step 6: Determining user country...');
     final userCountry = await _getUserCountryByIp();
     checks['User Country'] = userCountry;
 
@@ -216,26 +167,19 @@ class AppModeService {
       );
       _lastResult = result;
       result.logResult();
-
-      // Отправляем событие в AppMetrica
-      _reportModeToAppMetrica(
-        AppMode.nonCombat,
-        'Failed to determine user country',
-      );
-
       return result;
     }
 
     // 7. Проверка разрешенных стран в настройках
-    //print('✅ Step 7: Checking allowed countries...');
+    print('✅ Step 7: Checking allowed countries...');
     final allowedCountries = settings.location.split('/');
     // Приводим все к нижнему регистру для сравнения
     final allowedCountriesLower = allowedCountries
         .map((c) => c.toLowerCase())
         .toList();
-    //print('   📍 User country: "$userCountry"');
-    //print('   📍 Allowed countries (original): $allowedCountries');
-    //print('   📍 Allowed countries (lowercase): $allowedCountriesLower');
+    print('   📍 User country: "$userCountry"');
+    print('   📍 Allowed countries (original): $allowedCountries');
+    print('   📍 Allowed countries (lowercase): $allowedCountriesLower');
     checks['Allowed Countries'] = allowedCountriesLower;
     checks['User Country Allowed'] = allowedCountriesLower.contains(
       userCountry,
@@ -251,19 +195,11 @@ class AppModeService {
       );
       _lastResult = result;
       result.logResult();
-
-      // Отправляем событие в AppMetrica
-      _reportModeToAppMetrica(
-        AppMode.nonCombat,
-        'User country not allowed',
-        userCountry: userCountry,
-      );
-
       return result;
     }
 
     // 8. Проверка наличия коллекции boy_offers_[код страны]
-    //print('💼 Step 8: Checking boy offers collection...');
+    print('💼 Step 8: Checking boy offers collection...');
     final hasBoyOffers = await _checkBoyOffersCollection(userCountry);
     checks['Boy Offers Collection'] = hasBoyOffers;
 
@@ -276,14 +212,6 @@ class AppModeService {
       );
       _lastResult = result;
       result.logResult();
-
-      // Отправляем событие в AppMetrica
-      _reportModeToAppMetrica(
-        AppMode.nonCombat,
-        'No boy offers collection found',
-        userCountry: userCountry,
-      );
-
       return result;
     }
 
@@ -296,14 +224,6 @@ class AppModeService {
     );
     _lastResult = result;
     result.logResult();
-
-    // Отправляем событие в AppMetrica
-    _reportModeToAppMetrica(
-      AppMode.combat,
-      'All checks passed',
-      userCountry: userCountry,
-    );
-
     return result;
   }
 
@@ -312,7 +232,7 @@ class AppModeService {
     try {
       final connectivityResult = await Connectivity().checkConnectivity();
       if (connectivityResult.contains(ConnectivityResult.none)) {
-        //print('   ❌ No internet connectivity');
+        print('   ❌ No internet connectivity');
         return false;
       }
 
@@ -322,12 +242,12 @@ class AppModeService {
           .timeout(const Duration(seconds: 5));
 
       final hasInternet = response.statusCode == 200;
-      // print(
-      //   '   ${hasInternet ? "✅" : "❌"} Internet connection: ${hasInternet ? "OK" : "Failed"}',
-      // );
+      print(
+        '   ${hasInternet ? "✅" : "❌"} Internet connection: ${hasInternet ? "OK" : "Failed"}',
+      );
       return hasInternet;
     } catch (e) {
-      //print('   ❌ Internet check failed: $e');
+      print('   ❌ Internet check failed: $e');
       return false;
     }
   }
@@ -335,19 +255,19 @@ class AppModeService {
   /// Проверка статуса VPN (с учетом настроек Firebase)
   Future<bool> _checkVpnStatus(bool checkVpnSetting) async {
     if (!checkVpnSetting) {
-      //print('   ⚠️  VPN check disabled in settings - assuming VPN is OFF');
+      print('   ⚠️  VPN check disabled in settings - assuming VPN is OFF');
       return false; // Если в настройках отключена проверка VPN, считаем что VPN выключен
     }
 
     try {
       final vpnDetector = VpnDetector();
       final isVpnActive = await vpnDetector.isVpnActive();
-      // print(
-      //   '   ${isVpnActive ? "🔴" : "🟢"} VPN status: ${isVpnActive ? "Active (BLOCKS combat mode)" : "Inactive (ALLOWS combat mode)"}',
-      // );
+      print(
+        '   ${isVpnActive ? "🔴" : "🟢"} VPN status: ${isVpnActive ? "Active (BLOCKS combat mode)" : "Inactive (ALLOWS combat mode)"}',
+      );
       return isVpnActive;
     } catch (e) {
-      //print('   ❌ VPN check failed: $e');
+      print('   ❌ VPN check failed: $e');
       return false; // При ошибке считаем что VPN выключен
     }
   }
@@ -367,15 +287,15 @@ class AppModeService {
         ).firstMatch(data);
         if (countryCodeMatch != null) {
           final countryCode = countryCodeMatch.group(1)?.toLowerCase();
-          //print('   ✅ User country detected: $countryCode');
+          print('   ✅ User country detected: $countryCode');
           return countryCode;
         }
       }
 
-      //print('   ❌ Failed to detect country from IP');
+      print('   ❌ Failed to detect country from IP');
       return null;
     } catch (e) {
-      //print('   ❌ Country detection failed: $e');
+      print('   ❌ Country detection failed: $e');
       return null;
     }
   }
@@ -385,12 +305,12 @@ class AppModeService {
     try {
       final offers = await _firebaseService.getBoyOffers(countryCode);
       final hasOffers = offers.isNotEmpty;
-      // print(
-      //   '   ${hasOffers ? "✅" : "❌"} Boy offers for $countryCode: ${offers.length} offers',
-      // );
+      print(
+        '   ${hasOffers ? "✅" : "❌"} Boy offers for $countryCode: ${offers.length} offers',
+      );
       return hasOffers;
     } catch (e) {
-      //print('   ❌ Failed to check boy offers collection: $e');
+      print('   ❌ Failed to check boy offers collection: $e');
       return false;
     }
   }
@@ -403,16 +323,16 @@ class AppModeService {
       reason: reason,
       checks: {'Manual Override': true},
     );
-    // print(
-    //   '🔧 App mode manually set to: ${mode == AppMode.combat ? "COMBAT" : "NON-COMBAT"}',
-    // );
-    //print('Reason: $reason');
+    print(
+      '🔧 App mode manually set to: ${mode == AppMode.combat ? "COMBAT" : "NON-COMBAT"}',
+    );
+    print('Reason: $reason');
   }
 
   /// Сбросить режим работы (для повторного определения)
   void resetMode() {
     _currentMode = null;
     _lastResult = null;
-    //print('🔄 App mode reset - will be determined on next check');
+    print('🔄 App mode reset - will be determined on next check');
   }
 }
