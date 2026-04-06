@@ -3,6 +3,29 @@ import 'package:flutter_svg/flutter_svg.dart';
 import '../models/offer.dart';
 import '../views/webview/webview_screen.dart';
 
+const double _badgeVerticalPadding = 6;
+const double _badgeFontSize = 12;
+const double _badgeLineHeight = 1.2;
+
+/// Парсит hex (`#RRGGBB` или `RRGGBB`, опционально `AARRGGBB`) в [Color].
+Color? _parseOfferHexColor(String? raw) {
+  if (raw == null) return null;
+  final s = raw.trim();
+  if (s.isEmpty) return null;
+  var hex = s.startsWith('#') ? s.substring(1) : s;
+  if (hex.length == 6) {
+    final v = int.tryParse(hex, radix: 16);
+    if (v == null) return null;
+    return Color(0xFF000000 | v);
+  }
+  if (hex.length == 8) {
+    final v = int.tryParse(hex, radix: 16);
+    if (v == null) return null;
+    return Color(v);
+  }
+  return null;
+}
+
 /// Карточка оффера с раскрывающимися полями
 class OfferCard extends StatefulWidget {
   final Offer offer;
@@ -20,39 +43,96 @@ class _OfferCardState extends State<OfferCard> {
   @override
   Widget build(BuildContext context) {
     final fields = widget.offer.getFields();
+    final badgeLabel = widget.offer.badgeText?.trim() ?? '';
+    final showBadge = badgeLabel.isNotEmpty;
+    final badgeApproxHeight =
+        _badgeFontSize * _badgeLineHeight + _badgeVerticalPadding * 2;
+    final badgeHalfLift = badgeApproxHeight / 2;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.15),
-            blurRadius: 20, // Размытие тени
-            spreadRadius: 5, // Распространение тени во все стороны
-            offset: const Offset(0, 8), // Смещение тени вниз
+      margin: const EdgeInsets.only(bottom: 32),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: double.infinity,
+            decoration: _cardDecoration(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (showBadge) SizedBox(height: badgeHalfLift),
+                _buildCardHeader(),
+                _buildExpandableFields(fields),
+                _buildActionButton(),
+              ],
+            ),
           ),
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 15,
-            spreadRadius: 3,
-            offset: const Offset(0, 4),
-          ),
+          if (showBadge)
+            Positioned(
+              top: -badgeHalfLift,
+              right: 12,
+              child: _buildBadge(badgeLabel),
+            ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Заголовок карточки с логотипом, названием и рейтингом
-          _buildCardHeader(),
+    );
+  }
 
-          // Раскрывающаяся область с полями
-          _buildExpandableFields(fields),
+  BoxDecoration _cardDecoration() {
+    final rawBorder = widget.offer.borderColorOffer;
+    final borderColor = _parseOfferHexColor(rawBorder);
+    final useBorder = rawBorder != null &&
+        rawBorder.trim().isNotEmpty &&
+        borderColor != null;
 
-          // Кнопка действия (во всю ширину карточки)
-          _buildActionButton(),
-        ],
+    return BoxDecoration(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(14),
+      border: useBorder ? Border.all(color: borderColor, width: 3) : null,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.15),
+          blurRadius: 20,
+          spreadRadius: 5,
+          offset: const Offset(0, 8),
+        ),
+        BoxShadow(
+          color: Colors.black.withValues(alpha: 0.1),
+          blurRadius: 15,
+          spreadRadius: 3,
+          offset: const Offset(0, 4),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBadge(String text) {
+    final bg = _parseOfferHexColor(widget.offer.backgroundColorBadgeText) ??
+        Colors.grey.shade700;
+    final fg = bg.computeLuminance() > 0.55 ? Colors.black87 : Colors.white;
+
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 10,
+          vertical: _badgeVerticalPadding,
+        ),
+        decoration: ShapeDecoration(
+          color: bg,
+          shape: const StadiumBorder(),
+        ),
+        child: Text(
+          text,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(
+            color: fg,
+            fontSize: _badgeFontSize,
+            height: _badgeLineHeight,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
     );
   }

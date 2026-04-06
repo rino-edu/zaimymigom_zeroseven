@@ -25,6 +25,13 @@ class Offer {
   final String? field8Name;
   final String? field8Value;
 
+  /// Цвет фона бейджа (hex, с `#` или без)
+  final String? backgroundColorBadgeText;
+  /// Текст на бейдже
+  final String? badgeText;
+  /// Цвет бордера карточки (hex, с `#` или без)
+  final String? borderColorOffer;
+
   Offer({
     required this.id,
     required this.isShow,
@@ -49,6 +56,9 @@ class Offer {
     this.field7Value,
     this.field8Name,
     this.field8Value,
+    this.backgroundColorBadgeText,
+    this.badgeText,
+    this.borderColorOffer,
   });
 
   /// Создание объекта из документа Firestore
@@ -77,6 +87,10 @@ class Offer {
       field7Value: data['field_7_value'] as String?,
       field8Name: data['field_8_name'] as String?,
       field8Value: data['field_8_value'] as String?,
+      backgroundColorBadgeText:
+          data['background_color_badge_text']?.toString(),
+      badgeText: data['badge_text']?.toString(),
+      borderColorOffer: data['border_color_offer']?.toString(),
     );
   }
 
@@ -106,6 +120,13 @@ class Offer {
       if (field7Value != null) 'field_7_value': field7Value,
       if (field8Name != null) 'field_8_name': field8Name,
       if (field8Value != null) 'field_8_value': field8Value,
+      if (backgroundColorBadgeText != null &&
+          backgroundColorBadgeText!.trim().isNotEmpty)
+        'background_color_badge_text': backgroundColorBadgeText,
+      if (badgeText != null && badgeText!.trim().isNotEmpty)
+        'badge_text': badgeText,
+      if (borderColorOffer != null && borderColorOffer!.trim().isNotEmpty)
+        'border_color_offer': borderColorOffer,
     };
   }
 
