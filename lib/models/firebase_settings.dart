@@ -7,6 +7,7 @@ class FirebaseSettings {
   final bool checkSIM;
   final bool checkVPN;
   final String location;
+  final bool showOnboarding;
 
   FirebaseSettings({
     required this.checkInternet,
@@ -14,6 +15,7 @@ class FirebaseSettings {
     required this.checkSIM,
     required this.checkVPN,
     required this.location,
+    required this.showOnboarding,
   });
 
   /// Создание объекта из документа Firestore
@@ -24,6 +26,7 @@ class FirebaseSettings {
       checkSIM: data['checkSIM'] as bool? ?? false,
       checkVPN: data['checkVPN'] as bool? ?? false,
       location: data['location'] as String? ?? '',
+      showOnboarding: data['showOnboarding'] as bool? ?? false,
     );
   }
 
@@ -35,6 +38,7 @@ class FirebaseSettings {
       'checkSIM': checkSIM,
       'checkVPN': checkVPN,
       'location': location,
+      'showOnboarding': showOnboarding,
     };
   }
 
@@ -51,6 +55,6 @@ class FirebaseSettings {
 
   @override
   String toString() {
-    return 'FirebaseSettings(checkInternet: $checkInternet, checkLocation: $checkLocation, checkSIM: $checkSIM, checkVPN: $checkVPN, location: $location)';
+    return 'FirebaseSettings(checkInternet: $checkInternet, checkLocation: $checkLocation, checkSIM: $checkSIM, checkVPN: $checkVPN, location: $location, showOnboarding: $showOnboarding)';
   }
 }

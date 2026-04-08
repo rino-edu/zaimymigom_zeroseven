@@ -369,6 +369,54 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.1"
+  firebase_app_installations:
+    dependency: "direct main"
+    description:
+      name: firebase_app_installations
+      sha256: "9103cac19ec40561b49a023e8e583f007f77a499c2058f5a1d82ba480c2367d7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.1"
+  firebase_app_installations_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_app_installations_platform_interface
+      sha256: "0811d37b91c992cc0c98200cca79652d0375a16c58b364a4db5601571c198ee5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.4+67"
+  firebase_app_installations_web:
+    dependency: transitive
+    description:
+      name: firebase_app_installations_web
+      sha256: "02f2a96e85581bd1f78319b503dc92c80afa1527cbc299c7c921995b75595bbd"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.7+4"
+  firebase_auth:
+    dependency: "direct main"
+    description:
+      name: firebase_auth
+      sha256: "7421650001840aa63d3e7a59062bfa1a53febc52c7520e1effad0d325d6469cb"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.3.0"
+  firebase_auth_platform_interface:
+    dependency: transitive
+    description:
+      name: firebase_auth_platform_interface
+      sha256: "4f9103fe33f5a8cbe7b9bdae7a76e01cb67026b3fcaac5cf603a23685213f7cf"
+      url: "https://pub.dev"
+    source: hosted
+    version: "8.1.8"
+  firebase_auth_web:
+    dependency: transitive
+    description:
+      name: firebase_auth_web
+      sha256: "4173bfa41a8b6f0a791af99c61bead53fca819e32237c9336b84ebfbce44d7ae"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.1.4"
   firebase_core:
     dependency: "direct main"
     description:
@@ -1118,10 +1166,10 @@ packages:
     dependency: "direct main"
     description:
       name: smooth_page_indicator
-      sha256: "4b497e9898d095de40d246db943371183fa7482492a88391cfa8415ef94d57ba"
+      sha256: b21ebb8bc39cf72d11c7cfd809162a48c3800668ced1c9da3aade13a32cf6c1c
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.1"
+    version: "1.2.1"
   source_span:
     dependency: transitive
     description:

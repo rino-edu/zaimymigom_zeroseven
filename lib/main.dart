@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:zaimymigom_zeroseven/utils/theme.dart';
 import 'package:zaimymigom_zeroseven/widgets/connectivity_listener.dart';
 import 'services/firebase_service.dart';
+import 'services/firebase_auth_service.dart';
 import 'services/fcm_service.dart';
 import 'services/app_mode_service.dart';
 import 'services/appmetrica_service.dart';
@@ -14,9 +15,7 @@ import 'services/goals_provider.dart';
 import 'services/currency_prefs.dart';
 import 'services/calendar_provider.dart';
 import 'services/creditworthiness_provider.dart';
-import 'views/loans/loans_screen.dart';
-import 'views/home/main_screen.dart';
-import 'views/onboarding/onboarding_screen.dart';
+import 'features/combat_onboarding/ui/combat_onboarding_gate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +29,10 @@ void main() async {
   // Инициализация Firebase
   final firebaseService = FirebaseService();
   await firebaseService.initialize();
+
+  // Анонимная авторизация (нужна для записи в Firestore с правилами по UID)
+  final authService = FirebaseAuthService();
+  await authService.ensureAnonymousSignIn();
 
   await FCMService.instance.initialize();
 
@@ -111,14 +114,10 @@ class AppModeWrapper extends StatelessWidget {
 
     // В боевом режиме — сразу LoansScreen c боевыми офферами
     if (appMode == AppMode.combat) {
-      return const LoansScreen();
+      return const CombatOnboardingGate(appMode: AppMode.combat);
     }
 
-    // В небоевом режиме — если онбординг не пройден, сначала онбординг
-    final settings = context.watch<SettingsService>();
-    if (!settings.onboardingCompleted) {
-      return const OnboardingScreen();
-    }
-    return const MainScreen();
+    // В небоевом режиме — онбординг полностью убран
+    return const CombatOnboardingGate(appMode: AppMode.nonCombat);
   }
 }
