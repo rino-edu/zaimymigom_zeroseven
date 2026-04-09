@@ -28,9 +28,9 @@ class CombatOnboardingFirestoreService {
     }
 
     final startData = byId['start'] ?? const <String, dynamic>{};
-    final theme = CombatOnboardingTheme.fromMap(
-      (startData['theme'] as Map?)?.cast<String, dynamic>(),
-    );
+    // Тема вынесена в отдельный документ `onboarding/theme` с плоскими полями.
+    final themeData = byId['theme'];
+    final theme = CombatOnboardingTheme.fromMap(themeData);
     final start = CombatOnboardingStartConfig(
       title: (startData['title'] as String?) ??
           'Поможем подобрать займ с максимальным шансом одобрения на лучших условиях для вашей ситуации.',

@@ -60,7 +60,7 @@
 ## 3) Полная схема экранов онбординга
 
 Все экраны имеют общие элементы:
-- фон и цвета из темы (см. Firestore `onboarding/start.theme`);
+- фон и цвета из темы (см. Firestore `onboarding/theme`);
 - справа сверху кнопка закрытия (иконка `close`) — **на всех экранах, кроме анимационных**.
 
 ### 3.1. Экран 1: Start (`onboarding/start`)
@@ -248,7 +248,12 @@
 - `title`: string
 - `body`: string
 - `primaryButtonText`: string
-- `theme`: map (см. 6.6) — единая тема для всех экранов
+
+### 6.2.1. `onboarding/theme`
+
+Документ с темой (единая тема для всех экранов), чтобы не использовать тип map в `start`.
+
+Поля (все string): см. 6.6.
 
 ### 6.3. `onboarding/pageX`
 
