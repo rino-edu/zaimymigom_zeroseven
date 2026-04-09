@@ -6,17 +6,21 @@ import 'package:flutter/foundation.dart';
 
 import '../models/firebase_settings.dart';
 import '../models/offer.dart';
+import '../models/settings_show_case.dart';
 
 /// Ответ сервера со всеми данными (аналогом коллекций Firestore)
 class ServerDataResponse {
   final Map<String, List<Offer>> boyOffersByRegion;
   final List<Offer> vpnOffers;
   final FirebaseSettings? settings;
+  /// Аналог `settings/show_case` на сервере.
+  final SettingsShowCase? showCase;
 
   ServerDataResponse({
     required this.boyOffersByRegion,
     required this.vpnOffers,
     required this.settings,
+    required this.showCase,
   });
 }
 
@@ -124,6 +128,21 @@ class ServerDataService {
         }
       }
 
+      // Парсим show_case (документ settings/show_case)
+      SettingsShowCase? showCase;
+      final showCaseList =
+          (data['show_case'] ?? data['showCase']) as List<dynamic>?;
+      if (showCaseList != null && showCaseList.isNotEmpty) {
+        final first = showCaseList.first as Map<String, dynamic>;
+        final json = first['json'] as Map<String, dynamic>? ?? {};
+        showCase = SettingsShowCase.fromMap(json);
+        if (kDebugMode) {
+          debugPrint(
+            'ServerDataService: show_case titles true="${showCase.onboardingTrueTitle}" false="${showCase.onboardingFalseTitle}"',
+          );
+        }
+      }
+
       // Парсим vpn_offers
       final vpnOffersRaw = data['vpn_offers'] as List<dynamic>? ?? [];
       final vpnOffers = <Offer>[];
@@ -173,6 +192,7 @@ class ServerDataService {
         boyOffersByRegion: boyOffersByRegion,
         vpnOffers: vpnOffers,
         settings: settings,
+        showCase: showCase,
       );
 
       // Сохраняем в кэш

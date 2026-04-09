@@ -5,6 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import '../firebase_options.dart';
 import '../models/firebase_settings.dart';
 import '../models/offer.dart';
+import '../models/settings_show_case.dart';
 import 'firebase_crashlytics_service.dart';
 
 /// Сервис для работы с Firebase Firestore
@@ -158,6 +159,28 @@ class FirebaseService {
       return settings;
     } catch (e) {
       print('Error fetching settings: $e');
+      return null;
+    }
+  }
+
+  /// Документ `settings/show_case` (заголовки AppBar на экране займов).
+  Future<SettingsShowCase?> getShowCase() async {
+    await _ensureFirestoreInitialized();
+
+    try {
+      final doc = await _firestore
+          .collection('settings')
+          .doc('show_case')
+          .get()
+          .timeout(const Duration(seconds: 30));
+
+      if (!doc.exists || doc.data() == null) {
+        return null;
+      }
+
+      return SettingsShowCase.fromMap(doc.data()!);
+    } catch (e) {
+      print('Error fetching settings/show_case: $e');
       return null;
     }
   }

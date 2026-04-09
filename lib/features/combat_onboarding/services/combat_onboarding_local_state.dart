@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class CombatOnboardingLocalState {
   static const _firstOpenAtKey = 'combat_onboarding_first_open_at_iso';
+  static const _fullyCompletedKey = 'combat_onboarding_fully_completed';
 
   /// Возвращает дату первого открытия.
   /// Если ключа нет — сохраняет текущий момент и возвращает его.
@@ -24,6 +25,17 @@ class CombatOnboardingLocalState {
     final raw = prefs.getString(_firstOpenAtKey);
     if (raw == null || raw.isEmpty) return true;
     return DateTime.tryParse(raw) == null;
+  }
+
+  /// Боевой онбординг доведён до конца (после animation2 и успешной записи).
+  Future<bool> isCombatOnboardingFullyCompleted() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_fullyCompletedKey) ?? false;
+  }
+
+  Future<void> setCombatOnboardingFullyCompleted() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_fullyCompletedKey, true);
   }
 }
 

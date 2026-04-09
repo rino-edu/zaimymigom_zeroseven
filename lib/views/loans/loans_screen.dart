@@ -2,6 +2,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:zaimymigom_zeroseven/utils/locale_keys.dart';
 import '../../constants/app_strings.dart';
+import '../../features/combat_onboarding/services/combat_onboarding_local_state.dart';
+import '../../models/settings_show_case.dart';
 import '../../services/app_mode_service.dart';
 import '../../services/att_service.dart';
 import '../../services/server_data_service.dart';
@@ -52,6 +54,7 @@ class _LoansScreenState extends State<LoansScreen> {
   List<Offer> _offers = [];
   bool _isLoading = true;
   String? _userCountry;
+  String _loansAppBarTitle = '';
 
   @override
   void initState() {
@@ -77,6 +80,7 @@ class _LoansScreenState extends State<LoansScreen> {
 
 
   Future<void> _loadOffers() async {
+    SettingsShowCase? showCaseFromServer;
     try {
       final isCombatMode = _appModeService.currentMode == AppMode.combat;
       print('LoansScreen: Loading offers, combat mode: $isCombatMode');
@@ -87,6 +91,7 @@ class _LoansScreenState extends State<LoansScreen> {
       try {
         print('LoansScreen: Attempting to load offers from SERVER...');
         final serverData = await _serverDataService.fetchAllData();
+        showCaseFromServer = serverData.showCase;
 
         if (isCombatMode) {
           // Боевой режим - загружаем boy_offers с сервера
@@ -177,15 +182,47 @@ class _LoansScreenState extends State<LoansScreen> {
       // Гарантируем сортировку офферов по id по возрастанию перед отображением
       offers.sort((a, b) => a.id.compareTo(b.id));
 
+      var showCase = showCaseFromServer;
+      if (showCase == null || showCase.isEmpty) {
+        showCase = await _firebaseService.getShowCase();
+      }
+
+      final onboardingFullyDone =
+          await CombatOnboardingLocalState().isCombatOnboardingFullyCompleted();
+      var barTitle = onboardingFullyDone
+          ? (showCase?.onboardingTrueTitle ?? '')
+          : (showCase?.onboardingFalseTitle ?? '');
+      if (barTitle.isEmpty) {
+        barTitle = AppStrings.loans;
+      }
+
       setState(() {
         _offers = offers;
         _isLoading = false;
+        _loansAppBarTitle = barTitle;
       });
     } catch (e) {
       print('LoansScreen: Error loading offers: $e');
+
+      SettingsShowCase? showCase;
+      try {
+        showCase = await _firebaseService.getShowCase();
+      } catch (_) {
+        showCase = null;
+      }
+      final onboardingFullyDone =
+          await CombatOnboardingLocalState().isCombatOnboardingFullyCompleted();
+      var barTitle = onboardingFullyDone
+          ? (showCase?.onboardingTrueTitle ?? '')
+          : (showCase?.onboardingFalseTitle ?? '');
+      if (barTitle.isEmpty) {
+        barTitle = AppStrings.loans;
+      }
+
       setState(() {
         _offers = [];
         _isLoading = false;
+        _loansAppBarTitle = barTitle;
       });
     }
   }
@@ -223,7 +260,9 @@ class _LoansScreenState extends State<LoansScreen> {
     if (widget.withScaffold) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(AppStrings.loans),
+          title: Text(
+            _loansAppBarTitle.isEmpty ? AppStrings.loans : _loansAppBarTitle,
+          ),
           centerTitle: true,
           // В боевом режиме не показываем кнопку назад
           automaticallyImplyLeading: !isCombatMode,

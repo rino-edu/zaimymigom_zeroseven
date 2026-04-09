@@ -5,6 +5,7 @@ import '../../../views/loans/loans_screen.dart';
 import '../models/combat_onboarding_config.dart';
 import '../models/combat_onboarding_theme.dart';
 import '../services/combat_onboarding_firestore_service.dart';
+import '../services/combat_onboarding_local_state.dart';
 import '../services/combat_onboarding_user_writer.dart';
 import 'combat_onboarding_loading_screen.dart';
 
@@ -236,6 +237,8 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
                         answersOnbord: Map<String, String>.from(_answers),
                         phone: phone,
                       );
+                      await CombatOnboardingLocalState()
+                          .setCombatOnboardingFullyCompleted();
                       debugPrint('CombatOnboarding: writeResult ok, go LoansScreen');
                     } catch (e, st) {
                       debugPrint('CombatOnboarding: writeResult FAILED: $e');
