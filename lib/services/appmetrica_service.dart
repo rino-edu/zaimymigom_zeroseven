@@ -177,19 +177,46 @@ class AppMetricaService {
   }
 
   static Future<String> _getLocationByIp() async {
-    try {
-      final response = await http
-          .get(Uri.parse('https://ipinfo.io/json'))
-          .timeout(const Duration(seconds: 10));
+    String? extractCountryCode(String body) {
+      // ipinfo.io / ipwho.is
+      final m =
+          RegExp(r'"country"\\s*:\\s*"([^"]+)"').firstMatch(body) ??
+              RegExp(r'"country_code"\\s*:\\s*"([^"]+)"').firstMatch(body);
+      final v = m?.group(1)?.trim();
+      if (v == null || v.isEmpty) return null;
+      return v.toLowerCase();
+    }
 
-      if (response.statusCode == 200) {
-        final data = response.body;
-        final countryCodeMatch =
-            RegExp(r'"country"\\s*:\\s*"([^"]+)"').firstMatch(data);
-        if (countryCodeMatch != null) {
-          return (countryCodeMatch.group(1) ?? 'unknown').toLowerCase();
-        }
-      }
+    Future<String?> tryJson(String url) async {
+      final response =
+          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
+      if (response.statusCode != 200) return null;
+      return extractCountryCode(response.body);
+    }
+
+    Future<String?> tryPlainText(String url) async {
+      final response =
+          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
+      if (response.statusCode != 200) return null;
+      final v = response.body.trim().toLowerCase();
+      if (v.isEmpty || v == 'unknown') return null;
+      // ipapi.co/country/ возвращает "RU" (или "Undefined")
+      if (v.length > 8) return null;
+      return v;
+    }
+
+    try {
+      // 1) ipinfo (как в AppModeService)
+      final ipinfo = await tryJson('https://ipinfo.io/json');
+      if (ipinfo != null) return ipinfo;
+
+      // 2) ipapi.co (просто код страны)
+      final ipapi = await tryPlainText('https://ipapi.co/country/');
+      if (ipapi != null) return ipapi;
+
+      // 3) ipwho.is (country_code)
+      final ipwho = await tryJson('https://ipwho.is/');
+      if (ipwho != null) return ipwho;
     } catch (e) {
       debugPrint('AppMetricaService: location by ip failed: $e');
     }

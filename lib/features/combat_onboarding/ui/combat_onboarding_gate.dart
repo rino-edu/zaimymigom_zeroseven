@@ -49,12 +49,8 @@ class _CombatOnboardingGateState extends State<CombatOnboardingGate> {
     // combat
     if (!isFirstOpen) {
       if (!mounted) return;
-      setState(
-        () => _resolved = const LoansScreen(
-          showCaseOnboardingReason:
-              CombatLoansShowCaseReason.withoutOnboarding,
-        ),
-      );
+      // Повторный запуск — show_case_onboarding_none не отправляем.
+      setState(() => _resolved = const LoansScreen());
       return;
     }
 
