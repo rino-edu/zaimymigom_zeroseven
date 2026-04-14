@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../models/offer.dart';
+import '../services/firebase_analytics_service.dart';
 import '../views/webview/webview_screen.dart';
 
 const double _badgeVerticalPadding = 6;
@@ -481,6 +482,13 @@ class _OfferCardState extends State<OfferCard> {
 
   /// Обработка нажатия на кнопку
   void _onButtonTap() {
+    if (widget.offer.link.isNotEmpty) {
+      FirebaseAnalyticsService.logOfferOpen(
+        link: widget.offer.link,
+        name: widget.offer.name,
+      );
+    }
+
     // Если есть кастомный обработчик, используем его
     if (widget.onButtonTap != null) {
       widget.onButtonTap!();

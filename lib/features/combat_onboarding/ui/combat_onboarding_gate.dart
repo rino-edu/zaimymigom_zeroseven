@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../services/app_mode_service.dart';
+import '../../../services/firebase_analytics_service.dart';
 import '../../../views/home/main_screen.dart';
 import '../../../views/loans/loans_screen.dart';
 import '../services/combat_onboarding_local_state.dart';
@@ -48,7 +49,12 @@ class _CombatOnboardingGateState extends State<CombatOnboardingGate> {
     // combat
     if (!isFirstOpen) {
       if (!mounted) return;
-      setState(() => _resolved = const LoansScreen());
+      setState(
+        () => _resolved = const LoansScreen(
+          showCaseOnboardingReason:
+              CombatLoansShowCaseReason.withoutOnboarding,
+        ),
+      );
       return;
     }
 
@@ -58,7 +64,12 @@ class _CombatOnboardingGateState extends State<CombatOnboardingGate> {
     if (!showOnboarding) {
       await _userWriter.writeNotShownIfFirstOpen(isFirstOpen: true);
       if (!mounted) return;
-      setState(() => _resolved = const LoansScreen());
+      setState(
+        () => _resolved = const LoansScreen(
+          showCaseOnboardingReason:
+              CombatLoansShowCaseReason.withoutOnboarding,
+        ),
+      );
       return;
     }
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../../services/firebase_analytics_service.dart';
 import '../../../views/loans/loans_screen.dart';
 import '../models/combat_onboarding_config.dart';
 import '../models/combat_onboarding_theme.dart';
@@ -24,6 +25,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
 
   CombatOnboardingConfig? _config;
 
+  bool _loggedOnboardingShow = false;
   int _currentIndex = 0;
   final Map<String, String> _answers = {};
 
@@ -60,18 +62,29 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
       setState(() {
         _config = cfg;
       });
+      _logOnboardingShowOnce();
     } catch (e) {
       if (!mounted) return;
       // После 1 ретрая (уже внутри fetchConfigWithOneRetry) — уходим на LoansScreen.
-      _goLoans();
+      _goLoans(
+        showCaseReason: CombatLoansShowCaseReason.afterOnboardingClose,
+      );
     }
   }
 
-  void _goLoans() {
+  void _goLoans({CombatLoansShowCaseReason? showCaseReason}) {
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const LoansScreen()),
+      MaterialPageRoute(
+        builder: (_) => LoansScreen(showCaseOnboardingReason: showCaseReason),
+      ),
     );
+  }
+
+  void _logOnboardingShowOnce() {
+    if (_loggedOnboardingShow) return;
+    _loggedOnboardingShow = true;
+    FirebaseAnalyticsService.logOnboardingShow();
   }
 
   void _onPhoneChanged() {
@@ -156,9 +169,16 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
   Future<void> _closeOnboarding() async {
     final cfg = _config;
     if (cfg == null) {
-      _goLoans();
+      _goLoans(
+        showCaseReason: CombatLoansShowCaseReason.afterOnboardingClose,
+      );
       return;
     }
+
+    final analyticsPageNumber = _currentIndex + 1;
+    await FirebaseAnalyticsService.logOnboardingClose(
+      pageNumber: analyticsPageNumber,
+    );
 
     final current = _currentIndex + 1;
     final total = cfg.totalPagesForLastOnbord;
@@ -176,7 +196,14 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
       phone: phoneToWrite,
     );
 
-    _goLoans();
+    _goLoans(
+      showCaseReason: CombatLoansShowCaseReason.afterOnboardingClose,
+    );
+  }
+
+  void _onStartContinue() {
+    FirebaseAnalyticsService.logOnboardingStart();
+    _next();
   }
 
   void _next() {
@@ -193,6 +220,12 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
   }
 
   void _onOptionSelected(CombatOnboardingQuestionPageConfig page, String option) {
+    final qa =
+        'вопрос на экране(${page.question}): $option';
+    FirebaseAnalyticsService.logOnboardingPageAnswer(
+      pageNumber: page.pageNumber,
+      questionAnswer: qa,
+    );
     setState(() {
       _answers[page.question] = option;
     });
@@ -206,6 +239,8 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
     final phone = _normalizeRuPhone(_phoneController.text);
     if (phone == null) return;
     if (!_consentChecked) return;
+
+    FirebaseAnalyticsService.logOnboardingFinish();
 
     final total = cfg.totalPagesForLastOnbord;
     final last = '$total/$total';
@@ -249,7 +284,12 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
 
                     if (!loading2Ctx.mounted) return;
                     Navigator.of(loading2Ctx).pushReplacement(
-                      MaterialPageRoute(builder: (_) => const LoansScreen()),
+                      MaterialPageRoute(
+                        builder: (_) => const LoansScreen(
+                          showCaseOnboardingReason:
+                              CombatLoansShowCaseReason.afterOnboardingFinish,
+                        ),
+                      ),
                     );
                   },
                 ),
@@ -304,7 +344,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
                       body: cfg.start.body,
                       buttonText: cfg.start.primaryButtonText,
                       theme: cfg.start.theme,
-                      onContinue: _next,
+                      onContinue: _onStartContinue,
                     ),
                     for (final page in cfg.pagesSorted)
                       _QuestionPage(

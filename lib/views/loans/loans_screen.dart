@@ -9,6 +9,7 @@ import '../../services/att_service.dart';
 import '../../services/server_data_service.dart';
 import '../../services/firebase_service.dart';
 import '../../services/appmetrica_service.dart';
+import '../../services/firebase_analytics_service.dart';
 import '../../models/offer.dart';
 import '../../services/web_link_service.dart';
 import '../../widgets/offer_card.dart';
@@ -18,7 +19,14 @@ import '../webview/webview_screen.dart';
 class LoansScreen extends StatefulWidget {
   final bool withScaffold;
 
-  const LoansScreen({super.key, this.withScaffold = true});
+  /// Если задан — один раз логируем `show_case_onboarding_*` (гейт / онбординг).
+  final CombatLoansShowCaseReason? showCaseOnboardingReason;
+
+  const LoansScreen({
+    super.key,
+    this.withScaffold = true,
+    this.showCaseOnboardingReason,
+  });
 
   @override
   State<LoansScreen> createState() => _LoansScreenState();
@@ -59,6 +67,13 @@ class _LoansScreenState extends State<LoansScreen> {
   @override
   void initState() {
     super.initState();
+    final showCase = widget.showCaseOnboardingReason;
+    if (showCase != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        FirebaseAnalyticsService.logLoansShowCaseIfNeeded(showCase);
+      });
+    }
+
     _loadOffers();
 
     // Отправляем событие о просмотре экрана в AppMetrica
