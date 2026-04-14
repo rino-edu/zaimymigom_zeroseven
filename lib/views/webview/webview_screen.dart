@@ -97,7 +97,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
               _isLoading = true;
             });
           },
-          onPageFinished: (String url) {
+          onPageFinished: (String url) async {
             developer.log("Page finished loading: $url", name: _logTag);
 
             if (url == 'about:blank') return;
@@ -106,43 +106,54 @@ class _WebViewScreenState extends State<WebViewScreen> {
             _currentUrl = url;
 
             // Инжектируем JavaScript для улучшения работы с файлами
-            controller.runJavaScript('''
-              const originalClick = HTMLElement.prototype.click;
-              HTMLElement.prototype.click = function() {
-                console.log('Element clicked:', this.tagName, this.type);
-                if(this.tagName === 'INPUT' && this.type === 'file') {
-                  console.log('File input clicked!');
-                }
-                return originalClick.apply(this, arguments);
-              };
-              
-              document.querySelectorAll('input[type="file"]').forEach(input => {
-                console.log('Found file input:', input);
-                input.addEventListener('click', function() {
-                  console.log('File input clicked directly');
-                });
-              });
-              
-              const observer = new MutationObserver(mutations => {
-                mutations.forEach(mutation => {
-                  if (mutation.type === 'childList') {
-                    mutation.addedNodes.forEach(node => {
-                      if (node.querySelectorAll) {
-                        node.querySelectorAll('input[type="file"]').forEach(input => {
-                          console.log('New file input added:', input);
-                          input.addEventListener('click', function() {
-                            console.log('New file input clicked');
-                          });
-                        });
-                      }
-                    });
+            try {
+              await controller.runJavaScript('''
+                const originalClick = HTMLElement.prototype.click;
+                HTMLElement.prototype.click = function() {
+                  console.log('Element clicked:', this.tagName, this.type);
+                  if(this.tagName === 'INPUT' && this.type === 'file') {
+                    console.log('File input clicked!');
                   }
+                  return originalClick.apply(this, arguments);
+                };
+                
+                document.querySelectorAll('input[type="file"]').forEach(input => {
+                  console.log('Found file input:', input);
+                  input.addEventListener('click', function() {
+                    console.log('File input clicked directly');
+                  });
                 });
-              });
-              
-              observer.observe(document.body, { childList: true, subtree: true });
-              console.log('WebView JS initialization complete');
-            ''');
+                
+                const observer = new MutationObserver(mutations => {
+                  mutations.forEach(mutation => {
+                    if (mutation.type === 'childList') {
+                      mutation.addedNodes.forEach(node => {
+                        if (node.querySelectorAll) {
+                          node.querySelectorAll('input[type="file"]').forEach(input => {
+                            console.log('New file input added:', input);
+                            input.addEventListener('click', function() {
+                              console.log('New file input clicked');
+                            });
+                          });
+                        }
+                      });
+                    }
+                  });
+                });
+                
+                observer.observe(document.body, { childList: true, subtree: true });
+                console.log('WebView JS initialization complete');
+              ''');
+            } catch (e, st) {
+              // На некоторых страницах (особенно iOS/WKWebView) инъекция JS может падать.
+              // Это не должно ломать показ WebView и закрытие экрана.
+              developer.log(
+                'runJavaScript failed: $e',
+                name: _logTag,
+                error: e,
+                stackTrace: st,
+              );
+            }
 
             setState(() {
               _isLoading = false;

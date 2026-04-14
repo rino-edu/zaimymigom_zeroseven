@@ -36,7 +36,7 @@ class FirebaseCrashlyticsService {
     _ready = true;
 
     // Отправляем тестовый репорт для проверки работы Crashlytics (только в debug)
-    await _sendTestReportIfDebug();
+    //await _sendTestReportIfDebug();
   }
 
   // Отправка тестового репорта в Crashlytics для проверки интеграции
