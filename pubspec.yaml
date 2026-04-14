@@ -47,7 +47,7 @@ dependencies:
   flutter_slidable: ^4.0.3
   flutter_staggered_grid_view: ^0.7.0
   table_calendar: ^3.1.2
-  flutter_markdown: ^0.7.4+1
+  flutter_markdown: ^0.7.7+1
   url_launcher: ^6.3.1
   http: ^1.5.0
   dio: ^5.9.0
@@ -94,3 +94,4 @@ flutter:
   assets:
     - assets/locales/
     - assets/icons/
+    - assets/strings/policy.md

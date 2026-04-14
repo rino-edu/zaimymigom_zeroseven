@@ -33,12 +33,14 @@ class CombatOnboardingFinalConfig {
   final String body;
   final String primaryButtonText;
   final String consentText;
+  final String consentLink;
 
   const CombatOnboardingFinalConfig({
     required this.title,
     required this.body,
     required this.primaryButtonText,
     required this.consentText,
+    required this.consentLink,
   });
 }
 

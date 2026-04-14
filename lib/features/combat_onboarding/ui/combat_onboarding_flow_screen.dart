@@ -9,7 +9,9 @@ import '../models/combat_onboarding_theme.dart';
 import '../services/combat_onboarding_firestore_service.dart';
 import '../services/combat_onboarding_local_state.dart';
 import '../services/combat_onboarding_user_writer.dart';
+import 'combat_onboarding_policy_screen.dart';
 import 'combat_onboarding_loading_screen.dart';
+
 
 class CombatOnboardingFlowScreen extends StatefulWidget {
   const CombatOnboardingFlowScreen({super.key});
@@ -404,6 +406,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
   }
 }
 
+
 class _StartPage extends StatelessWidget {
   final String title;
   final String body;
@@ -464,6 +467,7 @@ class _StartPage extends StatelessWidget {
   }
 }
 
+
 class _QuestionPage extends StatelessWidget {
   final String question;
   final List<String> options;
@@ -518,6 +522,7 @@ class _QuestionPage extends StatelessWidget {
   }
 }
 
+
 class _FinalPage extends StatelessWidget {
   final String title;
   final String body;
@@ -546,6 +551,14 @@ class _FinalPage extends StatelessWidget {
     required this.canContinue,
     required this.onContinue,
   });
+
+  void _openPolicy(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const CombatOnboardingPolicyScreen(),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -587,9 +600,15 @@ class _FinalPage extends StatelessWidget {
           CheckboxListTile(
             value: consentChecked,
             onChanged: (v) => onConsentChanged(v ?? false),
-            title: Text(
-              consentText,
-              style: TextStyle(color: theme.bodyTextColor),
+            title: InkWell(
+              onTap: () => _openPolicy(context),
+              child: Text(
+                consentText,
+                style: TextStyle(
+                  color: theme.bodyTextColor,
+                  decoration: TextDecoration.underline,
+                ),
+              ),
             ),
             controlAffinity: ListTileControlAffinity.leading,
             contentPadding: EdgeInsets.zero,
@@ -615,4 +634,3 @@ class _FinalPage extends StatelessWidget {
     );
   }
 }
-
