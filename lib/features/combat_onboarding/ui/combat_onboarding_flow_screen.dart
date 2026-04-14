@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
 import '../../../services/firebase_analytics_service.dart';
+import '../../../services/appmetrica_service.dart';
 import '../../../views/loans/loans_screen.dart';
 import '../models/combat_onboarding_config.dart';
 import '../models/combat_onboarding_theme.dart';
@@ -85,6 +86,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
     if (_loggedOnboardingShow) return;
     _loggedOnboardingShow = true;
     FirebaseAnalyticsService.logOnboardingShow();
+    AppMetricaService.reportEvent('onboarding_show');
   }
 
   void _onPhoneChanged() {
@@ -179,6 +181,10 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
     await FirebaseAnalyticsService.logOnboardingClose(
       pageNumber: analyticsPageNumber,
     );
+    await AppMetricaService.reportEvent(
+      'onboarding_close',
+      parameters: {'page_number': analyticsPageNumber},
+    );
 
     final current = _currentIndex + 1;
     final total = cfg.totalPagesForLastOnbord;
@@ -203,6 +209,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
 
   void _onStartContinue() {
     FirebaseAnalyticsService.logOnboardingStart();
+    AppMetricaService.reportEvent('onboarding_start');
     _next();
   }
 
@@ -226,6 +233,10 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
       pageNumber: page.pageNumber,
       questionAnswer: qa,
     );
+    AppMetricaService.reportEvent(
+      'onboarding_page_${page.pageNumber}',
+      parameters: {'question_answer': qa},
+    );
     setState(() {
       _answers[page.question] = option;
     });
@@ -241,6 +252,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
     if (!_consentChecked) return;
 
     FirebaseAnalyticsService.logOnboardingFinish();
+    AppMetricaService.reportEvent('onboarding_finish');
 
     final total = cfg.totalPagesForLastOnbord;
     final last = '$total/$total';

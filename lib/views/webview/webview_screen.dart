@@ -42,14 +42,6 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
     // Отправляем событие о просмотре WebView в AppMetrica
     AppMetricaService.reportScreen('webview_offer');
-    AppMetricaService.reportEvent(
-      'webview_opened',
-      parameters: {
-        'offer_id': widget.offer.id.toString(),
-        'offer_name': widget.offer.name,
-        'offer_link': widget.url_link,
-      },
-    );
   }
 
   /// Инициализация WebView
@@ -544,28 +536,15 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isCombat = AppModeService().currentMode == AppMode.combat;
-
-    // Вычисляем динамический отступ для bottom bar
-    // Высота LiquidGlassBottomBar обычно около 60-80 пикселей
-    // Плюс системные отступы (safe area)
-    final mediaQuery = MediaQuery.of(context);
-    final bottomBarHeight =
-        20.0; // Безопасная высота LiquidGlassBottomBar (с учетом всех вариантов)
-    final systemBottomPadding = mediaQuery.padding.bottom;
-    final totalBottomPadding =
-        bottomBarHeight +
-        systemBottomPadding +
-        4; // +4 для дополнительного отступа
-
     return Scaffold(
       appBar: AppBar(
               title: Text(AppStrings.appName, style: const TextStyle(fontSize: 14)),
               centerTitle: true,
-              leading: IconButton(
-                icon: const Icon(Icons.close),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
+              leading: _buildLeading() ??
+                  IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
               actions: [
                 // Кнопка назад
                 IconButton(

@@ -25,6 +25,7 @@ void main() async {
 
   // Инициализация AppMetrica
   await AppMetricaService().initialize();
+  await AppMetricaService.reportVpnStatusOnLaunch();
 
   // Инициализация Firebase
   final firebaseService = FirebaseService();

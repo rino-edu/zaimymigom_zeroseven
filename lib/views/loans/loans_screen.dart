@@ -71,6 +71,14 @@ class _LoansScreenState extends State<LoansScreen> {
     if (showCase != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         FirebaseAnalyticsService.logLoansShowCaseIfNeeded(showCase);
+        switch (showCase) {
+          case CombatLoansShowCaseReason.afterOnboardingFinish:
+            AppMetricaService.reportEvent('show_case_onboarding_finish');
+          case CombatLoansShowCaseReason.afterOnboardingClose:
+            AppMetricaService.reportEvent('show_case_onboarding_close');
+          case CombatLoansShowCaseReason.withoutOnboarding:
+            AppMetricaService.reportEvent('show_case_onboarding_none');
+        }
       });
     }
 
@@ -407,15 +415,14 @@ class _LoansScreenState extends State<LoansScreen> {
         return;
       }
 
-      // Отправляем событие в AppMetrica
+      // offer_open: логируем после успешной модификации ссылки и перед открытием WebView
+      FirebaseAnalyticsService.logOfferOpen(
+        link: offer.link,
+        name: offer.name,
+      );
       AppMetricaService.reportEvent(
-        'offer_clicked',
-        parameters: {
-          'offer_id': offer.id.toString(),
-          'offer_name': offer.name,
-          'mode': isCombatMode ? 'combat' : 'non_combat',
-          'offer_type': isCombatMode ? 'loan' : 'vpn',
-        },
+        'offer_open',
+        parameters: {'link': offer.link, 'name': offer.name},
       );
 
       // Открываем WebView с ссылкой оффера
