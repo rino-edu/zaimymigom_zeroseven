@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:zaimymigom_zeroseven/utils/locale_keys.dart';
 import '../../constants/app_strings.dart';
 import '../../features/combat_onboarding/services/combat_onboarding_local_state.dart';
@@ -14,6 +15,7 @@ import '../../models/offer.dart';
 import '../../services/web_link_service.dart';
 import '../../widgets/offer_card.dart';
 import '../webview/webview_screen.dart';
+
 
 /// Экран "Займы"
 class LoansScreen extends StatefulWidget {
@@ -79,6 +81,9 @@ class _LoansScreenState extends State<LoansScreen> {
           case CombatLoansShowCaseReason.withoutOnboarding:
             AppMetricaService.reportEvent('show_case_onboarding_none');
         }
+
+        // Сохраняем причину для использования в WebLinkService (aff_sub10)
+        _saveOnboardingReason(showCase);
       });
     }
 
@@ -90,7 +95,7 @@ class _LoansScreenState extends State<LoansScreen> {
       isCombatMode ? 'loans_combat_mode' : 'loans_non_combat_mode',
     );
 
-        // Показ ATT-диалога только в небоевом режиме с задержкой 1 секунда
+    // Показ ATT-диалога только в небоевом режиме с задержкой 1 секунда
     if (!isCombatMode) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Future.delayed(const Duration(seconds: 1), () {
@@ -98,9 +103,27 @@ class _LoansScreenState extends State<LoansScreen> {
         });
       });
     }
-
   }
 
+  Future<void> _saveOnboardingReason(CombatLoansShowCaseReason reason) async {
+    final String sub10Value;
+    switch (reason) {
+      case CombatLoansShowCaseReason.afterOnboardingFinish:
+        sub10Value = 'onboarding_finish';
+      case CombatLoansShowCaseReason.afterOnboardingClose:
+        sub10Value = 'onboarding_close';
+      case CombatLoansShowCaseReason.withoutOnboarding:
+        sub10Value = 'onboarding_none';
+    }
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(WebLinkService.prefSub10Key, sub10Value);
+      debugPrint('LoansScreen: Сохранён aff_sub10=$sub10Value');
+    } catch (e) {
+      debugPrint('LoansScreen: Ошибка при сохранении aff_sub10: $e');
+    }
+  }
 
   Future<void> _loadOffers() async {
     SettingsShowCase? showCaseFromServer;
