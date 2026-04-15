@@ -176,51 +176,32 @@ class AppMetricaService {
         '${two(dt.hour)}:${two(dt.minute)}:${two(dt.second)}';
   }
 
-  static Future<String> _getLocationByIp() async {
-    String? extractCountryCode(String body) {
-      // ipinfo.io / ipwho.is
-      final m =
-          RegExp(r'"country"\\s*:\\s*"([^"]+)"').firstMatch(body) ??
-              RegExp(r'"country_code"\\s*:\\s*"([^"]+)"').firstMatch(body);
-      final v = m?.group(1)?.trim();
-      if (v == null || v.isEmpty) return null;
-      return v.toLowerCase();
-    }
-
-    Future<String?> tryJson(String url) async {
-      final response =
-          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
-      if (response.statusCode != 200) return null;
-      return extractCountryCode(response.body);
-    }
-
-    Future<String?> tryPlainText(String url) async {
-      final response =
-          await http.get(Uri.parse(url)).timeout(const Duration(seconds: 10));
-      if (response.statusCode != 200) return null;
-      final v = response.body.trim().toLowerCase();
-      if (v.isEmpty || v == 'unknown') return null;
-      // ipapi.co/country/ возвращает "RU" (или "Undefined")
-      if (v.length > 8) return null;
-      return v;
-    }
-
+  /// Определение страны пользователя по IP
+  static Future<String?> _getUserCountryByIp() async {
     try {
-      // 1) ipinfo (как в AppModeService)
-      final ipinfo = await tryJson('https://ipinfo.io/json');
-      if (ipinfo != null) return ipinfo;
+      final response = await http
+          .get(Uri.parse('https://ipinfo.io/json'))
+          .timeout(const Duration(seconds: 10));
 
-      // 2) ipapi.co (просто код страны)
-      final ipapi = await tryPlainText('https://ipapi.co/country/');
-      if (ipapi != null) return ipapi;
+      if (response.statusCode == 200) {
+        final data = response.body;
+        // Простое извлечение кода страны из JSON ipinfo.io
+        final countryCodeMatch = RegExp(
+          r'"country"\s*:\s*"([^"]+)"',
+        ).firstMatch(data);
+        if (countryCodeMatch != null) {
+          final countryCode = countryCodeMatch.group(1);
+          print('   ✅ User country detected: $countryCode');
+          return countryCode;
+        }
+      }
 
-      // 3) ipwho.is (country_code)
-      final ipwho = await tryJson('https://ipwho.is/');
-      if (ipwho != null) return ipwho;
+      print('   ❌ Failed to detect country from IP');
+      return null;
     } catch (e) {
-      debugPrint('AppMetricaService: location by ip failed: $e');
+      print('   ❌ Country detection failed: $e');
+      return null;
     }
-    return 'unknown';
   }
 
   /// Отправка `vpn_status_on`/`vpn_status_off_after_on` при старте приложения.
@@ -240,7 +221,7 @@ class AppMetricaService {
     }
 
     final appmetricaId = await getCachedDeviceIdHash();
-    final location = await _getLocationByIp();
+    final location = await _getUserCountryByIp();
     final ts = _formatGmtPlus3Now();
     final data = '$appmetricaId, $location, $ts';
 
