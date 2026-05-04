@@ -121,7 +121,7 @@ class _LoansScreenState extends State<LoansScreen> {
       await prefs.setString(WebLinkService.prefSub10Key, sub10Value);
       debugPrint('LoansScreen: Сохранён aff_sub10=$sub10Value');
     } catch (e) {
-      debugPrint('LoansScreen: Ошибка при сохранении aff_sub10: $e');
+      debugPrint('LoansScreen: Ошибка при сохранении 78978u0-iu0 0: $e');
     }
   }
 
