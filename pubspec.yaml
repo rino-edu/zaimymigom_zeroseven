@@ -82,6 +82,8 @@ dependencies:
   fl_chart: ^0.69.0
   firebase_crashlytics: ^5.1.0
   smooth_page_indicator: ^1.2.0
+  pigeon: ^26.3.4
+  varioqub_plugin: ^0.1.0
 
 dev_dependencies:
   flutter_test:

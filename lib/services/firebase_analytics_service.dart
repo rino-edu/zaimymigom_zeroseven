@@ -78,6 +78,21 @@ class FirebaseAnalyticsService {
     );
   }
 
+  static Future<void> logShowcaseShown() async {
+    await _analytics.logEvent(name: 'showcase_shown');
+  }
+
+  static Future<void> logShowcaseNotShown() async {
+    await _analytics.logEvent(name: 'showcase_not_shown');
+  }
+
+  static Future<void> logShowcaseError({required String message}) async {
+    await _analytics.logEvent(
+      name: 'showcase_error',
+      parameters: {'message': trimForGa(message)},
+    );
+  }
+
   static Future<void> logLoansShowCaseIfNeeded(
     CombatLoansShowCaseReason? reason,
   ) async {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../../services/combat_showcase_analytics.dart';
 import '../../../services/firebase_analytics_service.dart';
 import '../../../services/appmetrica_service.dart';
 import '../../../views/loans/loans_screen.dart';
@@ -87,6 +88,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
   void _logOnboardingShowOnce() {
     if (_loggedOnboardingShow) return;
     _loggedOnboardingShow = true;
+    CombatShowcaseSession.markOnboardingShowLogged();
     FirebaseAnalyticsService.logOnboardingShow();
     AppMetricaService.reportEvent('onboarding_show');
   }

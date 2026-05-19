@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../services/app_mode_service.dart';
+import '../../../services/combat_showcase_analytics.dart';
 import '../../../services/firebase_analytics_service.dart';
 import '../../../views/home/main_screen.dart';
 import '../../../views/loans/loans_screen.dart';
@@ -29,6 +30,9 @@ class _CombatOnboardingGateState extends State<CombatOnboardingGate> {
   @override
   void initState() {
     super.initState();
+    if (widget.appMode == AppMode.combat) {
+      CombatShowcaseLifecycleObserver.instance.registerIfNeeded();
+    }
     _resolve();
   }
 

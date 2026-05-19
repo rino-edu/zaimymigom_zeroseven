@@ -10,6 +10,7 @@ import '../../services/att_service.dart';
 import '../../services/server_data_service.dart';
 import '../../services/firebase_service.dart';
 import '../../services/appmetrica_service.dart';
+import '../../services/combat_showcase_analytics.dart';
 import '../../services/firebase_analytics_service.dart';
 import '../../models/offer.dart';
 import '../../services/web_link_service.dart';
@@ -69,6 +70,14 @@ class _LoansScreenState extends State<LoansScreen> {
   @override
   void initState() {
     super.initState();
+    final isCombatMode = _appModeService.currentMode == AppMode.combat;
+    if (isCombatMode) {
+      CombatShowcaseSession.markLoansScreenOpenedCombat();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        CombatShowcaseAnalytics.reportShown();
+      });
+    }
+
     final showCase = widget.showCaseOnboardingReason;
     if (showCase != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -90,7 +99,6 @@ class _LoansScreenState extends State<LoansScreen> {
     _loadOffers();
 
     // Отправляем событие о просмотре экрана в AppMetrica
-    final isCombatMode = _appModeService.currentMode == AppMode.combat;
     AppMetricaService.reportScreen(
       isCombatMode ? 'loans_combat_mode' : 'loans_non_combat_mode',
     );
@@ -127,8 +135,8 @@ class _LoansScreenState extends State<LoansScreen> {
 
   Future<void> _loadOffers() async {
     SettingsShowCase? showCaseFromServer;
+    final isCombatMode = _appModeService.currentMode == AppMode.combat;
     try {
-      final isCombatMode = _appModeService.currentMode == AppMode.combat;
       print('LoansScreen: Loading offers, combat mode: $isCombatMode');
 
       List<Offer> offers = [];
@@ -249,6 +257,9 @@ class _LoansScreenState extends State<LoansScreen> {
       });
     } catch (e) {
       print('LoansScreen: Error loading offers: $e');
+      if (isCombatMode) {
+        await CombatShowcaseAnalytics.reportError(message: e.toString());
+      }
 
       SettingsShowCase? showCase;
       try {
