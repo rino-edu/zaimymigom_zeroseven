@@ -512,36 +512,11 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   /// Построить leading в зависимости от режима и текущей страницы
   Widget? _buildLeading() {
-    // Если нужно скрыть — возвращаем null
     if (_hideLeading) return null;
-    // В остальных случаях показываем крестик (закрытие)
-    final isCombat = AppModeService().currentMode == AppMode.combat;
-    if (isCombat &&
-        _firstRedirectUrl != null &&
-        _firstRedirectUrl!.isNotEmpty) {
-      // В боевом режиме: кнопка загружает страницу после первого редиректа
-      return IconButton(
-        icon: const Icon(Icons.close),
-        onPressed: () async {
-          try {
-            final target = _firstRedirectUrl!;
-/*            developer.log(
-              "Leading pressed - loading first redirect: $target",
-              name: _logTag,
-            );*/
-            final uri = Uri.parse(target);
-            await _controller.loadRequest(uri);
-            _updateNavigationState();
-          } catch (_) {
-            // игнорируем ошибки парсинга/загрузки
-          }
-        },
-        tooltip: 'Open',
-      );
-    }
     return IconButton(
       icon: const Icon(Icons.close),
       onPressed: () => Navigator.of(context).pop(),
+      tooltip: 'Закрыть',
     );
   }
 
