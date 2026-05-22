@@ -8,6 +8,7 @@ import '../../../views/loans/loans_screen.dart';
 import '../services/combat_onboarding_local_state.dart';
 import '../services/combat_onboarding_user_writer.dart';
 import '../services/combat_settings_resolver.dart';
+import '../services/onboarding_visibility_resolver.dart';
 import 'combat_onboarding_flow_screen.dart';
 
 /// Решает, показывать ли боевой онбординг на старте.
@@ -23,6 +24,7 @@ class CombatOnboardingGate extends StatefulWidget {
 class _CombatOnboardingGateState extends State<CombatOnboardingGate> {
   final _localState = CombatOnboardingLocalState();
   final _settingsResolver = CombatSettingsResolver();
+  final _visibilityResolver = OnboardingVisibilityResolver();
   final _userWriter = CombatOnboardingUserWriter();
 
   Widget? _resolved;
@@ -64,9 +66,9 @@ class _CombatOnboardingGateState extends State<CombatOnboardingGate> {
     }
 
     final settings = await _settingsResolver.resolveSettings();
-    final showOnboarding = settings?.showOnboarding ?? false;
+    final visibility = await _visibilityResolver.resolve(settings);
 
-    if (!showOnboarding) {
+    if (!visibility.showOnboarding) {
       await _userWriter.writeNotShownIfFirstOpen(isFirstOpen: isFirstOpen);
       if (!mounted) return;
       setState(

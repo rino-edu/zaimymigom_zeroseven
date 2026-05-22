@@ -9,6 +9,7 @@ import 'services/firebase_auth_service.dart';
 import 'services/fcm_service.dart';
 import 'services/app_mode_service.dart';
 import 'services/appmetrica_service.dart';
+import 'services/varioqub_service.dart';
 import 'services/settings_service.dart';
 import 'services/budget_provider.dart';
 import 'services/goals_provider.dart';
@@ -26,6 +27,9 @@ void main() async {
   // Инициализация AppMetrica
   await AppMetricaService().initialize();
   await AppMetricaService.reportVpnStatusOnLaunch();
+
+  // Varioqub (флаги A/B) — после AppMetrica, до гейта онбординга
+  await VarioqubService().initialize();
 
   // Инициализация Firebase
   final firebaseService = FirebaseService();

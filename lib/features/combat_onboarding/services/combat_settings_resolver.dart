@@ -27,7 +27,9 @@ class CombatSettingsResolver {
       final serverData = await _serverDataService.fetchAllData(forceRefresh: true);
       if (serverData.settings != null) {
         debugPrint(
-          'CombatSettingsResolver: settings from SERVER, showOnboarding=${serverData.settings!.showOnboarding}',
+          'CombatSettingsResolver: settings from SERVER, '
+          'showOnboarding=${serverData.settings!.showOnboarding}, '
+          'onboardingSource=${serverData.settings!.onboardingSource.settingsValue}',
         );
         return serverData.settings;
       }
@@ -37,7 +39,9 @@ class CombatSettingsResolver {
 
     final fs = await _firebaseService.getSettings();
     debugPrint(
-      'CombatSettingsResolver: settings from FIRESTORE, showOnboarding=${fs?.showOnboarding}',
+      'CombatSettingsResolver: settings from FIRESTORE, '
+      'showOnboarding=${fs?.showOnboarding}, '
+      'onboardingSource=${fs?.onboardingSource.settingsValue}',
     );
     return fs;
   }

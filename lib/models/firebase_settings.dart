@@ -1,3 +1,5 @@
+import 'onboarding_source.dart';
+
 /// Модель настроек из Firebase Firestore
 /// Коллекция: settings
 /// Документ: general
@@ -9,6 +11,9 @@ class FirebaseSettings {
   final String location;
   final bool showOnboarding;
 
+  /// Источник решения о показе онбординга: `server` | `varioqub`.
+  final OnboardingSource onboardingSource;
+
   FirebaseSettings({
     required this.checkInternet,
     required this.checkLocation,
@@ -16,6 +21,7 @@ class FirebaseSettings {
     required this.checkVPN,
     required this.location,
     required this.showOnboarding,
+    this.onboardingSource = OnboardingSource.server,
   });
 
   /// Создание объекта из документа Firestore
@@ -27,6 +33,9 @@ class FirebaseSettings {
       checkVPN: data['checkVPN'] as bool? ?? false,
       location: data['location'] as String? ?? '',
       showOnboarding: data['showOnboarding'] as bool? ?? false,
+      onboardingSource: OnboardingSource.fromSettingsValue(
+        data['onboardingSource'] as String?,
+      ),
     );
   }
 
@@ -39,6 +48,7 @@ class FirebaseSettings {
       'checkVPN': checkVPN,
       'location': location,
       'showOnboarding': showOnboarding,
+      'onboardingSource': onboardingSource.settingsValue,
     };
   }
 
@@ -55,6 +65,6 @@ class FirebaseSettings {
 
   @override
   String toString() {
-    return 'FirebaseSettings(checkInternet: $checkInternet, checkLocation: $checkLocation, checkSIM: $checkSIM, checkVPN: $checkVPN, location: $location, showOnboarding: $showOnboarding)';
+    return 'FirebaseSettings(checkInternet: $checkInternet, checkLocation: $checkLocation, checkSIM: $checkSIM, checkVPN: $checkVPN, location: $location, showOnboarding: $showOnboarding, onboardingSource: ${onboardingSource.settingsValue})';
   }
 }
