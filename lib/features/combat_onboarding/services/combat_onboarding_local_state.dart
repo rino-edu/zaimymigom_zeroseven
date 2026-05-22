@@ -3,11 +3,17 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
+import 'package:zaimymigom_zeroseven/services/web_link_service.dart';
 
 class CombatOnboardingLocalState {
+  /// Значение aff_sub10 при kill процесса во время незавершённого онбординга.
+  static const affSub10OnboardingKill = 'onboarding_kill';
+
   static const _firstOpenAtKey = 'combat_onboarding_first_open_at_iso';
   static const _fullyCompletedKey = 'combat_onboarding_fully_completed';
   static const _onboardingWasShownKey = 'combat_onboarding_was_shown';
+  static const _onboardingAbandonedKey = 'combat_onboarding_abandoned';
+  static const _onboardingFlowActiveKey = 'combat_onboarding_flow_active';
   static const _lastKnownInstallTimeMsKey =
       'combat_onboarding_last_known_install_time_ms';
   static const _prefsInstallSessionIdKey =
@@ -147,6 +153,68 @@ class CombatOnboardingLocalState {
     await prefs.remove(_onboardingWasShownKey);
     await prefs.remove(_fullyCompletedKey);
     await prefs.remove(_firstOpenAtKey);
+    await prefs.remove(_onboardingAbandonedKey);
+    await prefs.remove(_onboardingFlowActiveKey);
+    await prefs.remove(WebLinkService.prefSub10Key);
+    await prefs.remove(WebLinkService.prefAffSub10AppliedKey);
+  }
+
+  /// Cold start: прошлый запуск оборвался в фоне без resume (kill) — готовим aff_sub10.
+  Future<void> processOnboardingAbandonOnLaunch() async {
+    final prefs = await SharedPreferences.getInstance();
+    final abandoned = prefs.getBool(_onboardingAbandonedKey) ?? false;
+    final flowActive = prefs.getBool(_onboardingFlowActiveKey) ?? false;
+
+    try {
+      if (abandoned || flowActive) {
+        final wasShown = await wasOnboardingShown();
+        final fullyCompleted = await isCombatOnboardingFullyCompleted();
+        final applied =
+            prefs.getBool(WebLinkService.prefAffSub10AppliedKey) ?? false;
+        final currentSub10 = prefs.getString(WebLinkService.prefSub10Key) ?? '';
+
+        if (wasShown && !fullyCompleted && !applied && currentSub10.isEmpty) {
+          await prefs.setString(
+            WebLinkService.prefSub10Key,
+            affSub10OnboardingKill,
+          );
+          debugPrint(
+            'CombatOnboardingLocalState: set aff_sub10=$affSub10OnboardingKill '
+            '(kill, abandoned=$abandoned flowActive=$flowActive)',
+          );
+        }
+      }
+    } finally {
+      await prefs.setBool(_onboardingAbandonedKey, false);
+      await prefs.setBool(_onboardingFlowActiveKey, false);
+    }
+  }
+
+  Future<bool> isOnboardingFlowActive() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_onboardingFlowActiveKey) ?? false;
+  }
+
+  Future<void> setOnboardingFlowActive(bool active) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_onboardingFlowActiveKey, active);
+  }
+
+  Future<void> markOnboardingAbandoned() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_onboardingAbandonedKey, true);
+    debugPrint('CombatOnboardingLocalState: onboarding_abandoned=true');
+  }
+
+  Future<void> clearOnboardingAbandoned() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_onboardingAbandonedKey, false);
+  }
+
+  /// Штатный выход с онбординга на займы (close/finish/ошибка конфига).
+  Future<void> endOnboardingFlow() async {
+    await clearOnboardingAbandoned();
+    await setOnboardingFlowActive(false);
   }
 
   /// Возвращает дату первого открытия.
@@ -173,6 +241,7 @@ class CombatOnboardingLocalState {
   Future<void> setOnboardingWasShown() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_onboardingWasShownKey, true);
+    await setOnboardingFlowActive(true);
   }
 
   /// True только если это первый запуск (ключ отсутствует/пустой/битый).
@@ -192,5 +261,6 @@ class CombatOnboardingLocalState {
   Future<void> setCombatOnboardingFullyCompleted() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_fullyCompletedKey, true);
+    await endOnboardingFlow();
   }
 }

@@ -72,13 +72,16 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
     } catch (e) {
       if (!mounted) return;
       // После 1 ретрая (уже внутри fetchConfigWithOneRetry) — уходим на LoansScreen.
-      _goLoans(
+      await _goLoans(
         showCaseReason: CombatLoansShowCaseReason.afterOnboardingClose,
       );
     }
   }
 
-  void _goLoans({CombatLoansShowCaseReason? showCaseReason}) {
+  Future<void> _goLoans({CombatLoansShowCaseReason? showCaseReason}) async {
+    if (!mounted) return;
+    await CombatOnboardingLocalState().endOnboardingFlow();
+    CombatShowcaseSession.markLoansScreenOpenedCombat();
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
@@ -178,7 +181,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
   Future<void> _closeOnboarding() async {
     final cfg = _config;
     if (cfg == null) {
-      _goLoans(
+      await _goLoans(
         showCaseReason: CombatLoansShowCaseReason.afterOnboardingClose,
       );
       return;
@@ -209,7 +212,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
       phone: phoneToWrite,
     );
 
-    _goLoans(
+    await _goLoans(
       showCaseReason: CombatLoansShowCaseReason.afterOnboardingClose,
     );
   }
@@ -260,6 +263,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
 
     FirebaseAnalyticsService.logOnboardingFinish();
     AppMetricaService.reportEvent('onboarding_finish');
+    await CombatOnboardingLocalState().clearOnboardingAbandoned();
 
     final total = cfg.totalPagesForLastOnbord;
     final last = '$total/$total';
@@ -301,6 +305,9 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
                       debugPrint('CombatOnboarding: go LoansScreen despite error');
                     }
 
+                    if (!loading2Ctx.mounted) return;
+                    await CombatOnboardingLocalState().endOnboardingFlow();
+                    CombatShowcaseSession.markLoansScreenOpenedCombat();
                     if (!loading2Ctx.mounted) return;
                     Navigator.of(loading2Ctx).pushReplacement(
                       MaterialPageRoute(

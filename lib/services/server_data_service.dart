@@ -107,9 +107,9 @@ class ServerDataService {
 
       // Логируем сырой ответ
       if (kDebugMode) {
-        debugPrint(
-          'ServerDataService: сырой ответ:\n${const JsonEncoder.withIndent('  ').convert(response.data)}',
-        );
+        //debugPrint(
+          //'ServerDataService: сырой ответ:\n${const JsonEncoder.withIndent('  ').convert(response.data)}',
+        //);
       }
 
       final data = response.data as Map<String, dynamic>;

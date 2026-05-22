@@ -39,6 +39,10 @@ class _CombatOnboardingGateState extends State<CombatOnboardingGate> {
   Future<void> _resolve() async {
     await _localState.syncInstallSession();
 
+    if (widget.appMode == AppMode.combat) {
+      await _localState.processOnboardingAbandonOnLaunch();
+    }
+
     final isFirstOpen = await _localState.isFirstOpen();
     // фиксируем firstOpenDate как можно раньше
     if (isFirstOpen) {

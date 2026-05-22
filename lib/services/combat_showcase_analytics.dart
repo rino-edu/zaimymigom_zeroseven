@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 
+import '../features/combat_onboarding/services/combat_onboarding_local_state.dart';
 import 'app_mode_service.dart';
 import 'appmetrica_service.dart';
 import 'firebase_analytics_service.dart';
@@ -58,7 +59,7 @@ class CombatShowcaseAnalytics {
   }
 }
 
-/// Уход в фон после показа онбординга без открытия [LoansScreen] (с задержкой, чтобы отсечь краткое переключение приложений).
+/// Lifecycle: kill онбординга (abandon без resume) и аналитика showcase_not_shown.
 class CombatShowcaseLifecycleObserver extends WidgetsBindingObserver {
   CombatShowcaseLifecycleObserver._();
 
@@ -67,6 +68,7 @@ class CombatShowcaseLifecycleObserver extends WidgetsBindingObserver {
 
   bool _registered = false;
   Timer? _pauseTimer;
+  final _localState = CombatOnboardingLocalState();
 
   void registerIfNeeded() {
     if (_registered) return;
@@ -76,13 +78,31 @@ class CombatShowcaseLifecycleObserver extends WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused) {
+    // iOS: при kill из карусели часто приходит только inactive, без paused.
+    if (state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
+      unawaited(_onAppBackgrounded());
+    }
+
+    if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.detached) {
       _pauseTimer?.cancel();
       _pauseTimer = Timer(const Duration(seconds: 2), () {
         unawaited(CombatShowcaseAnalytics.reportNotShownIfEligible());
       });
     } else if (state == AppLifecycleState.resumed) {
       _pauseTimer?.cancel();
+      unawaited(_localState.clearOnboardingAbandoned());
     }
+  }
+
+  /// Уход в фон во время онбординга: при kill без resume флаг останется до cold start.
+  Future<void> _onAppBackgrounded() async {
+    if (AppModeService().currentMode != AppMode.combat) return;
+    if (CombatShowcaseSession.loansScreenOpenedCombat) return;
+    if (!await _localState.isOnboardingFlowActive()) return;
+    if (await _localState.isCombatOnboardingFullyCompleted()) return;
+    await _localState.markOnboardingAbandoned();
   }
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 import '../models/combat_onboarding_theme.dart';
+import '../services/combat_onboarding_local_state.dart';
 
 class CombatOnboardingLoadingScreen extends StatefulWidget {
   final String title;
@@ -30,6 +31,7 @@ class _CombatOnboardingLoadingScreenState
   @override
   void initState() {
     super.initState();
+    CombatOnboardingLocalState().setOnboardingFlowActive(true);
     final seconds = widget.durationSeconds <= 0 ? 1 : widget.durationSeconds;
     debugPrint(
       'CombatOnboardingLoadingScreen: init title="${widget.title}" durationSeconds=$seconds',

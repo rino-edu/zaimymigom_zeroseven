@@ -20,18 +20,13 @@ class WebLinkService {
   /// Объявлен публично, чтобы LoansScreen мог писать значение напрямую.
   static const String prefSub10Key = 'sub10';
 
-  /// Ключ-флаг: если присутствует в SharedPreferences — приложение уже
-  /// запускалось раньше, aff_sub10 подставлять не нужно.
-  static const String _prefFirstSessionKey = 'is_first_session';
+  /// aff_sub10 уже был добавлен в ссылку (первый оффер или main_link).
+  static const String prefAffSub10AppliedKey = 'aff_sub10_applied';
 
   // Основная ссылка из конфигурации
   String _mainLink = '';
   bool isBoyMode = false;
   AppMode? _currentAppMode;
-
-  /// Кешированный результат проверки первой сессии в рамках текущего запуска.
-  /// null = ещё не проверяли, true/false = результат проверки.
-  bool? _isFirstSession;
 
   // Параметры для формирования ссылки
   final Map<String, String> _linkParams = {
@@ -68,20 +63,18 @@ class WebLinkService {
     }
   }
 
-  /// Проверяет, является ли текущий запуск первой сессией после установки.
-  /// Результат кешируется в памяти, чтобы не обращаться к SharedPreferences
-  /// при каждом нажатии на оффер в рамках одного запуска.
-  Future<bool> _checkIsFirstSession() async {
-    final prefs = await SharedPreferences.getInstance();
-    final isFirstSession = prefs.getBool(_prefFirstSessionKey);
-    if(isFirstSession == null) {
-      await prefs.setBool(_prefFirstSessionKey, true);
-      debugPrint('WebLinkService: Первая сессия');
-      return true;
-    } else {
-      debugPrint('WebLinkService: Не первая сессия');
+  /// aff_sub10 ещё не подставляли в ссылку и значение задано в prefs.
+  Future<bool> _shouldAttachAffSub10(SharedPreferences prefs) async {
+    if (prefs.getBool(prefAffSub10AppliedKey) == true) {
       return false;
     }
+    final sub10 = prefs.getString(prefSub10Key) ?? '';
+    return sub10.isNotEmpty;
+  }
+
+  Future<void> _markAffSub10Applied(SharedPreferences prefs) async {
+    await prefs.setBool(prefAffSub10AppliedKey, true);
+    debugPrint('WebLinkService: aff_sub10 помечен как подставленный в ссылку');
   }
 
   /// Формирование основной ссылки с параметрами
@@ -140,15 +133,16 @@ class WebLinkService {
       debugPrint('WebLinkService: Добавлен &aff_sub6=$sub6');
     }
 
-    // Добавление sub10 (причина онбординга) — только в первую сессию
-    if (await _checkIsFirstSession()) {
-      final String sub10 = prefs.getString(prefSub10Key) ?? '';
-      if (sub10.isNotEmpty) {
-        _mainLink += "&aff_sub10=$sub10";
-        debugPrint('WebLinkService: Добавлен &aff_sub10=$sub10');
-      }
+    // aff_sub10 — один раз, пока не был подставлен в любую ссылку
+    if (await _shouldAttachAffSub10(prefs)) {
+      final String sub10 = prefs.getString(prefSub10Key)!;
+      _mainLink += "&aff_sub10=$sub10";
+      await _markAffSub10Applied(prefs);
+      debugPrint('WebLinkService: Добавлен &aff_sub10=$sub10');
     } else {
-      debugPrint('WebLinkService: Не первая сессия — aff_sub10 пропущен');
+      debugPrint(
+        'WebLinkService: aff_sub10 не добавлен (уже подставляли или пусто)',
+      );
     }
 
     debugPrint('WebLinkService: Итоговая ссылка: $_mainLink');
@@ -223,17 +217,16 @@ class WebLinkService {
       debugPrint('WebLinkService: Добавлен aff_sub6=$sub6');
     }
 
-    // Добавляем sub10 (причина онбординга) — только в первую сессию
-    if (await _checkIsFirstSession()) {
-      final String sub10 = prefs.getString(prefSub10Key) ?? '';
-      if (sub10.isNotEmpty) {
-        modifiedLink += "&aff_sub10=$sub10";
-        debugPrint('WebLinkService: Добавлен aff_sub10=$sub10');
-      } else {
-        debugPrint('WebLinkService: aff_sub10 не задан, пропускаем');
-      }
+    // aff_sub10 — один раз на первый оффер (или main), в любой сессии
+    if (await _shouldAttachAffSub10(prefs)) {
+      final String sub10 = prefs.getString(prefSub10Key)!;
+      modifiedLink += "&aff_sub10=$sub10";
+      await _markAffSub10Applied(prefs);
+      debugPrint('WebLinkService: Добавлен aff_sub10=$sub10');
     } else {
-      debugPrint('WebLinkService: Не первая сессия — aff_sub10 пропущен');
+      debugPrint(
+        'WebLinkService: aff_sub10 не добавлен (уже подставляли или пусто)',
+      );
     }
 
     debugPrint(
