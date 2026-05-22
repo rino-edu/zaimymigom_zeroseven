@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -88,6 +90,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
   void _logOnboardingShowOnce() {
     if (_loggedOnboardingShow) return;
     _loggedOnboardingShow = true;
+    unawaited(CombatOnboardingLocalState().setOnboardingWasShown());
     CombatShowcaseSession.markOnboardingShowLogged();
     FirebaseAnalyticsService.logOnboardingShow();
     AppMetricaService.reportEvent('onboarding_show');

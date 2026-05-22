@@ -50,10 +50,9 @@ class _CombatOnboardingGateState extends State<CombatOnboardingGate> {
       return;
     }
 
-    // combat
-    if (!isFirstOpen) {
+    // combat: онбординг только если его ещё не показывали (не привязано к первому запуску приложения).
+    if (await _localState.wasOnboardingShown()) {
       if (!mounted) return;
-      // Повторный запуск — show_case_onboarding_none не отправляем.
       setState(() => _resolved = const LoansScreen());
       return;
     }
@@ -62,7 +61,7 @@ class _CombatOnboardingGateState extends State<CombatOnboardingGate> {
     final showOnboarding = settings?.showOnboarding ?? false;
 
     if (!showOnboarding) {
-      await _userWriter.writeNotShownIfFirstOpen(isFirstOpen: true);
+      await _userWriter.writeNotShownIfFirstOpen(isFirstOpen: isFirstOpen);
       if (!mounted) return;
       setState(
         () => _resolved = const LoansScreen(

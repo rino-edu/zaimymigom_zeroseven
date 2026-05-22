@@ -1664,9 +1664,25 @@ PODS:
   - sqflite_darwin (0.0.4):
     - Flutter
     - FlutterMacOS
+  - SwiftProtobuf (1.38.0)
   - SwiftyGif (5.4.5)
   - url_launcher_ios (0.0.1):
     - Flutter
+  - Varioqub (1.1.2):
+    - Varioqub/Core (= 1.1.2)
+  - Varioqub/Core (1.1.2):
+    - SwiftProtobuf (~> 1.31)
+  - varioqub_plugin (0.1.0):
+    - Flutter
+    - Varioqub (~> 1.0)
+    - VarioqubAppMetricaAdapter (~> 1.0)
+  - VarioqubAppMetricaAdapter (1.1.2):
+    - VarioqubAppMetricaAdapter/Core (= 1.1.2)
+  - VarioqubAppMetricaAdapter/Core (1.1.2):
+    - AppMetricaCore (~> 5.2)
+    - AppMetricaCoreExtension (~> 5.2)
+    - SwiftProtobuf (~> 1.31)
+    - Varioqub (= 1.1.2)
   - vpn_detector (1.1.0):
     - Flutter
   - webview_flutter_wkwebview (0.0.1):
@@ -1699,6 +1715,7 @@ DEPENDENCIES:
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
+  - varioqub_plugin (from `.symlinks/plugins/varioqub_plugin/ios`)
   - vpn_detector (from `.symlinks/plugins/vpn_detector/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
 
@@ -1761,7 +1778,10 @@ SPEC REPOS:
     - PromisesSwift
     - RecaptchaInterop
     - SDWebImage
+    - SwiftProtobuf
     - SwiftyGif
+    - Varioqub
+    - VarioqubAppMetricaAdapter
 
 EXTERNAL SOURCES:
   add_2_calendar:
@@ -1814,6 +1834,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/sqflite_darwin/darwin"
   url_launcher_ios:
     :path: ".symlinks/plugins/url_launcher_ios/ios"
+  varioqub_plugin:
+    :path: ".symlinks/plugins/varioqub_plugin/ios"
   vpn_detector:
     :path: ".symlinks/plugins/vpn_detector/ios"
   webview_flutter_wkwebview:
@@ -1901,8 +1923,12 @@ SPEC CHECKSUMS:
   share_plus: 50da8cb520a8f0f65671c6c6a99b3617ed10a58a
   shared_preferences_foundation: 9e1978ff2562383bd5676f64ec4e9aa8fa06a6f7
   sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
+  SwiftProtobuf: d724b5145bfc609d9a49c1e3e3a3dabb07273ffb
   SwiftyGif: 706c60cf65fa2bc5ee0313beece843c8eb8194d4
   url_launcher_ios: 694010445543906933d732453a59da0a173ae33d
+  Varioqub: 11de661a7012d7e6ba7da281d507874670e8b224
+  varioqub_plugin: 808ca8568a205e83acdec02a115691ea6cdf96f8
+  VarioqubAppMetricaAdapter: 3eed576ccc98444352e21e7f3280cd8f1f507ae8
   vpn_detector: 24f7c7155ced8572fe86239a3832a23b7eb14dfa
   webview_flutter_wkwebview: 1821ceac936eba6f7984d89a9f3bcb4dea99ebb2
 

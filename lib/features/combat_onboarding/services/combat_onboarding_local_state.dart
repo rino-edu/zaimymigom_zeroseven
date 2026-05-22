@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class CombatOnboardingLocalState {
   static const _firstOpenAtKey = 'combat_onboarding_first_open_at_iso';
   static const _fullyCompletedKey = 'combat_onboarding_fully_completed';
+  static const _onboardingWasShownKey = 'combat_onboarding_was_shown';
 
   /// Возвращает дату первого открытия.
   /// Если ключа нет — сохраняет текущий момент и возвращает его.
@@ -17,6 +18,17 @@ class CombatOnboardingLocalState {
     final now = DateTime.now();
     await prefs.setString(_firstOpenAtKey, now.toIso8601String());
     return now;
+  }
+
+  /// Боевой онбординг уже показывали пользователю (экран потока с контентом).
+  Future<bool> wasOnboardingShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(_onboardingWasShownKey) ?? false;
+  }
+
+  Future<void> setOnboardingWasShown() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_onboardingWasShownKey, true);
   }
 
   /// True только если это первый запуск (ключ отсутствует/пустой/битый).
