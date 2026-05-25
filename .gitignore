@@ -46,3 +46,6 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+# LeadGid API token (локальная копия; шаблон — leadgid_account_token.example.dart)
+lib/config/leadgid_account_token.dart

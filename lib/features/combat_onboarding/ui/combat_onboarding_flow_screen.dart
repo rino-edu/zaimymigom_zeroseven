@@ -12,6 +12,7 @@ import '../models/combat_onboarding_theme.dart';
 import '../services/combat_onboarding_firestore_service.dart';
 import '../services/combat_onboarding_local_state.dart';
 import '../services/combat_onboarding_user_writer.dart';
+import '../services/leadgid_application_api_service.dart';
 import 'combat_onboarding_policy_screen.dart';
 import 'combat_onboarding_loading_screen.dart';
 
@@ -28,6 +29,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
   final _pageController = PageController();
   final _firestoreService = CombatOnboardingFirestoreService();
   final _userWriter = CombatOnboardingUserWriter();
+  final _leadgidApi = LeadgidApplicationApiService();
 
   CombatOnboardingConfig? _config;
 
@@ -268,6 +270,19 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
     final total = cfg.totalPagesForLastOnbord;
     final last = '$total/$total';
     debugPrint('CombatOnboarding: final continue pressed, last=$last');
+
+    try {
+      await _userWriter.writeResult(
+        endOnbord: false,
+        lastOnbordpage: last,
+        answersOnbord: Map<String, String>.from(_answers),
+        phone: phone,
+      );
+      await _leadgidApi.createApplicationFromNormalizedPhone(phone);
+    } catch (e, st) {
+      debugPrint('CombatOnboarding: writeResult/LeadGid on final FAILED: $e');
+      debugPrint('$st');
+    }
 
     // Экран 1
     if (!mounted) return;
