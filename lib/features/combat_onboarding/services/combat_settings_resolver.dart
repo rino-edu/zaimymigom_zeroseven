@@ -29,6 +29,7 @@ class CombatSettingsResolver {
         debugPrint(
           'CombatSettingsResolver: settings from SERVER, '
           'showOnboarding=${serverData.settings!.showOnboarding}, '
+          'leadGidAPI=${serverData.settings!.leadGidAPI}, '
           'onboardingSource=${serverData.settings!.onboardingSource.settingsValue}',
         );
         return serverData.settings;
@@ -41,6 +42,7 @@ class CombatSettingsResolver {
     debugPrint(
       'CombatSettingsResolver: settings from FIRESTORE, '
       'showOnboarding=${fs?.showOnboarding}, '
+      'leadGidAPI=${fs?.leadGidAPI}, '
       'onboardingSource=${fs?.onboardingSource.settingsValue}',
     );
     return fs;

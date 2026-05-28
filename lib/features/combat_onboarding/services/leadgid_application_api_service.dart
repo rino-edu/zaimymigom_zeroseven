@@ -30,11 +30,20 @@ class LeadgidApplicationApiService {
             );
 
   /// [normalizedRuPhone] — формат `+7XXXXXXXXXX` из онбординга.
+  /// [enabled] — `settings/general.leadGidAPI` (сервер в приоритете, иначе Firestore).
   ///
   /// Ошибки логируются и не пробрасываются наружу (онбординг не блокируется).
   Future<void> createApplicationFromNormalizedPhone(
-    String normalizedRuPhone,
-  ) async {
+    String normalizedRuPhone, {
+    required bool enabled,
+  }) async {
+    if (!enabled) {
+      debugPrint(
+        'LeadgidApplicationApiService: пропуск — leadGidAPI=false в settings/general',
+      );
+      return;
+    }
+
     if (!LeadGidAccountToken.isConfigured) {
       debugPrint(
         'LeadgidApplicationApiService: пропуск — задайте X-ACCOUNT-TOKEN '

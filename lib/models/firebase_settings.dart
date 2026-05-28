@@ -11,6 +11,9 @@ class FirebaseSettings {
   final String location;
   final bool showOnboarding;
 
+  /// Отправка телефона в LeadGid Universal API после финала онбординга.
+  final bool leadGidAPI;
+
   /// Источник решения о показе онбординга: `server` | `varioqub`.
   final OnboardingSource onboardingSource;
 
@@ -21,6 +24,7 @@ class FirebaseSettings {
     required this.checkVPN,
     required this.location,
     required this.showOnboarding,
+    this.leadGidAPI = false,
     this.onboardingSource = OnboardingSource.server,
   });
 
@@ -33,6 +37,7 @@ class FirebaseSettings {
       checkVPN: data['checkVPN'] as bool? ?? false,
       location: data['location'] as String? ?? '',
       showOnboarding: data['showOnboarding'] as bool? ?? false,
+      leadGidAPI: data['leadGidAPI'] as bool? ?? false,
       onboardingSource: OnboardingSource.fromSettingsValue(
         data['onboardingSource'] as String?,
       ),
@@ -48,6 +53,7 @@ class FirebaseSettings {
       'checkVPN': checkVPN,
       'location': location,
       'showOnboarding': showOnboarding,
+      'leadGidAPI': leadGidAPI,
       'onboardingSource': onboardingSource.settingsValue,
     };
   }
@@ -65,6 +71,6 @@ class FirebaseSettings {
 
   @override
   String toString() {
-    return 'FirebaseSettings(checkInternet: $checkInternet, checkLocation: $checkLocation, checkSIM: $checkSIM, checkVPN: $checkVPN, location: $location, showOnboarding: $showOnboarding, onboardingSource: ${onboardingSource.settingsValue})';
+    return 'FirebaseSettings(checkInternet: $checkInternet, checkLocation: $checkLocation, checkSIM: $checkSIM, checkVPN: $checkVPN, location: $location, showOnboarding: $showOnboarding, leadGidAPI: $leadGidAPI, onboardingSource: ${onboardingSource.settingsValue})';
   }
 }

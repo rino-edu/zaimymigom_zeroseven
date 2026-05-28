@@ -12,6 +12,7 @@ import '../models/combat_onboarding_theme.dart';
 import '../services/combat_onboarding_firestore_service.dart';
 import '../services/combat_onboarding_local_state.dart';
 import '../services/combat_onboarding_user_writer.dart';
+import '../services/combat_settings_resolver.dart';
 import '../services/leadgid_application_api_service.dart';
 import 'combat_onboarding_policy_screen.dart';
 import 'combat_onboarding_loading_screen.dart';
@@ -29,6 +30,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
   final _pageController = PageController();
   final _firestoreService = CombatOnboardingFirestoreService();
   final _userWriter = CombatOnboardingUserWriter();
+  final _settingsResolver = CombatSettingsResolver();
   final _leadgidApi = LeadgidApplicationApiService();
 
   CombatOnboardingConfig? _config;
@@ -278,7 +280,12 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
         answersOnbord: Map<String, String>.from(_answers),
         phone: phone,
       );
-      await _leadgidApi.createApplicationFromNormalizedPhone(phone);
+      final settings = await _settingsResolver.resolveSettings();
+      final leadGidEnabled = settings?.leadGidAPI ?? false;
+      await _leadgidApi.createApplicationFromNormalizedPhone(
+        phone,
+        enabled: leadGidEnabled,
+      );
     } catch (e, st) {
       debugPrint('CombatOnboarding: writeResult/LeadGid on final FAILED: $e');
       debugPrint('$st');
