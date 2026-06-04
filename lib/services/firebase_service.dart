@@ -163,14 +163,14 @@ class FirebaseService {
     }
   }
 
-  /// Документ `settings/show_case` (заголовки AppBar на экране займов).
-  Future<SettingsShowCase?> getShowCase() async {
+  /// Документ `show_case/titles` (заголовок и подзаголовок витрины займов).
+  Future<SettingsShowCase?> getShowCaseTitles() async {
     await _ensureFirestoreInitialized();
 
     try {
       final doc = await _firestore
-          .collection('settings')
-          .doc('show_case')
+          .collection('show_case')
+          .doc('titles')
           .get()
           .timeout(const Duration(seconds: 30));
 
@@ -180,7 +180,7 @@ class FirebaseService {
 
       return SettingsShowCase.fromMap(doc.data()!);
     } catch (e) {
-      print('Error fetching settings/show_case: $e');
+      print('Error fetching show_case/titles: $e');
       return null;
     }
   }

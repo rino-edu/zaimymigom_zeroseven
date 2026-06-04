@@ -13,7 +13,7 @@ class ServerDataResponse {
   final Map<String, List<Offer>> boyOffersByRegion;
   final List<Offer> vpnOffers;
   final FirebaseSettings? settings;
-  /// Аналог `settings/show_case` на сервере.
+  /// Аналог `show_case/titles` на сервере.
   final SettingsShowCase? showCase;
 
   ServerDataResponse({
@@ -128,17 +128,30 @@ class ServerDataService {
         }
       }
 
-      // Парсим show_case (документ settings/show_case)
+      // Парсим show_case/titles (коллекция show_case, документ titles)
       SettingsShowCase? showCase;
       final showCaseList =
           (data['show_case'] ?? data['showCase']) as List<dynamic>?;
       if (showCaseList != null && showCaseList.isNotEmpty) {
-        final first = showCaseList.first as Map<String, dynamic>;
-        final json = first['json'] as Map<String, dynamic>? ?? {};
-        showCase = SettingsShowCase.fromMap(json);
+        Map<String, dynamic>? titlesJson;
+        for (final item in showCaseList) {
+          final map = item as Map<String, dynamic>;
+          final name = map['name']?.toString();
+          if (name == 'titles') {
+            titlesJson = map['json'] as Map<String, dynamic>? ?? {};
+            break;
+          }
+        }
+        titlesJson ??=
+            (showCaseList.first as Map<String, dynamic>)['json']
+                as Map<String, dynamic>? ??
+            {};
+        showCase = SettingsShowCase.fromMap(titlesJson);
         if (kDebugMode) {
           debugPrint(
-            'ServerDataService: show_case titles true="${showCase.onboardingTrueTitle}" false="${showCase.onboardingFalseTitle}"',
+            'ServerDataService: show_case/titles '
+            'trueTitle="${showCase.onboardingTrueTitle}" '
+            'falseTitle="${showCase.onboardingFalseTitle}"',
           );
         }
       }

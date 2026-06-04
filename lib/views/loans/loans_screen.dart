@@ -66,6 +66,7 @@ class _LoansScreenState extends State<LoansScreen> {
   bool _isLoading = true;
   String? _userCountry;
   String _loansAppBarTitle = '';
+  String? _loansSubtitle;
 
   @override
   void initState() {
@@ -131,6 +132,35 @@ class _LoansScreenState extends State<LoansScreen> {
     } catch (e) {
       debugPrint('LoansScreen: Ошибка при сохранении 78978u0-iu0 0: $e');
     }
+  }
+
+  Future<({String title, String? subtitle})> _resolveShowCaseTexts({
+    SettingsShowCase? fromServer,
+    required bool isCombatMode,
+  }) async {
+    var showCase = fromServer;
+    if (showCase == null || showCase.isEmpty) {
+      showCase = await _firebaseService.getShowCaseTitles();
+    }
+
+    final onboardingFullyDone =
+        await CombatOnboardingLocalState().isCombatOnboardingFullyCompleted();
+
+    var title = showCase?.titleForOnboardingCompleted(onboardingFullyDone) ?? '';
+    if (title.isEmpty) {
+      title = AppStrings.loans;
+    }
+
+    String? subtitle;
+    if (isCombatMode) {
+      final raw =
+          showCase?.subtitleForOnboardingCompleted(onboardingFullyDone) ?? '';
+      if (raw.isNotEmpty) {
+        subtitle = raw;
+      }
+    }
+
+    return (title: title, subtitle: subtitle);
   }
 
   Future<void> _loadOffers() async {
@@ -236,24 +266,16 @@ class _LoansScreenState extends State<LoansScreen> {
       // Гарантируем сортировку офферов по id по возрастанию перед отображением
       offers.sort((a, b) => a.id.compareTo(b.id));
 
-      var showCase = showCaseFromServer;
-      if (showCase == null || showCase.isEmpty) {
-        showCase = await _firebaseService.getShowCase();
-      }
-
-      final onboardingFullyDone =
-          await CombatOnboardingLocalState().isCombatOnboardingFullyCompleted();
-      var barTitle = onboardingFullyDone
-          ? (showCase?.onboardingTrueTitle ?? '')
-          : (showCase?.onboardingFalseTitle ?? '');
-      if (barTitle.isEmpty) {
-        barTitle = AppStrings.loans;
-      }
+      final showCaseTexts = await _resolveShowCaseTexts(
+        fromServer: showCaseFromServer,
+        isCombatMode: isCombatMode,
+      );
 
       setState(() {
         _offers = offers;
         _isLoading = false;
-        _loansAppBarTitle = barTitle;
+        _loansAppBarTitle = showCaseTexts.title;
+        _loansSubtitle = showCaseTexts.subtitle;
       });
     } catch (e) {
       print('LoansScreen: Error loading offers: $e');
@@ -261,25 +283,15 @@ class _LoansScreenState extends State<LoansScreen> {
         await CombatShowcaseAnalytics.reportError(message: e.toString());
       }
 
-      SettingsShowCase? showCase;
-      try {
-        showCase = await _firebaseService.getShowCase();
-      } catch (_) {
-        showCase = null;
-      }
-      final onboardingFullyDone =
-          await CombatOnboardingLocalState().isCombatOnboardingFullyCompleted();
-      var barTitle = onboardingFullyDone
-          ? (showCase?.onboardingTrueTitle ?? '')
-          : (showCase?.onboardingFalseTitle ?? '');
-      if (barTitle.isEmpty) {
-        barTitle = AppStrings.loans;
-      }
+      final showCaseTexts = await _resolveShowCaseTexts(
+        isCombatMode: isCombatMode,
+      );
 
       setState(() {
         _offers = [];
         _isLoading = false;
-        _loansAppBarTitle = barTitle;
+        _loansAppBarTitle = showCaseTexts.title;
+        _loansSubtitle = showCaseTexts.subtitle;
       });
     }
   }
@@ -336,6 +348,42 @@ class _LoansScreenState extends State<LoansScreen> {
     return _buildOffersContent(context, isCombatMode);
   }
 
+  /// Подзаголовок витрины (стиль карточки оффера).
+  Widget _buildLoansSubtitleCard(BuildContext context, String text) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.15),
+            blurRadius: 20,
+            spreadRadius: 5,
+            offset: const Offset(0, 8),
+          ),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.1),
+            blurRadius: 15,
+            spreadRadius: 3,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontSize: 17,
+              height: 1.45,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.onSurface,
+            ),
+      ),
+    );
+  }
+
   /// Контент с офферами для обоих режимов
   Widget _buildOffersContent(BuildContext context, bool isCombatMode) {
     if (_isLoading) {
@@ -387,12 +435,19 @@ class _LoansScreenState extends State<LoansScreen> {
       );
     }
 
-    // Список офферов
+    final showSubtitle =
+        isCombatMode && (_loansSubtitle?.isNotEmpty ?? false);
+    final headerCount = showSubtitle ? 1 : 0;
+
     return ListView.builder(
       padding: const EdgeInsets.only(bottom: 80, top: 16, right: 16, left: 16),
-      itemCount: _offers.length,
+      itemCount: _offers.length + headerCount,
       itemBuilder: (context, index) {
-        final offer = _offers[index];
+        if (showSubtitle && index == 0) {
+          return _buildLoansSubtitleCard(context, _loansSubtitle!);
+        }
+
+        final offer = _offers[index - headerCount];
         return OfferCard(
           offer: offer,
           onButtonTap: () => _onOfferButtonTap(offer, isCombatMode),
