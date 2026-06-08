@@ -24,13 +24,6 @@ void main() async {
 
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-  // Инициализация AppMetrica
-  await AppMetricaService().initialize();
-  await AppMetricaService.reportVpnStatusOnLaunch();
-
-  // Varioqub (флаги A/B) — после AppMetrica, до гейта онбординга
-  await VarioqubService().initialize();
-
   // Инициализация Firebase
   final firebaseService = FirebaseService();
   await firebaseService.initialize();
@@ -40,6 +33,13 @@ void main() async {
   await authService.ensureAnonymousSignIn();
 
   await FCMService.instance.initialize();
+
+  // Инициализация AppMetrica
+  await AppMetricaService().initialize();
+  await AppMetricaService.reportVpnStatusOnLaunch();
+
+  // Varioqub (флаги A/B) — после AppMetrica, до гейта онбординга
+  await VarioqubService().initialize();
 
   // Определение режима работы
   final appModeService = AppModeService();

@@ -85,6 +85,7 @@ dependencies:
   smooth_page_indicator: ^1.2.0
   pigeon: ^26.3.4
   varioqub_plugin: ^0.1.0
+  appmetrica_plugin: ^3.4.0
 
 dev_dependencies:
   flutter_test:
