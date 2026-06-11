@@ -350,12 +350,15 @@ class _LoansScreenState extends State<LoansScreen> {
 
   /// Подзаголовок витрины (стиль карточки оффера).
   Widget _buildLoansSubtitleCard(BuildContext context, String text) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? theme.colorScheme.surface : Colors.white,
         borderRadius: BorderRadius.circular(14),
         boxShadow: [
           BoxShadow(
@@ -374,11 +377,11 @@ class _LoansScreenState extends State<LoansScreen> {
       ),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+        style: theme.textTheme.titleMedium?.copyWith(
               fontSize: 17,
               height: 1.45,
               fontWeight: FontWeight.w500,
-              color: Theme.of(context).colorScheme.onSurface,
+              color: isDark ? Colors.white : theme.colorScheme.onSurface,
             ),
       ),
     );

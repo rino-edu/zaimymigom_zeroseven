@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
+import '../../../constants/app_colors.dart';
 import '../../../services/combat_showcase_analytics.dart';
 import '../../../services/firebase_analytics_service.dart';
 import '../../../services/appmetrica_service.dart';
@@ -293,12 +294,13 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
 
     // Экран 1
     if (!mounted) return;
+    final flowTheme = cfg.start.theme.forFlowBrightness(context);
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
         builder: (_) => CombatOnboardingLoadingScreen(
           title: cfg.animation1.title,
           durationSeconds: cfg.animation1.durationSeconds,
-          theme: cfg.start.theme,
+          theme: flowTheme,
           onDone: (loadingCtx) {
             debugPrint('CombatOnboarding: animation1 done, push animation2');
             // Экран 2
@@ -307,7 +309,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
                 builder: (_) => CombatOnboardingLoadingScreen(
                   title: cfg.animation2.title,
                   durationSeconds: cfg.animation2.durationSeconds,
-                  theme: cfg.start.theme,
+                  theme: flowTheme,
                   onDone: (loading2Ctx) async {
                     debugPrint('CombatOnboarding: animation2 done, writeResult...');
                     try {
@@ -353,16 +355,25 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
   Widget build(BuildContext context) {
     final cfg = _config;
     if (cfg == null) {
-      // минимальный лоадер на время запроса
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      final isDark = Theme.of(context).brightness == Brightness.dark;
+      return Scaffold(
+        backgroundColor:
+            isDark ? AppColors.darkBackground : Theme.of(context).colorScheme.surface,
+        body: Center(
+          child: CircularProgressIndicator(
+            color: isDark ? Colors.white : null,
+          ),
+        ),
+      );
     }
 
+    final flowTheme = cfg.start.theme.forFlowBrightness(context);
     final total = cfg.totalPagesForLastOnbord;
 
     return PopScope(
       canPop: false,
       child: Scaffold(
-        backgroundColor: cfg.start.theme.backgroundColor,
+        backgroundColor: flowTheme.backgroundColor,
         body: SafeArea(
           child: Column(
             children: [
@@ -375,7 +386,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
                       onPressed: _closeOnboarding,
                       icon: Icon(
                         Icons.close,
-                        color: cfg.start.theme.titleTextColor,
+                        color: flowTheme.titleTextColor,
                       ),
                     ),
                   ],
@@ -391,14 +402,14 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
                       title: cfg.start.title,
                       body: cfg.start.body,
                       buttonText: cfg.start.primaryButtonText,
-                      theme: cfg.start.theme,
+                      theme: flowTheme,
                       onContinue: _onStartContinue,
                     ),
                     for (final page in cfg.pagesSorted)
                       _QuestionPage(
                         question: page.question,
                         options: page.options,
-                        theme: cfg.start.theme,
+                        theme: flowTheme,
                         onSelected: (opt) => _onOptionSelected(page, opt),
                       ),
                     _FinalPage(
@@ -406,7 +417,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
                       body: cfg.finalStep.body,
                       buttonText: cfg.finalStep.primaryButtonText,
                       consentText: cfg.finalStep.consentText,
-                      theme: cfg.start.theme,
+                      theme: flowTheme,
                       phoneController: _phoneController,
                       phoneFocusNode: _phoneFocusNode,
                       phoneErrorText: _phoneErrorText,
@@ -424,9 +435,8 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
                   controller: _pageController,
                   count: total,
                   effect: WormEffect(
-                    dotColor:
-                        cfg.start.theme.bodyTextColor.withValues(alpha: 0.25),
-                    activeDotColor: cfg.start.theme.primaryButtonBgColor,
+                    dotColor: flowTheme.bodyTextColor.withValues(alpha: 0.25),
+                    activeDotColor: flowTheme.primaryButtonBgColor,
                     dotHeight: 8,
                     dotWidth: 8,
                   ),
@@ -596,6 +606,8 @@ class _FinalPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -622,18 +634,62 @@ class _FinalPage extends StatelessWidget {
             controller: phoneController,
             focusNode: phoneFocusNode,
             keyboardType: TextInputType.phone,
+            style: TextStyle(color: isDark ? Colors.white : null),
+            cursorColor: isDark ? Colors.white : null,
             decoration: InputDecoration(
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: isDark ? Colors.white38 : Theme.of(context).dividerColor,
+                ),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: isDark ? Colors.white38 : Theme.of(context).dividerColor,
+                ),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: isDark ? Colors.white : Theme.of(context).colorScheme.primary,
+                  width: isDark ? 1.5 : 1,
+                ),
+              ),
+              errorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.error,
+                ),
+              ),
+              focusedErrorBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14),
+                borderSide: BorderSide(
+                  color: Theme.of(context).colorScheme.error,
+                ),
               ),
               labelText: 'Телефон',
+              labelStyle: TextStyle(color: isDark ? Colors.white70 : null),
               errorText: phoneErrorText,
+              errorStyle: TextStyle(
+                color: isDark ? const Color(0xFFFF8A80) : null,
+              ),
             ),
           ),
           const SizedBox(height: 12),
           CheckboxListTile(
             value: consentChecked,
             onChanged: (v) => onConsentChanged(v ?? false),
+            checkColor: isDark ? AppColors.darkBackground : null,
+            fillColor: WidgetStateProperty.resolveWith((states) {
+              if (states.contains(WidgetState.selected)) {
+                return isDark ? Colors.white : null;
+              }
+              return isDark ? Colors.transparent : null;
+            }),
+            side: isDark
+                ? const BorderSide(color: Colors.white54, width: 1.5)
+                : null,
             title: InkWell(
               onTap: () => _openPolicy(context),
               child: Text(
@@ -654,6 +710,11 @@ class _FinalPage extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: theme.primaryButtonBgColor,
                 foregroundColor: theme.primaryButtonTextColor,
+                disabledBackgroundColor: isDark
+                    ? theme.primaryButtonBgColor.withValues(alpha: 0.45)
+                    : null,
+                disabledForegroundColor:
+                    isDark ? Colors.white54 : null,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
@@ -665,6 +726,23 @@ class _FinalPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+extension _CombatOnboardingFlowTheme on CombatOnboardingTheme {
+  CombatOnboardingTheme forFlowBrightness(BuildContext context) {
+    if (Theme.of(context).brightness == Brightness.light) {
+      return this;
+    }
+
+    return const CombatOnboardingTheme(
+      backgroundColor: AppColors.darkBackground,
+      titleTextColor: Colors.white,
+      bodyTextColor: Colors.white,
+      primaryButtonBgColor: AppColors.darkSurface,
+      primaryButtonTextColor: Colors.white,
+      optionButtonBgColor: AppColors.darkSurface,
     );
   }
 }
