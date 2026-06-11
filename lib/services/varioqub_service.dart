@@ -31,9 +31,8 @@ class VarioqubService {
         ),
       );
 
-      await Varioqub.setDefaults({
-        showOnboardingFlagKey: 'false',
-      });
+      // Дефолт для showOnboarding не задаём: без эксперимента флаг отсутствует
+      // в активном конфиге → fallback на settings.showOnboarding с сервера.
 
       await Varioqub.activateConfig();
       _initialized = true;
@@ -77,7 +76,8 @@ class VarioqubService {
 
   /// Читает флаг `showOnboarding` из активной конфигурации Varioqub.
   ///
-  /// Возвращает `null`, если SDK недоступен или значение не распознано.
+  /// Возвращает `null`, если SDK недоступен, эксперимент не назначил флаг
+  /// или значение не распознано — тогда используется `showOnboarding` с сервера.
   Future<bool?> tryGetShowOnboarding() async {
     if (!isAvailable) {
       if (kDebugMode) {
@@ -89,6 +89,16 @@ class VarioqubService {
     }
 
     try {
+      if (!await _isFlagInActiveConfig()) {
+        if (kDebugMode) {
+          debugPrint(
+            'VarioqubService: "$showOnboardingFlagKey" not in active config '
+            '(experiment not running) → server fallback',
+          );
+        }
+        return null;
+      }
+
       final raw = await Varioqub.getString(showOnboardingFlagKey, '');
       final parsed = _parseShowOnboardingString(raw);
       if (parsed == null) {
@@ -106,11 +116,26 @@ class VarioqubService {
       }
       return parsed;
     } on PlatformException catch (e) {
-      debugPrint('VarioqubService: getString failed: $e');
+      debugPrint('VarioqubService: read flag failed: $e');
       return null;
     } catch (e) {
-      debugPrint('VarioqubService: getString failed: $e');
+      debugPrint('VarioqubService: read flag failed: $e');
       return null;
+    }
+  }
+
+  /// Флаг есть в активированном конфиге (пользователь в эксперименте / конфиге).
+  Future<bool> _isFlagInActiveConfig() async {
+    try {
+      final keys = await Varioqub.getAllKeys();
+      return keys
+          .whereType<String>()
+          .any((key) => key == showOnboardingFlagKey);
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('VarioqubService: getAllKeys failed: $e');
+      }
+      return false;
     }
   }
 

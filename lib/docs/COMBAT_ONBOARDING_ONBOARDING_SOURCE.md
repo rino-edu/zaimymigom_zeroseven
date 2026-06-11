@@ -37,7 +37,7 @@
 | Значение | Поведение |
 |----------|-----------|
 | `server` | Показ = `showOnboarding` с сервера/Firestore (после master: при `true` → показываем). |
-| `varioqub` | Показ = флаг Varioqub `showOnboarding` (`"true"` / `"false"`). Если Varioqub недоступен — **fallback** на `showOnboarding` с сервера. |
+| `varioqub` | Показ = флаг Varioqub `showOnboarding` (`"true"` / `"false"`), **только если эксперимент назначил флаг** (ключ есть в активном конфиге). Иначе — **fallback** на `showOnboarding` с сервера (в т.ч. когда эксперимент не запущен). |
 
 Неизвестное значение трактуется как `server`.
 
@@ -52,8 +52,8 @@
 Инициализация в `main.dart` **после** `AppMetricaService.initialize()`:
 
 - `initVarioqubWithAppMetricaAdapter`
-- `setDefaults({ showOnboarding: "false" })`
 - `activateConfig()` — флаги текущей сессии
+- для `showOnboarding` **не** задаётся `setDefaults` — без эксперимента ключ отсутствует в конфиге
 - `fetchConfig()` в фоне — конфиг для **следующего** запуска (без `activateConfig` в середине сессии)
 
 ### 2.2. Флаг в эксперименте / конфиге
@@ -62,14 +62,15 @@
 |------|----------------|----------|--------------|
 | `showOnboarding` | string | `"true"`, `"false"` | конвертация в `bool` (без учёта регистра) |
 
-Пустая строка или другое значение → флаг считается **недоступным**, используется fallback на сервер.
+Пустая строка или другое значение → fallback на сервер.
 
 ### 2.3. Проверка доступности Varioqub
 
 `VarioqubService.tryGetShowOnboarding()` возвращает `null`, если:
 
 - не удалась инициализация / `activateConfig`;
-- исключение при `getString`;
+- ключ `showOnboarding` **отсутствует** в активном конфиге (`getAllKeys`) — эксперимент не запущен или пользователь не в варианте;
+- исключение при чтении;
 - значение флага пустое или не `"true"` / `"false"`.
 
 В этом случае `OnboardingVisibilityResolver` использует `settings.showOnboarding` с сервера.
@@ -82,8 +83,8 @@
 1. settings.showOnboarding == false  →  не показываем (master OFF)
 2. onboardingSource == server        →  показываем (master уже true)
 3. onboardingSource == varioqub:
-     - Varioqub.showOnboarding доступен  →  его bool
-     - иначе                             →  settings.showOnboarding (fallback)
+     - ключ showOnboarding в активном конфиге Varioqub  →  его bool ("true"/"false")
+     - иначе (нет эксперимента, SDK недоступен и т.д.) →  settings.showOnboarding (fallback)
 ```
 
 Дополнительно (как раньше): если `combat_onboarding_was_shown == true` — онбординг не показывается повторно (`CombatOnboardingGate`).
