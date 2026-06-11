@@ -9,6 +9,10 @@ class LocaleKeys {
   static const vpnDialogTitle = 'vpn.dialog_title';
   static const vpnDialogDescription = 'vpn.dialog_description';
   static const vpnDialogOk = 'vpn.dialog_ok';
+  static const vpnBlockedTitle = 'vpn.blocked_title';
+  static const vpnBlockedDescription = 'vpn.blocked_description';
+  static const vpnBlockedHint = 'vpn.blocked_hint';
+  static const vpnBlockedRefresh = 'vpn.blocked_refresh';
 
   // Navigation
   static const navHome = 'navigation.home';

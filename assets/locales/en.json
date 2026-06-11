@@ -549,7 +549,11 @@
   "vpn": {
     "dialog_title": "It seems VPN is enabled on your device",
     "dialog_description": "For a more stable app experience, we recommend turning off VPN and restarting the app.",
-    "dialog_ok": "Got it"
+    "dialog_ok": "Got it",
+    "blocked_title": "VPN detected",
+    "blocked_description": "To use the app, you need to disable the VPN connection.",
+    "blocked_hint": "Please disable VPN and try again.",
+    "blocked_refresh": "Refresh"
   },
   "connection": {
     "lost_title": "No internet connection",

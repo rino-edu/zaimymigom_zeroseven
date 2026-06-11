@@ -9,6 +9,7 @@ import 'services/firebase_auth_service.dart';
 import 'services/fcm_service.dart';
 import 'services/app_mode_service.dart';
 import 'services/appmetrica_service.dart';
+import 'services/vpn_startup_service.dart';
 import 'services/varioqub_service.dart';
 import 'services/settings_service.dart';
 import 'services/budget_provider.dart';
@@ -16,7 +17,7 @@ import 'services/goals_provider.dart';
 import 'services/currency_prefs.dart';
 import 'services/calendar_provider.dart';
 import 'services/creditworthiness_provider.dart';
-import 'features/combat_onboarding/ui/combat_onboarding_gate.dart';
+import 'views/vpn/app_startup_gate.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,9 +42,15 @@ void main() async {
   // Varioqub (флаги A/B) — после AppMetrica, до гейта онбординга
   await VarioqubService().initialize();
 
-  // Определение режима работы
+  // На iOS при активном VPN откладываем определение режима до отключения VPN.
+  final iosVpnActive = await VpnStartupService.instance.checkIosVpnActive();
+
   final appModeService = AppModeService();
-  await appModeService.determineAppMode();
+  if (!iosVpnActive) {
+    await appModeService.determineAppMode();
+  } else {
+    appModeService.resetMode();
+  }
 
   // Загрузка настроек
   final settingsService = SettingsService();
@@ -100,29 +107,8 @@ class MyApp extends StatelessWidget {
       themeMode: settings.themeMode,
       debugShowCheckedModeBanner: false,
       home: const ConnectivityListener(
-        child: AppModeWrapper(),
+        child: AppStartupGate(),
       ),
     );
-  }
-}
-
-class AppModeWrapper extends StatelessWidget {
-  const AppModeWrapper({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final appMode = AppModeService().currentMode;
-    // Если режим еще не определен (теоретически), показываем лоадер
-    if (appMode == null) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
-    // В боевом режиме — сразу LoansScreen c боевыми офферами
-    if (appMode == AppMode.combat) {
-      return const CombatOnboardingGate(appMode: AppMode.combat);
-    }
-
-    // В небоевом режиме — онбординг полностью убран
-    return const CombatOnboardingGate(appMode: AppMode.nonCombat);
   }
 }
