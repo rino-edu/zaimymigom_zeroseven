@@ -1,0 +1,2 @@
+#include? "Pods/Target Support Files/Pods-PushNotificationServiceExtension/Pods-PushNotificationServiceExtension.release.xcconfig"
+#include "Generated.xcconfig"

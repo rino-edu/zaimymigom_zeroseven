@@ -1700,6 +1700,8 @@ DEPENDENCIES:
   - app_tracking_transparency (from `.symlinks/plugins/app_tracking_transparency/ios`)
   - appmetrica_plugin (from `.symlinks/plugins/appmetrica_plugin/ios`)
   - appmetrica_push_plugin (from `.symlinks/plugins/appmetrica_push_plugin/ios`)
+  - AppMetricaAnalytics (~> 5.14)
+  - AppMetricaPush (~> 3.2)
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - device_info_plus (from `.symlinks/plugins/device_info_plus/ios`)
@@ -1944,6 +1946,6 @@ SPEC CHECKSUMS:
   vpn_detector: 24f7c7155ced8572fe86239a3832a23b7eb14dfa
   webview_flutter_wkwebview: 1821ceac936eba6f7984d89a9f3bcb4dea99ebb2
 
-PODFILE CHECKSUM: 3c63482e143d1b91d2d2560aee9fb04ecc74ac7e
+PODFILE CHECKSUM: 7932cf493b617d78dfd6f6a75bbb99ad47ff5f19
 
 COCOAPODS: 1.16.2

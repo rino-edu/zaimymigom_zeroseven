@@ -1,8 +1,13 @@
+import AppMetricaPush
+import FirebaseCore
+import FirebaseMessaging
 import Flutter
 import UIKit
 import UserNotifications
-import FirebaseCore
-import FirebaseMessaging
+
+/// App Group для обмена данными между приложением и NSE (Notification Service Extension).
+/// Target NSE: PushNotificationServiceExtension
+private let appMetricaAppGroup = "group.com.kredit7.dney.appmetrica"
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -10,12 +15,16 @@ import FirebaseMessaging
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    UNUserNotificationCenter.current().delegate = self
+    GeneratedPluginRegistrant.register(with: self)
+
+    AppMetricaPush.setExtensionAppGroup(appMetricaAppGroup)
+
+    let pushDelegate = AppMetricaPush.userNotificationCenterDelegate
+    pushDelegate.nextDelegate = self
+    UNUserNotificationCenter.current().delegate = pushDelegate
+
     Messaging.messaging().delegate = self
 
-    application.registerForRemoteNotifications()
-
-    GeneratedPluginRegistrant.register(with: self)
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
@@ -26,28 +35,22 @@ import FirebaseMessaging
     Messaging.messaging().apnsToken = deviceToken
     super.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
   }
-}
 
-extension AppDelegate {
   override func userNotificationCenter(
     _ center: UNUserNotificationCenter,
     willPresent notification: UNNotification,
     withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
   ) {
-    completionHandler([.banner, .badge, .sound, .list])
-  }
-
-  override func userNotificationCenter(
-    _ center: UNUserNotificationCenter,
-    didReceive response: UNNotificationResponse,
-    withCompletionHandler completionHandler: @escaping () -> Void
-  ) {
-    completionHandler()
+    super.userNotificationCenter(
+      center,
+      willPresent: notification,
+      withCompletionHandler: completionHandler
+    )
   }
 }
 
 extension AppDelegate: MessagingDelegate {
   func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-    // FlutterFire сам подхватит токен в Dart; держим хук для диагностики/совместимости.
+    // FlutterFire подхватит токен в Dart.
   }
 }

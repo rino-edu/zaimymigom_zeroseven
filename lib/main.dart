@@ -33,11 +33,11 @@ void main() async {
   final authService = FirebaseAuthService();
   await authService.ensureAnonymousSignIn();
 
-  await FCMService.instance.initialize();
-
-  // Инициализация AppMetrica
+  // AppMetrica Push SDK должен активироваться до регистрации push-токена.
   await AppMetricaService().initialize();
   await AppMetricaService.reportVpnStatusOnLaunch();
+
+  await FCMService.instance.initialize();
 
   // Varioqub (флаги A/B) — после AppMetrica, до гейта онбординга
   await VarioqubService().initialize();
