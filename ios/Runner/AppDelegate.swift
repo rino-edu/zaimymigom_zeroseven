@@ -18,14 +18,18 @@ private let appMetricaAppGroup = "group.com.kredit7.dney.appmetrica"
     GeneratedPluginRegistrant.register(with: self)
 
     AppMetricaPush.setExtensionAppGroup(appMetricaAppGroup)
-
-    let pushDelegate = AppMetricaPush.userNotificationCenterDelegate
-    pushDelegate.nextDelegate = self
-    UNUserNotificationCenter.current().delegate = pushDelegate
+    // UNUserNotificationCenter.delegate настраивает appmetrica_push_plugin:
+    // Plugin → AppMetrica delegate → FlutterAppDelegate/FCM.
+    // Ручная установка delegate/nextDelegate здесь вызывает бесконечную рекурсию при тапе по push.
 
     Messaging.messaging().delegate = self
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  override func applicationDidBecomeActive(_ application: UIApplication) {
+    clearApplicationBadge()
+    super.applicationDidBecomeActive(application)
   }
 
   override func application(
@@ -36,16 +40,12 @@ private let appMetricaAppGroup = "group.com.kredit7.dney.appmetrica"
     super.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken)
   }
 
-  override func userNotificationCenter(
-    _ center: UNUserNotificationCenter,
-    willPresent notification: UNNotification,
-    withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
-  ) {
-    super.userNotificationCenter(
-      center,
-      willPresent: notification,
-      withCompletionHandler: completionHandler
-    )
+  private func clearApplicationBadge() {
+    if #available(iOS 16.0, *) {
+      UNUserNotificationCenter.current().setBadgeCount(0) { _ in }
+    } else {
+      UIApplication.shared.applicationIconBadgeNumber = 0
+    }
   }
 }
 
