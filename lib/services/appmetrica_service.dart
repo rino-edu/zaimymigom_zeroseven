@@ -1,15 +1,29 @@
+import 'dart:async';
+
 import 'package:appmetrica_plugin/appmetrica_plugin.dart';
 import 'package:appmetrica_push_plugin/appmetrica_push_plugin.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:vpn_detector/vpn_detector.dart';
 import 'package:http/http.dart' as http;
+
+import 'pending_push_open_channel.dart';
 
 /// Сервис для работы с AppMetrica
 class AppMetricaService {
   static final String _apiKey = "c828e376-a236-497e-9d06-af7a0d0cbc9e"; // Замените на ваш API ключ
   static const String _vpnWereOpenedKey = 'vpn_were_opened';
   static const String _deviceIdHashCacheKey = 'appmetrica_device_id_hash';
+  static const Duration _pushOpenDedupWindow = Duration(seconds: 3);
+
+  static StreamSubscription? _pushClickSub;
+  static StreamSubscription? _fcmOpenedSub;
+  static String? _lastPushOpenKey;
+  static DateTime? _lastPushOpenAt;
+  static bool _pushClickListenerAttached = false;
+  static bool _fcmPushOpenTrackingAttached = false;
+  static bool _coldStartPushOpenHandled = false;
 
   /// Инициализация AppMetrica
   Future<void> initialize() async {
@@ -52,6 +66,9 @@ class AppMetricaService {
       await AppMetricaPush.activate();
       debugPrint('AppMetricaService: Push SDK активирован');
 
+      _attachPushClickListener();
+      await _handleColdStartPushOpen();
+
       // Получение токена Firebase и настройка слушателя токенов
       AppMetricaPush.tokenStream.listen((tokens) {
         debugPrint('AppMetricaService: получены новые токены: $tokens');
@@ -59,6 +76,108 @@ class AppMetricaService {
     } catch (e) {
       debugPrint('AppMetricaService: ошибка при инициализации Push SDK: $e');
     }
+  }
+
+  /// FCM fallback для открытия push. Вызывать после инициализации FCM.
+  static Future<void> setupPushOpenTracking() async {
+    if (_fcmPushOpenTrackingAttached) return;
+    _fcmPushOpenTrackingAttached = true;
+
+    _fcmOpenedSub = FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      reportPushOpen(
+        payload: _fcmPayload(message),
+        messageId: message.messageId,
+      );
+    });
+
+    try {
+      final initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+      if (initialMessage != null) {
+        await reportPushOpen(
+          payload: _fcmPayload(initialMessage),
+          messageId: initialMessage.messageId,
+        );
+      }
+    } catch (e) {
+      debugPrint('AppMetricaService: getInitialMessage error: $e');
+    }
+  }
+
+  static void _attachPushClickListener() {
+    if (_pushClickListenerAttached) return;
+    _pushClickListenerAttached = true;
+
+    _pushClickSub = AppMetricaPush.pushClickStream.listen((info) {
+      reportPushOpen(payload: info.payload);
+    });
+  }
+
+  static Future<void> _handleColdStartPushOpen() async {
+    if (_coldStartPushOpenHandled) return;
+    _coldStartPushOpenHandled = true;
+
+    try {
+      final pending = await PendingPushOpenChannel.consumeLaunchPush();
+      if (pending != null) {
+        await reportPushOpen(payload: pending.payload);
+        return;
+      }
+    } catch (e) {
+      debugPrint('AppMetricaService: pending push open error: $e');
+    }
+
+    try {
+      final launchInfo = await AppMetricaPush.getLaunchPushInfo();
+      final launchPayload = launchInfo.payload?.trim();
+      if (launchPayload != null && launchPayload.isNotEmpty) {
+        await reportPushOpen(payload: launchPayload);
+      }
+    } catch (e) {
+      debugPrint('AppMetricaService: getLaunchPushInfo error: $e');
+    }
+  }
+
+  /// Событие открытия push-уведомления (тап пользователя).
+  static Future<void> reportPushOpen({
+    String? payload,
+    String? messageId,
+  }) async {
+    final normalizedPayload = payload?.trim();
+    final normalizedMessageId = messageId?.trim();
+    final dedupKey =
+        '${normalizedPayload ?? ''}|${normalizedMessageId ?? ''}';
+    final now = DateTime.now();
+
+    if (_lastPushOpenKey == dedupKey &&
+        _lastPushOpenAt != null &&
+        now.difference(_lastPushOpenAt!) < _pushOpenDedupWindow) {
+      return;
+    }
+
+    _lastPushOpenKey = dedupKey;
+    _lastPushOpenAt = now;
+
+    final parameters = <String, dynamic>{};
+    if (normalizedPayload != null && normalizedPayload.isNotEmpty) {
+      parameters['payload'] = normalizedPayload;
+    }
+    if (normalizedMessageId != null && normalizedMessageId.isNotEmpty) {
+      parameters['message_id'] = normalizedMessageId;
+    }
+
+    await reportEvent(
+      'push_open',
+      parameters: parameters.isEmpty ? null : parameters,
+    );
+    await PendingPushOpenChannel.clear();
+  }
+
+  static String? _fcmPayload(RemoteMessage message) {
+    final dataPayload = message.data['payload'] ?? message.data['yamp'];
+    if (dataPayload != null && dataPayload.toString().trim().isNotEmpty) {
+      return dataPayload.toString();
+    }
+    return message.notification?.title;
   }
 
   /// Отправка события

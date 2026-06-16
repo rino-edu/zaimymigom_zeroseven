@@ -38,6 +38,7 @@ void main() async {
   await AppMetricaService.reportVpnStatusOnLaunch();
 
   await FCMService.instance.initialize();
+  await AppMetricaService.setupPushOpenTracking();
 
   // Varioqub (флаги A/B) — после AppMetrica, до гейта онбординга
   await VarioqubService().initialize();
