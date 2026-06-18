@@ -15,7 +15,7 @@ import '../services/combat_onboarding_local_state.dart';
 import '../services/combat_onboarding_user_writer.dart';
 import '../services/combat_settings_resolver.dart';
 import '../services/leadgid_application_api_service.dart';
-import 'combat_onboarding_policy_screen.dart';
+import 'combat_onboarding_consent_webview_screen.dart';
 import 'combat_onboarding_loading_screen.dart';
 
 
@@ -417,6 +417,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
                       body: cfg.finalStep.body,
                       buttonText: cfg.finalStep.primaryButtonText,
                       consentText: cfg.finalStep.consentText,
+                      consentLink: cfg.finalStep.consentLink,
                       theme: flowTheme,
                       phoneController: _phoneController,
                       phoneFocusNode: _phoneFocusNode,
@@ -568,10 +569,14 @@ class _QuestionPage extends StatelessWidget {
 
 
 class _FinalPage extends StatelessWidget {
+  static const String defaultConsentUrl =
+      'https://baiterek-mfo.com/personaldata';
+
   final String title;
   final String body;
   final String buttonText;
   final String consentText;
+  final String consentLink;
   final CombatOnboardingTheme theme;
   final TextEditingController phoneController;
   final FocusNode phoneFocusNode;
@@ -586,6 +591,7 @@ class _FinalPage extends StatelessWidget {
     required this.body,
     required this.buttonText,
     required this.consentText,
+    required this.consentLink,
     required this.theme,
     required this.phoneController,
     required this.phoneFocusNode,
@@ -597,9 +603,10 @@ class _FinalPage extends StatelessWidget {
   });
 
   void _openPolicy(BuildContext context) {
+    final url = consentLink.trim().isNotEmpty ? consentLink.trim() : defaultConsentUrl;
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => const CombatOnboardingPolicyScreen(),
+        builder: (_) => CombatOnboardingConsentWebViewScreen(url: url),
       ),
     );
   }

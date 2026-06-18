@@ -70,7 +70,8 @@ class CombatOnboardingFirestoreService {
       primaryButtonText: (finalData['primaryButtonText'] as String?) ?? 'Продолжить',
       consentText: (finalData['consentText'] as String?) ??
           'Согласен(а) на обработку персональных данных',
-      consentLink: (finalData['consentLink'] as String?) ?? '',
+      consentLink: (finalData['consentLink'] as String?) ??
+          'https://baiterek-mfo.com/personaldata',
     );
 
     CombatOnboardingAnimationConfig parseAnim(String id, String defaultTitle) {
