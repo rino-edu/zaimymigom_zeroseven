@@ -36,15 +36,24 @@ class _WebViewScreenState extends State<WebViewScreen> {
   String? _firstRedirectUrl;
   String _currentUrl = '';
 
-  /// Только на время открытия анкеты: блок CMB/витрины.
-  /// После загрузки формы выключается — историю больше не трогаем.
+  /// Только на время открытия анкеты (логирование / будущие нюансы).
+  /// Denylist витрин действует всегда — не зависит от guard.
   bool _guardFormOpen = false;
   bool _skippingHistory = false;
 
+  /// CPA/витрины, на которые не пускаем main-frame.
   static const Set<String> _partnerShowcaseHosts = {
     'happyzaym.ru',
     'clickstats.ru',
     'captchacheck.ru',
+    'greenzaem.ru',
+  };
+
+  /// Доп. path-маркеры витрины на доменах Webbankir.
+  static const Set<String> _partnerShowcasePathMarkers = {
+    '/promo/cmb',
+    '/cmb-cpa',
+    '/back-cpa',
   };
 
   /// UA как у мобильного Safari — меньше детекта in-app WebView.
@@ -80,10 +89,25 @@ class _WebViewScreenState extends State<WebViewScreen> {
     final uri = Uri.tryParse(url);
     if (uri == null) return false;
     final host = uri.host.toLowerCase();
+    final path = uri.path.toLowerCase();
+
     if (_partnerShowcaseHosts.any((h) => host == h || host.endsWith('.$h'))) {
       return true;
     }
-    return host.contains('wbbankir.ru') && uri.path.contains('/promo/cmb');
+
+    // Webbankir CMB / CPA-пути
+    if (host.contains('wbbankir.ru') || host.contains('wb-digital.ru')) {
+      if (_partnerShowcasePathMarkers.any(path.contains)) {
+        return true;
+      }
+    }
+
+    // На всякий случай: cmb-cpa / back-cpa на любом хосте
+    if (path.contains('/cmb-cpa') || path.contains('/back-cpa')) {
+      return true;
+    }
+
+    return false;
   }
 
   bool _isAuthHistoryHop(String url) {
@@ -168,9 +192,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
               return NavigationDecision.navigate;
             }
 
-            // Только CMB/витрина во время открытия анкеты. Стек не подменяем.
-            if (_guardFormOpen && _isPartnerShowcaseDetour(url)) {
-              debugPrint('[$_logTag] blocked showcase during form-open: $url');
+            // Denylist витрин/CPA — всегда, не только во время открытия анкеты
+            if (_isPartnerShowcaseDetour(url)) {
+              debugPrint('[$_logTag] blocked denylist: $url');
               return NavigationDecision.prevent;
             }
 
