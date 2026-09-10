@@ -22,16 +22,21 @@ class WebViewService {
             // Можно добавить индикатор загрузки
           },
           onPageStarted: (String url) {
-            // Страница начала загружаться
+            debugPrint('[WebViewDebug][pageStarted] $url');
           },
           onPageFinished: (String url) {
-            // Страница загружена
+            debugPrint('[WebViewDebug][pageFinished] $url');
+          },
+          onUrlChange: (UrlChange change) {
+            final url = change.url ?? '';
+            if (url.isEmpty || url == 'about:blank') return;
+            debugPrint('[WebViewDebug][urlChange] $url');
           },
           onWebResourceError: (WebResourceError error) {
             // Обработка ошибок
           },
           onNavigationRequest: (NavigationRequest request) {
-            // Можно контролировать навигацию
+            debugPrint('[WebViewDebug][navigation] ${request.url}');
             return NavigationDecision.navigate;
           },
         ),

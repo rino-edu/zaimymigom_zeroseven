@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -35,13 +36,86 @@ class _WebViewScreenState extends State<WebViewScreen> {
   String? _firstRedirectUrl;
   String _currentUrl = '';
 
+  /// Только на время открытия анкеты: блок CMB/витрины.
+  /// После загрузки формы выключается — историю больше не трогаем.
+  bool _guardFormOpen = false;
+  bool _skippingHistory = false;
+
+  static const Set<String> _partnerShowcaseHosts = {
+    'happyzaym.ru',
+    'clickstats.ru',
+    'captchacheck.ru',
+  };
+
+  /// UA как у мобильного Safari — меньше детекта in-app WebView.
+  static const String _safariMobileUserAgent =
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) '
+      'AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 '
+      'Mobile/15E148 Safari/604.1';
+
   @override
   void initState() {
     super.initState();
     _initializeWebView();
-
-    // Отправляем событие о просмотре WebView в AppMetrica
     AppMetricaService.reportScreen('webview_offer');
+  }
+
+  bool _isOfferFormHost(String url) {
+    final host = Uri.tryParse(url)?.host.toLowerCase() ?? '';
+    return host == 'registration.wbbankir.ru' ||
+        host.endsWith('.registration.wbbankir.ru');
+  }
+
+  bool _isRegistrationBridge(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+    final host = uri.host.toLowerCase();
+    if (host != 'auth.wb-digital.ru' && !host.endsWith('.auth.wb-digital.ru')) {
+      return false;
+    }
+    return uri.path.toLowerCase().contains('/registration');
+  }
+
+  bool _isPartnerShowcaseDetour(String url) {
+    final uri = Uri.tryParse(url);
+    if (uri == null) return false;
+    final host = uri.host.toLowerCase();
+    if (_partnerShowcaseHosts.any((h) => host == h || host.endsWith('.$h'))) {
+      return true;
+    }
+    return host.contains('wbbankir.ru') && uri.path.contains('/promo/cmb');
+  }
+
+  bool _isAuthHistoryHop(String url) {
+    final host = Uri.tryParse(url)?.host.toLowerCase() ?? '';
+    return host == 'auth.wb-digital.ru' || host.endsWith('.auth.wb-digital.ru');
+  }
+
+  void _beginFormOpenGuard(String url) {
+    if (_guardFormOpen) return;
+    _guardFormOpen = true;
+    debugPrint('[$_logTag] form-open guard ON: $url');
+  }
+
+  void _endFormOpenGuard(String url) {
+    if (!_guardFormOpen) return;
+    _guardFormOpen = false;
+    debugPrint('[$_logTag] form-open guard OFF: $url');
+  }
+
+  bool _isCancelledOrIgnorableError(WebResourceError error) {
+    final description = error.description.toLowerCase();
+    final code = error.errorCode;
+    if (code == -999) return true;
+    if (description.contains('cancel')) return true;
+    if (description.contains('interrupted')) return true;
+    if (description.contains('err_aborted')) return true;
+    if (description.contains('err_blocked_by_orb')) return true;
+    if (description.contains('err_name_not_resolved')) return true;
+    if (description.contains('err_timed_out')) return true;
+    if (error.url == 'about:blank') return true;
+    if (error.isForMainFrame == false) return true;
+    return false;
   }
 
   /// Инициализация WebView
@@ -64,19 +138,39 @@ class _WebViewScreenState extends State<WebViewScreen> {
     controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.white)
+      ..setUserAgent(_safariMobileUserAgent)
       ..setNavigationDelegate(
         NavigationDelegate(
           onNavigationRequest: (NavigationRequest request) {
             final String url = request.url;
+            _logCurrentUrl(
+              request.isMainFrame ? 'navigation' : 'navigation(iframe)',
+              url,
+            );
 
-            // Проверяем кастомные схемы магазинов приложений
+            if (!request.isMainFrame) {
+              return NavigationDecision.navigate;
+            }
+
             if (url.contains("rustore.ru") ||
                 url.contains("play.google.com/store/apps") ||
                 url.contains("appgallery.huawei") ||
                 url.contains("apps.apple.com") ||
-                url.contains("tel:") || url.contains("vk.com") || url.contains("ok.ru")
-            ) {
+                url.contains("tel:") ||
+                url.contains("vk.com") ||
+                url.contains("ok.ru")) {
               developer.log("App store scheme detected: $url", name: _logTag);
+              return NavigationDecision.prevent;
+            }
+
+            if (_isRegistrationBridge(url) || _isOfferFormHost(url)) {
+              _beginFormOpenGuard(url);
+              return NavigationDecision.navigate;
+            }
+
+            // Только CMB/витрина во время открытия анкеты. Стек не подменяем.
+            if (_guardFormOpen && _isPartnerShowcaseDetour(url)) {
+              debugPrint('[$_logTag] blocked showcase during form-open: $url');
               return NavigationDecision.prevent;
             }
 
@@ -86,28 +180,88 @@ class _WebViewScreenState extends State<WebViewScreen> {
             final String url = change.url ?? '';
             if (url.isEmpty || url == 'about:blank') return;
 
-            developer.log("URL changed to: $url", name: _logTag);
+            _logCurrentUrl('urlChange', url);
             _currentUrl = url;
+
+            if (_isRegistrationBridge(url) || _isOfferFormHost(url)) {
+              _beginFormOpenGuard(url);
+            }
           },
           onPageStarted: (String url) {
-            developer.log("Page started loading: $url", name: _logTag);
+            _logCurrentUrl('pageStarted', url);
+            _currentUrl = url;
 
-            setState(() {
-              _isErrorState = false;
-              _isLoading = true;
-            });
+            if (_isRegistrationBridge(url) || _isOfferFormHost(url)) {
+              _beginFormOpenGuard(url);
+            }
+
+            if (url != 'about:blank' && mounted) {
+              setState(() {
+                _isErrorState = false;
+                _isLoading = true;
+              });
+            }
           },
           onPageFinished: (String url) async {
-            developer.log("Page finished loading: $url", name: _logTag);
+            _logCurrentUrl('pageFinished', url);
 
             if (url == 'about:blank') return;
 
-            developer.log("Page finished loading: $url", name: _logTag);
             _currentUrl = url;
 
+            if (_isOfferFormHost(url)) {
+              _endFormOpenGuard(url);
+            }
+
             // Инжектируем JavaScript для улучшения работы с файлами
+            // и перехвата window.open (форма Webbankir часто в новом окне)
             try {
               await controller.runJavaScript('''
+                (function() {
+                  if (window.__flutterWindowOpenHooked) return;
+                  window.__flutterWindowOpenHooked = true;
+                  window.open = function(url, name, specs) {
+                    try {
+                      if (url && url !== '' && url !== 'about:blank') {
+                        console.log('[WebViewDebug] window.open -> same frame:', url);
+                        window.location.href = url;
+                        return window;
+                      }
+                      // blank popup: перехватываем последующую установку location
+                      var proxy = {
+                        closed: false,
+                        close: function() { this.closed = true; },
+                        focus: function() {},
+                        blur: function() {},
+                        document: {
+                          write: function() {},
+                          writeln: function() {},
+                          open: function() {},
+                          close: function() {}
+                        }
+                      };
+                      var loc = url || 'about:blank';
+                      Object.defineProperty(proxy, 'location', {
+                        get: function() {
+                          return {
+                            href: loc,
+                            assign: function(v) { window.location.href = v; },
+                            replace: function(v) { window.location.replace(v); },
+                            toString: function() { return loc; }
+                          };
+                        },
+                        set: function(v) {
+                          if (v) { window.location.href = String(v); }
+                        }
+                      });
+                      return proxy;
+                    } catch (e) {
+                      console.log('[WebViewDebug] window.open hook error', e);
+                      return null;
+                    }
+                  };
+                })();
+
                 const originalClick = HTMLElement.prototype.click;
                 HTMLElement.prototype.click = function() {
                   console.log('Element clicked:', this.tagName, this.type);
@@ -141,7 +295,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
                   });
                 });
                 
-                observer.observe(document.body, { childList: true, subtree: true });
+                if (document.body) {
+                  observer.observe(document.body, { childList: true, subtree: true });
+                }
                 console.log('WebView JS initialization complete');
               ''');
             } catch (e, st) {
@@ -184,29 +340,24 @@ class _WebViewScreenState extends State<WebViewScreen> {
             }
           },
           onWebResourceError: (WebResourceError error) {
-            developer.log("WebView error: ${error.description}", name: _logTag);
-/*            developer.log(
-              "WebView error code: ${error.errorCode}",
-              name: _logTag,
-            );*/
+            debugPrint(
+              '[$_logTag] resource error: ${error.description} '
+              'code=${error.errorCode} url=${error.url} '
+              'mainFrame=${error.isForMainFrame}',
+            );
 
-            String error_name = error.description;
+            if (_guardFormOpen || _isCancelledOrIgnorableError(error)) {
+              debugPrint('[$_logTag] ignore resource error');
+              return;
+            }
 
             if (_isErrorState) return;
 
-            // Логируем все ошибки для диагностики
-            /*developer.log(
-              "WebView: обработка ошибки: $error_name",
-              name: _logTag,
-            );*/
+            final error_name = error.description;
 
             if (error_name.contains('ERR_BLOCKED_BY_ORB') ||
                 error_name.contains('net::ERR_NAME_NOT_RESOLVED')
                 || error_name.contains('net::ERR_TIMED_OUT')) {
-/*              developer.log(
-                "Ignoring ${error.description} for URL: ${error.url}",
-                name: _logTag,
-              );*/
               return;
             } else {
               // При любой ошибке показываем единый диалог
@@ -247,6 +398,13 @@ class _WebViewScreenState extends State<WebViewScreen> {
     _loadInitialUrl();
   }
 
+  /// Печать текущего веб-адреса в консоль (Flutter / Xcode / Logcat)
+  void _logCurrentUrl(String source, String url) {
+    if (url.isEmpty) return;
+    debugPrint('[$_logTag][$source] $url');
+    developer.log('[$source] $url', name: _logTag);
+  }
+
   /// Загрузить начальный URL
   Future<void> _loadInitialUrl() async {
     // Используем url_link если он передан, иначе используем offer.link
@@ -256,10 +414,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
         final uri = Uri.parse(urlToLoad);
         if (uri.hasScheme) {
           _initialUrl = urlToLoad;
-          developer.log(
-            "Loading initial URL: $urlToLoad",
-            name: _logTag,
-          );
+          _logCurrentUrl('initial', urlToLoad);
           await _controller.loadRequest(uri);
         } else {
           developer.log(
@@ -483,25 +638,42 @@ class _WebViewScreenState extends State<WebViewScreen> {
     }
   }
 
-  /// Навигация назад
+  /// Навигация назад — обычный history back.
+  /// Пропускаем только промежуточные auth.* hop'ы между анкетой и промо.
   Future<void> _goBack() async {
-    if (await _controller.canGoBack()) {
+    if (_skippingHistory) return;
+    if (!await _controller.canGoBack()) {
+      if (mounted) Navigator.of(context).pop();
+      return;
+    }
+
+    final startedOnForm = _isOfferFormHost(_currentUrl);
+    _skippingHistory = true;
+    try {
       await _controller.goBack();
-      _updateNavigationState();
-    } else {
-      // Если нельзя идти назад, закрываем экран
-      if (mounted) {
-        Navigator.of(context).pop();
+      await Future<void>.delayed(const Duration(milliseconds: 120));
+
+      for (var i = 0; i < 8; i++) {
+        final url = await _controller.currentUrl() ?? _currentUrl;
+        final skipAuth = _isAuthHistoryHop(url);
+        final skipFormHop = startedOnForm && _isOfferFormHost(url);
+        if (!skipAuth && !skipFormHop) break;
+        if (!await _controller.canGoBack()) break;
+        debugPrint('[$_logTag] goBack skip hop: $url');
+        await _controller.goBack();
+        await Future<void>.delayed(const Duration(milliseconds: 120));
       }
+    } finally {
+      _skippingHistory = false;
+      await _updateNavigationState();
     }
   }
 
-  /// Навигация вперед
+  /// Навигация вперед — обычный history forward.
   Future<void> _goForward() async {
-    if (await _controller.canGoForward()) {
-      await _controller.goForward();
-      _updateNavigationState();
-    }
+    if (!await _controller.canGoForward()) return;
+    await _controller.goForward();
+    await _updateNavigationState();
   }
 
   /// Обновить страницу
@@ -570,7 +742,6 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   @override
   void dispose() {
-    // Контроллер будет автоматически очищен системой
     super.dispose();
   }
 }
