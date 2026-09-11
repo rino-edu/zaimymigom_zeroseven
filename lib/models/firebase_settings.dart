@@ -17,6 +17,12 @@ class FirebaseSettings {
   /// Источник решения о показе онбординга: `server` | `varioqub`.
   final OnboardingSource onboardingSource;
 
+  /// `true` — нативная витрина (LoansScreen), `false` — WebView по [showCaseLink].
+  final bool nativeVitrina;
+
+  /// URL веб-витрины, если [nativeVitrina] == false.
+  final String showCaseLink;
+
   FirebaseSettings({
     required this.checkInternet,
     required this.checkLocation,
@@ -26,6 +32,8 @@ class FirebaseSettings {
     required this.showOnboarding,
     this.leadGidAPI = false,
     this.onboardingSource = OnboardingSource.server,
+    this.nativeVitrina = true,
+    this.showCaseLink = '',
   });
 
   /// Создание объекта из документа Firestore
@@ -41,6 +49,8 @@ class FirebaseSettings {
       onboardingSource: OnboardingSource.fromSettingsValue(
         data['onboardingSource'] as String?,
       ),
+      nativeVitrina: data['nativeVitrina'] as bool? ?? true,
+      showCaseLink: data['showCaseLink'] as String? ?? '',
     );
   }
 
@@ -55,6 +65,8 @@ class FirebaseSettings {
       'showOnboarding': showOnboarding,
       'leadGidAPI': leadGidAPI,
       'onboardingSource': onboardingSource.settingsValue,
+      'nativeVitrina': nativeVitrina,
+      'showCaseLink': showCaseLink,
     };
   }
 
@@ -71,6 +83,6 @@ class FirebaseSettings {
 
   @override
   String toString() {
-    return 'FirebaseSettings(checkInternet: $checkInternet, checkLocation: $checkLocation, checkSIM: $checkSIM, checkVPN: $checkVPN, location: $location, showOnboarding: $showOnboarding, leadGidAPI: $leadGidAPI, onboardingSource: ${onboardingSource.settingsValue})';
+    return 'FirebaseSettings(checkInternet: $checkInternet, checkLocation: $checkLocation, checkSIM: $checkSIM, checkVPN: $checkVPN, location: $location, showOnboarding: $showOnboarding, leadGidAPI: $leadGidAPI, onboardingSource: ${onboardingSource.settingsValue}, nativeVitrina: $nativeVitrina, showCaseLink: $showCaseLink)';
   }
 }

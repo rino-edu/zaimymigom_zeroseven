@@ -161,6 +161,90 @@ class WebLinkService {
     debugPrint('WebLinkService: Режим обновлен на ${mode.name}');
   }
 
+  /// Запасной URL веб-витрины, если `showCaseLink` пустой/невалидный.
+  static const String fallbackShowCaseLink =
+      'https://crapinka.ru/Zp7h5HDc?aff_sub1=com.kredit7.dney';
+
+  /// Нормализует схему URL (добавляет https:// при необходимости).
+  String _ensureHttpsScheme(String link) {
+    try {
+      final uri = Uri.parse(link);
+      if (!uri.hasScheme) {
+        return 'https://$link';
+      }
+      return link;
+    } catch (_) {
+      return link;
+    }
+  }
+
+  /// Ставит/заменяет query-параметр в URL.
+  String _upsertQueryParam(String link, String key, String value) {
+    final uri = Uri.parse(link);
+    final params = Map<String, String>.from(uri.queryParameters);
+    params[key] = value;
+    return uri.replace(queryParameters: params).toString();
+  }
+
+  /// Модифицирует ссылку веб-витрины: те же трекинг-параметры, что у офферов,
+  /// плюс `aff_sub4=boy` (боевой) / `aff_sub4=vpn` (небоевой).
+  Future<String> generateModifiedShowCaseLink(String? showCaseLink) async {
+    final raw = (showCaseLink ?? '').trim();
+    var link = _ensureHttpsScheme(raw.isNotEmpty ? raw : fallbackShowCaseLink);
+    debugPrint('WebLinkService: Модификация showCaseLink: $link');
+
+    if (_currentAppMode == null) {
+      final AppMode? modeResult = AppModeService().currentMode;
+      isBoyMode = modeResult == AppMode.combat;
+      _currentAppMode = modeResult;
+      debugPrint('WebLinkService: Режим определён как ${modeResult?.name}');
+    }
+
+    final affSub4 = isBoyMode ? 'boy' : 'vpn';
+    link = _upsertQueryParam(link, 'aff_sub4', affSub4);
+    debugPrint('WebLinkService: Установлен aff_sub4=$affSub4');
+
+    // Как у офферов: aff_sub6 / aff_sub10 только в боевом режиме.
+    if (!isBoyMode) {
+      debugPrint(
+        'WebLinkService: VPN режим — showCaseLink без aff_sub6/aff_sub10: $link',
+      );
+      return link;
+    }
+
+    if ((_linkParams['sub6'] ?? '').isEmpty) {
+      _linkParams['sub6'] = await AppMetricaService.getDeviceIdHash();
+      await _saveParamsToPrefs();
+    }
+
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    String sub6 = _linkParams['sub6'] ?? '';
+    if (sub6.isEmpty) {
+      final String? prefSub6 = prefs.getString(_prefSub6Key);
+      if (prefSub6 != null && prefSub6.isNotEmpty) {
+        sub6 = prefSub6;
+      }
+    }
+    if (sub6.isNotEmpty) {
+      link = _upsertQueryParam(link, 'aff_sub6', sub6);
+      debugPrint('WebLinkService: Установлен aff_sub6=$sub6');
+    }
+
+    if (await _shouldAttachAffSub10(prefs)) {
+      final String sub10 = prefs.getString(prefSub10Key)!;
+      link = _upsertQueryParam(link, 'aff_sub10', sub10);
+      await _markAffSub10Applied(prefs);
+      debugPrint('WebLinkService: Установлен aff_sub10=$sub10');
+    } else {
+      debugPrint(
+        'WebLinkService: aff_sub10 не добавлен (уже подставляли или пусто)',
+      );
+    }
+
+    debugPrint('WebLinkService: Итоговая showCaseLink: $link');
+    return link;
+  }
+
   /// Модифицирует предоставленную ссылку оффера, добавляя трекинг-параметры
   Future<String> generateModifiedOfferLink(String offerLink) async {
     debugPrint('WebLinkService: Начало модификации ссылки оффера: $offerLink');

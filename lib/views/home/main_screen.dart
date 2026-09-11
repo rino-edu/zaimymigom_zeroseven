@@ -3,6 +3,7 @@ import 'package:easy_localization/easy_localization.dart';
 import '../../utils/locale_keys.dart';
 import '../../services/app_mode_service.dart';
 import '../loans/loans_screen.dart';
+import '../loans/showcase_screen.dart';
 import '../settings/settings_screen.dart';
 import 'psc_calculator_screen.dart';
 import 'budget_screen.dart';
@@ -39,7 +40,7 @@ class _MainScreenState extends State<MainScreen> {
     PscCalculatorScreen(),
     BudgetScreen(),
     GoalsScreen(),
-    const LoansScreen(withScaffold: false),
+    const ShowcaseScreen(withScaffold: false, embedInParent: true),
   ];
 
   void _onItemTapped(int index) {

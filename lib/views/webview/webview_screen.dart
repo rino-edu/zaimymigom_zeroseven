@@ -16,7 +16,32 @@ class WebViewScreen extends StatefulWidget {
   final Offer offer;
   final String? url_link;
 
-  const WebViewScreen({super.key, required this.offer, this.url_link});
+  /// Корневая веб-витрина: нельзя закрыть через leading (нет куда pop).
+  final bool isRootShowcase;
+
+  /// Если false — без собственного AppBar (вкладка MainScreen).
+  final bool withAppBar;
+
+  const WebViewScreen({
+    super.key,
+    required this.offer,
+    this.url_link,
+    this.isRootShowcase = false,
+    this.withAppBar = true,
+  });
+
+  /// Заглушка-оффер для веб-витрины (WebViewScreen требует Offer).
+  static Offer showcasePlaceholderOffer({required String link}) {
+    return Offer(
+      id: 0,
+      isShow: true,
+      link: link,
+      image: '',
+      buttonText: '',
+      name: 'Showcase',
+      stars: '0',
+    );
+  }
 
   @override
   State<WebViewScreen> createState() => _WebViewScreenState();
@@ -708,7 +733,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   /// Построить leading в зависимости от режима и текущей страницы
   Widget? _buildLeading() {
-    if (_hideLeading) return null;
+    if (widget.isRootShowcase || _hideLeading) return null;
     return IconButton(
       icon: const Icon(Icons.close),
       onPressed: () => Navigator.of(context).pop(),
@@ -718,49 +743,52 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-              title: Text(AppStrings.appName, style: const TextStyle(fontSize: 14)),
-              centerTitle: true,
-              leading: _buildLeading() ??
-                  IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-              actions: [
-                // Кнопка назад
-                IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: _canGoBack ? _goBack : null,
-                ),
-                // Кнопка вперед
-                IconButton(
-                  icon: const Icon(Icons.arrow_forward),
-                  onPressed: _canGoForward ? _goForward : null,
-                ),
-                // Кнопка обновления
-                IconButton(icon: const Icon(Icons.refresh), onPressed: _reload),
+    final webViewBody = Stack(
+      children: [
+        WebViewWidget(controller: _controller),
+        if (_isLoading)
+          const Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+                SizedBox(height: 16),
+                Text('Загрузка...'),
               ],
             ),
-      body: Stack(
-        children: [
-          // WebView
-          WebViewWidget(controller: _controller),
+          ),
+      ],
+    );
 
-          // Индикатор загрузки
-          if (_isLoading)
-            const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Загрузка...'),
-                ],
-              ),
-            ),
+    if (!widget.withAppBar) {
+      return Scaffold(body: webViewBody);
+    }
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(AppStrings.appName, style: const TextStyle(fontSize: 14)),
+        centerTitle: true,
+        automaticallyImplyLeading: !widget.isRootShowcase,
+        leading: widget.isRootShowcase
+            ? null
+            : (_buildLeading() ??
+                IconButton(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.of(context).pop(),
+                )),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: _canGoBack ? _goBack : null,
+          ),
+          IconButton(
+            icon: const Icon(Icons.arrow_forward),
+            onPressed: _canGoForward ? _goForward : null,
+          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _reload),
         ],
       ),
+      body: webViewBody,
     );
   }
 

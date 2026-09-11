@@ -7,7 +7,7 @@ import '../../../constants/app_colors.dart';
 import '../../../services/combat_showcase_analytics.dart';
 import '../../../services/firebase_analytics_service.dart';
 import '../../../services/appmetrica_service.dart';
-import '../../../views/loans/loans_screen.dart';
+import '../../../views/loans/showcase_screen.dart';
 import '../models/combat_onboarding_config.dart';
 import '../models/combat_onboarding_theme.dart';
 import '../services/combat_onboarding_firestore_service.dart';
@@ -90,7 +90,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
     if (!mounted) return;
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(
-        builder: (_) => LoansScreen(showCaseOnboardingReason: showCaseReason),
+        builder: (_) => ShowcaseScreen(showCaseOnboardingReason: showCaseReason),
       ),
     );
   }
@@ -335,7 +335,7 @@ class _CombatOnboardingFlowScreenState extends State<CombatOnboardingFlowScreen>
                     if (!loading2Ctx.mounted) return;
                     Navigator.of(loading2Ctx).pushReplacement(
                       MaterialPageRoute(
-                        builder: (_) => const LoansScreen(
+                        builder: (_) => const ShowcaseScreen(
                           showCaseOnboardingReason:
                               CombatLoansShowCaseReason.afterOnboardingFinish,
                         ),

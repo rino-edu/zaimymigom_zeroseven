@@ -4,7 +4,7 @@ import '../../../services/app_mode_service.dart';
 import '../../../services/combat_showcase_analytics.dart';
 import '../../../services/firebase_analytics_service.dart';
 import '../../../views/home/main_screen.dart';
-import '../../../views/loans/loans_screen.dart';
+import '../../../views/loans/showcase_screen.dart';
 import '../services/combat_onboarding_local_state.dart';
 import '../services/combat_onboarding_user_writer.dart';
 import '../services/combat_settings_resolver.dart';
@@ -61,7 +61,7 @@ class _CombatOnboardingGateState extends State<CombatOnboardingGate> {
     // combat: онбординг только если его ещё не показывали (не привязано к первому запуску приложения).
     if (await _localState.wasOnboardingShown()) {
       if (!mounted) return;
-      setState(() => _resolved = const LoansScreen());
+      setState(() => _resolved = const ShowcaseScreen());
       return;
     }
 
@@ -72,7 +72,7 @@ class _CombatOnboardingGateState extends State<CombatOnboardingGate> {
       await _userWriter.writeNotShownIfFirstOpen(isFirstOpen: isFirstOpen);
       if (!mounted) return;
       setState(
-        () => _resolved = const LoansScreen(
+        () => _resolved = const ShowcaseScreen(
           showCaseOnboardingReason:
               CombatLoansShowCaseReason.withoutOnboarding,
         ),
@@ -92,4 +92,3 @@ class _CombatOnboardingGateState extends State<CombatOnboardingGate> {
         );
   }
 }
-
