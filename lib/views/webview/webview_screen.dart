@@ -365,15 +365,29 @@ class _WebViewScreenState extends State<WebViewScreen> {
             });
             _updateNavigationState();
 
-            final isCombat = AppModeService().currentMode == AppMode.combat;
-            if (isCombat) {
+            if (widget.isRootShowcase) {
+              // Веб-витрина: запоминаем стартовую страницу после редиректа для кнопки home
               if (!_firstRedirectHandled &&
                   _initialUrl.isNotEmpty &&
                   url != _initialUrl) {
                 setState(() {
                   _firstRedirectHandled = true;
-                  _hideLeading =
-                      true; // скрываем крестик на первой странице после редиректа
+                  _firstRedirectUrl = url;
+                  _hideLeading = true;
+                });
+              } else if (_firstRedirectUrl != null) {
+                setState(() {
+                  _hideLeading = url == _firstRedirectUrl;
+                });
+              }
+            } else if (AppModeService().currentMode == AppMode.combat) {
+              // Нативная витрина → оффер: прежняя логика скрытия крестика
+              if (!_firstRedirectHandled &&
+                  _initialUrl.isNotEmpty &&
+                  url != _initialUrl) {
+                setState(() {
+                  _firstRedirectHandled = true;
+                  _hideLeading = true;
                   _firstRedirectUrl = url;
                 });
               }
@@ -725,15 +739,42 @@ class _WebViewScreenState extends State<WebViewScreen> {
     await _updateNavigationState();
   }
 
+  /// Вернуться на стартовую страницу после первого редиректа (только веб-витрина).
+  Future<void> _goHome() async {
+    final home = _firstRedirectUrl;
+    if (home == null || home.isEmpty) return;
+    debugPrint('[$_logTag] goHome -> $home');
+    try {
+      await _controller.loadRequest(Uri.parse(home));
+    } catch (e) {
+      developer.log('goHome failed: $e', name: _logTag, error: e);
+    }
+  }
+
   /// Обновить страницу
   Future<void> _reload() async {
     await _controller.reload();
     _updateNavigationState();
   }
 
-  /// Построить leading в зависимости от режима и текущей страницы
+  /// Leading зависит от типа экрана:
+  /// - веб-витрина (`isRootShowcase`): домик → стартовая страница после редиректа
+  /// - оффер с нативной витрины: крестик → pop назад на LoansScreen
   Widget? _buildLeading() {
-    if (widget.isRootShowcase || _hideLeading) return null;
+    if (widget.isRootShowcase) {
+      final showHome = _firstRedirectHandled &&
+          _firstRedirectUrl != null &&
+          _currentUrl != _firstRedirectUrl;
+      if (!showHome) return null;
+      return IconButton(
+        icon: const Icon(Icons.home),
+        onPressed: _goHome,
+        tooltip: 'На главную',
+      );
+    }
+
+    if (_hideLeading) return null;
+
     return IconButton(
       icon: const Icon(Icons.close),
       onPressed: () => Navigator.of(context).pop(),
@@ -768,14 +809,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
       appBar: AppBar(
         title: Text(AppStrings.appName, style: const TextStyle(fontSize: 14)),
         centerTitle: true,
-        automaticallyImplyLeading: !widget.isRootShowcase,
-        leading: widget.isRootShowcase
-            ? null
-            : (_buildLeading() ??
-                IconButton(
-                  icon: const Icon(Icons.close),
-                  onPressed: () => Navigator.of(context).pop(),
-                )),
+        automaticallyImplyLeading: false,
+        leading: _buildLeading(),
         actions: [
           IconButton(
             icon: const Icon(Icons.arrow_back),
