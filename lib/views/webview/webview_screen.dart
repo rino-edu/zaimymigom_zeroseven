@@ -155,9 +155,12 @@ class _WebViewScreenState extends State<WebViewScreen> {
   bool _isCancelledOrIgnorableError(WebResourceError error) {
     final description = error.description.toLowerCase();
     final code = error.errorCode;
-    if (code == -999) return true;
+    // -999 NSURLErrorCancelled, 102 WebKitErrorFrameLoadInterrupted
+    // (возникает при prevent + loadRequest, напр. http→https upgrade)
+    if (code == -999 || code == 102) return true;
     if (description.contains('cancel')) return true;
     if (description.contains('interrupted')) return true;
+    if (description.contains('прерван')) return true;
     if (description.contains('err_aborted')) return true;
     if (description.contains('err_blocked_by_orb')) return true;
     if (description.contains('err_name_not_resolved')) return true;
@@ -199,6 +202,26 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
             if (!request.isMainFrame) {
               return NavigationDecision.navigate;
+            }
+
+            // iOS ATS блокирует cleartext HTTP (-1022). Safari при этом часто
+            // сам уходит на HTTPS (HSTS / HTTPS-First), а WKWebView — нет.
+            // Поднимаем схему вручную, чтобы редиректы офферов не ломались.
+            if (url.startsWith('http://')) {
+              final httpsUrl = 'https://${url.substring('http://'.length)}';
+              debugPrint('[$_logTag] upgrade http→https: $httpsUrl');
+              Future.microtask(() async {
+                try {
+                  await controller.loadRequest(Uri.parse(httpsUrl));
+                } catch (e) {
+                  developer.log(
+                    'http→https upgrade failed: $e',
+                    name: _logTag,
+                    error: e,
+                  );
+                }
+              });
+              return NavigationDecision.prevent;
             }
 
             if (url.contains("rustore.ru") ||
@@ -415,6 +438,30 @@ class _WebViewScreenState extends State<WebViewScreen> {
             }
 
             if (_isErrorState) return;
+
+            final errorUrl = error.url ?? '';
+            final isAtsHttpBlock = error.errorCode == -1022 ||
+                error.description.contains('App Transport Security') ||
+                error.description.contains('secure connection');
+            if (isAtsHttpBlock && errorUrl.startsWith('http://')) {
+              final httpsUrl =
+                  'https://${errorUrl.substring('http://'.length)}';
+              debugPrint(
+                '[$_logTag] ATS http block → retry https: $httpsUrl',
+              );
+              Future.microtask(() async {
+                try {
+                  await controller.loadRequest(Uri.parse(httpsUrl));
+                } catch (e) {
+                  developer.log(
+                    'ATS https retry failed: $e',
+                    name: _logTag,
+                    error: e,
+                  );
+                }
+              });
+              return;
+            }
 
             final error_name = error.description;
 
