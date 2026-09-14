@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 import '../../utils/locale_keys.dart';
 import '../../services/app_mode_service.dart';
+import '../../services/vpn_startup_service.dart';
 import '../loans/loans_screen.dart';
 import '../loans/showcase_screen.dart';
 import '../settings/settings_screen.dart';
@@ -57,14 +58,18 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
 
-    // Попап про включённый VPN после первого рендера домашнего экрана
+    // Попап про VPN на MainScreen — только если ещё не показали на старте
+    // (когда isShowVpnScreen=false попап уже мог показать AppStartupGate).
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_vpnDialogShown) return;
+      if (VpnStartupService.instance.vpnWarningPopupShown) return;
+
       final lastResult = AppModeService().lastResult;
       final hasVpn = lastResult?.checks['VPN Status'] == true;
       if (!hasVpn) return;
 
       _vpnDialogShown = true;
+      VpnStartupService.instance.vpnWarningPopupShown = true;
       showDialog(
         context: context,
         builder: (ctx) {

@@ -32,7 +32,8 @@ class CombatSettingsResolver {
           'leadGidAPI=${serverData.settings!.leadGidAPI}, '
           'onboardingSource=${serverData.settings!.onboardingSource.settingsValue}, '
           'nativeVitrina=${serverData.settings!.nativeVitrina}, '
-          'showCaseLink=${serverData.settings!.showCaseLink}',
+          'showCaseLink=${serverData.settings!.showCaseLink}, '
+          'isShowVpnScreen=${serverData.settings!.isShowVpnScreen}',
         );
         return serverData.settings;
       }
@@ -47,7 +48,8 @@ class CombatSettingsResolver {
       'leadGidAPI=${fs?.leadGidAPI}, '
       'onboardingSource=${fs?.onboardingSource.settingsValue}, '
       'nativeVitrina=${fs?.nativeVitrina}, '
-      'showCaseLink=${fs?.showCaseLink}',
+      'showCaseLink=${fs?.showCaseLink}, '
+      'isShowVpnScreen=${fs?.isShowVpnScreen}',
     );
     return fs;
   }

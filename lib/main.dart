@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'package:zaimymigom_zeroseven/utils/theme.dart';
 import 'package:zaimymigom_zeroseven/widgets/connectivity_listener.dart';
+import 'features/combat_onboarding/services/combat_settings_resolver.dart';
 import 'services/firebase_service.dart';
 import 'services/firebase_auth_service.dart';
 import 'services/fcm_service.dart';
@@ -43,11 +44,27 @@ void main() async {
   // Varioqub (флаги A/B) — после AppMetrica, до гейта онбординга
   await VarioqubService().initialize();
 
-  // На iOS при активном VPN откладываем определение режима до отключения VPN.
+  // На iOS политика VPN зависит от isShowVpnScreen в settings.
   final iosVpnActive = await VpnStartupService.instance.checkIosVpnActive();
 
+  bool isShowVpnScreen = true;
+  try {
+    final remoteSettings = await CombatSettingsResolver().resolveSettings();
+    isShowVpnScreen = remoteSettings?.isShowVpnScreen ?? true;
+    debugPrint(
+      'main: isShowVpnScreen=$isShowVpnScreen (vpnActive=$iosVpnActive)',
+    );
+  } catch (e) {
+    debugPrint('main: failed to resolve isShowVpnScreen, default true: $e');
+  }
+
+  VpnStartupService.instance.applyLaunchPolicy(
+    iosVpnActive: iosVpnActive,
+    isShowVpnScreen: isShowVpnScreen,
+  );
+
   final appModeService = AppModeService();
-  if (!iosVpnActive) {
+  if (!VpnStartupService.instance.iosVpnBlockedOnLaunch) {
     await appModeService.determineAppMode();
   } else {
     appModeService.resetMode();

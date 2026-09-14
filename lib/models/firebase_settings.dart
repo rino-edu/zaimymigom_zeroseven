@@ -23,6 +23,10 @@ class FirebaseSettings {
   /// URL веб-витрины, если [nativeVitrina] == false.
   final String showCaseLink;
 
+  /// `true` — непропускаемый VpnBlockedScreen при VPN на iOS.
+  /// `false` — только dismissible-попап, флоу не блокируется.
+  final bool isShowVpnScreen;
+
   FirebaseSettings({
     required this.checkInternet,
     required this.checkLocation,
@@ -34,6 +38,7 @@ class FirebaseSettings {
     this.onboardingSource = OnboardingSource.server,
     this.nativeVitrina = true,
     this.showCaseLink = '',
+    this.isShowVpnScreen = true,
   });
 
   /// Создание объекта из документа Firestore
@@ -51,6 +56,7 @@ class FirebaseSettings {
       ),
       nativeVitrina: data['nativeVitrina'] as bool? ?? true,
       showCaseLink: data['showCaseLink'] as String? ?? '',
+      isShowVpnScreen: data['isShowVpnScreen'] as bool? ?? true,
     );
   }
 
@@ -67,6 +73,7 @@ class FirebaseSettings {
       'onboardingSource': onboardingSource.settingsValue,
       'nativeVitrina': nativeVitrina,
       'showCaseLink': showCaseLink,
+      'isShowVpnScreen': isShowVpnScreen,
     };
   }
 
@@ -83,6 +90,6 @@ class FirebaseSettings {
 
   @override
   String toString() {
-    return 'FirebaseSettings(checkInternet: $checkInternet, checkLocation: $checkLocation, checkSIM: $checkSIM, checkVPN: $checkVPN, location: $location, showOnboarding: $showOnboarding, leadGidAPI: $leadGidAPI, onboardingSource: ${onboardingSource.settingsValue}, nativeVitrina: $nativeVitrina, showCaseLink: $showCaseLink)';
+    return 'FirebaseSettings(checkInternet: $checkInternet, checkLocation: $checkLocation, checkSIM: $checkSIM, checkVPN: $checkVPN, location: $location, showOnboarding: $showOnboarding, leadGidAPI: $leadGidAPI, onboardingSource: ${onboardingSource.settingsValue}, nativeVitrina: $nativeVitrina, showCaseLink: $showCaseLink, isShowVpnScreen: $isShowVpnScreen)';
   }
 }
