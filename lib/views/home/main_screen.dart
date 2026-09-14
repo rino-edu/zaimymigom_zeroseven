@@ -26,7 +26,8 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
+  /// В небоевом режиме стартуем с витрины займов, не с ПСК.
+  int _selectedIndex = 3;
   static bool _vpnDialogShown = false;
   final AppModeService _appModeService = AppModeService();
 
