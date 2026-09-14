@@ -1,17 +1,23 @@
-import 'package:flutter/foundation.dart';
+import 'dart:convert';
+import 'dart:developer' as developer;
+
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:file_picker/file_picker.dart';
 import '../../constants/app_strings.dart';
 import '../../models/offer.dart';
 import '../../services/appmetrica_service.dart';
-import 'dart:developer' as developer;
-import '../../services/app_mode_service.dart';
+import 'webview_comebacker_bridge.dart';
+import 'webview_navigation_stack.dart';
 
-/// Экран WebView для отображения веб-страниц
+/// Экран WebView для отображения веб-страниц офферов.
+///
+/// Защита от камбекеров — порт логики React OfferWebViewPane:
+/// JS-мост перехватывает window.open / target=_blank, а Flutter блокирует
+/// подмену вкладки и ведёт собственный стек точек входа (не каждый редирект).
 class WebViewScreen extends StatefulWidget {
   final Offer offer;
   final String? url_link;
@@ -49,24 +55,27 @@ class WebViewScreen extends StatefulWidget {
 
 class _WebViewScreenState extends State<WebViewScreen> {
   late final WebViewController _controller;
+  late final WebViewNavigationStack _navStack;
+  late final String _initialUrl;
+
   bool _isLoading = true;
   bool _canGoBack = false;
   bool _canGoForward = false;
   bool _isErrorState = false;
-  final ImagePicker _picker = ImagePicker();
-  static const String _logTag = "WebViewDebug";
-  late final String _initialUrl;
-  bool _hideLeading = false;
   bool _firstRedirectHandled = false;
   String? _firstRedirectUrl;
   String _currentUrl = '';
+  String _urlAtLastGesture = '';
+  bool _bridgeInjecting = false;
 
   /// Только на время открытия анкеты (логирование / будущие нюансы).
-  /// Denylist витрин действует всегда — не зависит от guard.
   bool _guardFormOpen = false;
-  bool _skippingHistory = false;
 
-  /// CPA/витрины, на которые не пускаем main-frame.
+  final ImagePicker _picker = ImagePicker();
+  static const String _logTag = 'WebViewDebug';
+  static const String _bridgeChannel = 'FlutterBridge';
+
+  /// CPA/витрины, на которые не пускаем main-frame (доп. denylist).
   static const Set<String> _partnerShowcaseHosts = {
     'happyzaym.ru',
     'clickstats.ru',
@@ -74,7 +83,6 @@ class _WebViewScreenState extends State<WebViewScreen> {
     'greenzaem.ru',
   };
 
-  /// Доп. path-маркеры витрины на доменах Webbankir.
   static const Set<String> _partnerShowcasePathMarkers = {
     '/promo/cmb',
     '/cmb-cpa',
@@ -90,6 +98,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
   @override
   void initState() {
     super.initState();
+    _initialUrl = widget.url_link ?? widget.offer.link;
+    _navStack = WebViewNavigationStack(_initialUrl);
+    _currentUrl = _initialUrl;
     _initializeWebView();
     AppMetricaService.reportScreen('webview_offer');
   }
@@ -120,24 +131,17 @@ class _WebViewScreenState extends State<WebViewScreen> {
       return true;
     }
 
-    // Webbankir CMB / CPA-пути
     if (host.contains('wbbankir.ru') || host.contains('wb-digital.ru')) {
       if (_partnerShowcasePathMarkers.any(path.contains)) {
         return true;
       }
     }
 
-    // На всякий случай: cmb-cpa / back-cpa на любом хосте
     if (path.contains('/cmb-cpa') || path.contains('/back-cpa')) {
       return true;
     }
 
     return false;
-  }
-
-  bool _isAuthHistoryHop(String url) {
-    final host = Uri.tryParse(url)?.host.toLowerCase() ?? '';
-    return host == 'auth.wb-digital.ru' || host.endsWith('.auth.wb-digital.ru');
   }
 
   void _beginFormOpenGuard(String url) {
@@ -155,8 +159,6 @@ class _WebViewScreenState extends State<WebViewScreen> {
   bool _isCancelledOrIgnorableError(WebResourceError error) {
     final description = error.description.toLowerCase();
     final code = error.errorCode;
-    // -999 NSURLErrorCancelled, 102 WebKitErrorFrameLoadInterrupted
-    // (возникает при prevent + loadRequest, напр. http→https upgrade)
     if (code == -999 || code == 102) return true;
     if (description.contains('cancel')) return true;
     if (description.contains('interrupted')) return true;
@@ -170,17 +172,121 @@ class _WebViewScreenState extends State<WebViewScreen> {
     return false;
   }
 
-  /// Инициализация WebView
+  bool _isExternalAppScheme(String url) {
+    return url.contains('rustore.ru') ||
+        url.contains('play.google.com/store/apps') ||
+        url.contains('appgallery.huawei') ||
+        url.contains('apps.apple.com') ||
+        url.contains('tel:') ||
+        url.contains('vk.com') ||
+        url.contains('ok.ru');
+  }
+
+  void _syncNavButtons() {
+    if (!mounted) return;
+    setState(() {
+      _canGoBack = _navStack.canGoBack;
+      _canGoForward = _navStack.canGoForward;
+    });
+  }
+
+  Future<void> _injectComebackerBridge() async {
+    if (_bridgeInjecting) return;
+    _bridgeInjecting = true;
+    try {
+      await _controller.runJavaScript(kWebViewComebackerBridgeJs);
+    } catch (e, st) {
+      developer.log(
+        'bridge inject failed: $e',
+        name: _logTag,
+        error: e,
+        stackTrace: st,
+      );
+    } finally {
+      _bridgeInjecting = false;
+    }
+  }
+
+  Future<void> _injectFileHelpers() async {
+    try {
+      await _controller.runJavaScript('''
+        (function() {
+          if (window.__flutterFileHelpersInstalled) return;
+          window.__flutterFileHelpersInstalled = true;
+          const originalClick = HTMLElement.prototype.click;
+          HTMLElement.prototype.click = function() {
+            if (this.tagName === 'INPUT' && this.type === 'file') {
+              console.log('[WebViewDebug] File input clicked');
+            }
+            return originalClick.apply(this, arguments);
+          };
+        })();
+      ''');
+    } catch (_) {}
+  }
+
+  void _handleBridgeMessage(String raw) {
+    try {
+      final data = jsonDecode(raw);
+      if (data is! Map) return;
+      final type = data['type'];
+      if (type == 'GESTURE') {
+        _navStack.markGesture();
+        _urlAtLastGesture = _currentUrl;
+        return;
+      }
+      if (type == 'OPEN_URL' && data['url'] is String) {
+        final url = data['url'] as String;
+        debugPrint('[$_logTag] bridge OPEN_URL: $url');
+        _navStack.openAsNewEntry(url, forceLoad: false);
+        _syncNavButtons();
+
+        // JS уже делает location.replace — не дублируем загрузку.
+        // Reclaim только если рекламный URL уже успел подменить вкладку.
+        final current = _currentUrl;
+        final onTarget = WebViewUrlUtils.startsWith(current, url);
+        final stillOnOpener = WebViewUrlUtils.same(current, _urlAtLastGesture) ||
+            current.isEmpty ||
+            current.startsWith('about:');
+        if (!onTarget && !stillOnOpener) {
+          debugPrint('[$_logTag] reclaim after tab-replace: $url (was $current)');
+          _navStack.pendingNav = url;
+          _loadUrl(url);
+        }
+      }
+    } catch (_) {
+      // чужое сообщение — игнорируем
+    }
+  }
+
+  Future<void> _loadUrl(String url) async {
+    if (url.isEmpty || url == 'about:blank') return;
+    try {
+      if (mounted) {
+        setState(() {
+          _isLoading = true;
+          _isErrorState = false;
+          _currentUrl = url;
+        });
+      }
+      await _controller.loadRequest(Uri.parse(url));
+    } catch (e) {
+      developer.log('loadUrl failed: $e', name: _logTag, error: e);
+    }
+  }
+
   void _initializeWebView() {
-    developer.log("Initializing WebView controller", name: _logTag);
+    developer.log('Initializing WebView controller', name: _logTag);
 
     late final PlatformWebViewControllerCreationParams params;
 
-    if (WebViewPlatform.instance is AndroidWebViewPlatform) {
-      developer.log("Using Android WebView creation params", name: _logTag);
+    if (WebViewPlatform.instance is WebKitWebViewPlatform) {
+      params = WebKitWebViewControllerCreationParams(
+        allowsInlineMediaPlayback: true,
+      );
+    } else if (WebViewPlatform.instance is AndroidWebViewPlatform) {
       params = AndroidWebViewControllerCreationParams();
     } else {
-      developer.log("Using default WebView creation params", name: _logTag);
       params = const PlatformWebViewControllerCreationParams();
     }
 
@@ -191,6 +297,12 @@ class _WebViewScreenState extends State<WebViewScreen> {
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(Colors.white)
       ..setUserAgent(_safariMobileUserAgent)
+      ..addJavaScriptChannel(
+        _bridgeChannel,
+        onMessageReceived: (JavaScriptMessage message) {
+          _handleBridgeMessage(message.message);
+        },
+      )
       ..setNavigationDelegate(
         NavigationDelegate(
           onNavigationRequest: (NavigationRequest request) {
@@ -204,9 +316,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
               return NavigationDecision.navigate;
             }
 
-            // iOS ATS блокирует cleartext HTTP (-1022). Safari при этом часто
-            // сам уходит на HTTPS (HSTS / HTTPS-First), а WKWebView — нет.
-            // Поднимаем схему вручную, чтобы редиректы офферов не ломались.
+            // iOS ATS: cleartext HTTP → HTTPS (HSTS / HTTPS-First).
             if (url.startsWith('http://')) {
               final httpsUrl = 'https://${url.substring('http://'.length)}';
               debugPrint('[$_logTag] upgrade http→https: $httpsUrl');
@@ -224,25 +334,28 @@ class _WebViewScreenState extends State<WebViewScreen> {
               return NavigationDecision.prevent;
             }
 
-            if (url.contains("rustore.ru") ||
-                url.contains("play.google.com/store/apps") ||
-                url.contains("appgallery.huawei") ||
-                url.contains("apps.apple.com") ||
-                url.contains("tel:") ||
-                url.contains("vk.com") ||
-                url.contains("ok.ru")) {
-              developer.log("App store scheme detected: $url", name: _logTag);
+            if (_isExternalAppScheme(url)) {
+              developer.log('App store scheme detected: $url', name: _logTag);
               return NavigationDecision.prevent;
             }
 
             if (_isRegistrationBridge(url) || _isOfferFormHost(url)) {
               _beginFormOpenGuard(url);
-              return NavigationDecision.navigate;
             }
 
-            // Denylist витрин/CPA — всегда, не только во время открытия анкеты
+            // Denylist известных CPA-витрин (доп. защита).
             if (_isPartnerShowcaseDetour(url)) {
               debugPrint('[$_logTag] blocked denylist: $url');
+              return NavigationDecision.prevent;
+            }
+
+            // Главная защита от камбекеров: пока активен popup-intent,
+            // любой другой top-level URL считаем подменой вкладки.
+            if (!_navStack.shouldAllowNavigation(
+              url,
+              isMainFrame: request.isMainFrame,
+            )) {
+              debugPrint('[$_logTag] blocked tab-replace: $url');
               return NavigationDecision.prevent;
             }
 
@@ -254,6 +367,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
             _logCurrentUrl('urlChange', url);
             _currentUrl = url;
+            _navStack.onNavUrlSeen(url);
+            _updateLeadingVisibility(url);
 
             if (_isRegistrationBridge(url) || _isOfferFormHost(url)) {
               _beginFormOpenGuard(url);
@@ -267,162 +382,44 @@ class _WebViewScreenState extends State<WebViewScreen> {
               _beginFormOpenGuard(url);
             }
 
-            if (url != 'about:blank' && mounted) {
-              setState(() {
-                _isErrorState = false;
-                _isLoading = true;
-              });
+            if (url != 'about:blank') {
+              _navStack.onLoadStart(url);
+              _syncNavButtons();
+              _updateLeadingVisibility(url);
+              // Инжектим мост как можно раньше на каждом документе.
+              _injectComebackerBridge();
+              if (mounted) {
+                setState(() {
+                  _isErrorState = false;
+                  _isLoading = true;
+                });
+              }
             }
           },
           onPageFinished: (String url) async {
             _logCurrentUrl('pageFinished', url);
-
             if (url == 'about:blank') return;
 
             _currentUrl = url;
+            _navStack.onLoadEnd();
 
             if (_isOfferFormHost(url)) {
               _endFormOpenGuard(url);
             }
 
-            // Инжектируем JavaScript для улучшения работы с файлами
-            // и перехвата window.open (форма Webbankir часто в новом окне)
-            try {
-              await controller.runJavaScript('''
-                (function() {
-                  if (window.__flutterWindowOpenHooked) return;
-                  window.__flutterWindowOpenHooked = true;
-                  window.open = function(url, name, specs) {
-                    try {
-                      if (url && url !== '' && url !== 'about:blank') {
-                        console.log('[WebViewDebug] window.open -> same frame:', url);
-                        window.location.href = url;
-                        return window;
-                      }
-                      // blank popup: перехватываем последующую установку location
-                      var proxy = {
-                        closed: false,
-                        close: function() { this.closed = true; },
-                        focus: function() {},
-                        blur: function() {},
-                        document: {
-                          write: function() {},
-                          writeln: function() {},
-                          open: function() {},
-                          close: function() {}
-                        }
-                      };
-                      var loc = url || 'about:blank';
-                      Object.defineProperty(proxy, 'location', {
-                        get: function() {
-                          return {
-                            href: loc,
-                            assign: function(v) { window.location.href = v; },
-                            replace: function(v) { window.location.replace(v); },
-                            toString: function() { return loc; }
-                          };
-                        },
-                        set: function(v) {
-                          if (v) { window.location.href = String(v); }
-                        }
-                      });
-                      return proxy;
-                    } catch (e) {
-                      console.log('[WebViewDebug] window.open hook error', e);
-                      return null;
-                    }
-                  };
-                })();
+            await _injectComebackerBridge();
+            await _injectFileHelpers();
 
-                const originalClick = HTMLElement.prototype.click;
-                HTMLElement.prototype.click = function() {
-                  console.log('Element clicked:', this.tagName, this.type);
-                  if(this.tagName === 'INPUT' && this.type === 'file') {
-                    console.log('File input clicked!');
-                  }
-                  return originalClick.apply(this, arguments);
-                };
-                
-                document.querySelectorAll('input[type="file"]').forEach(input => {
-                  console.log('Found file input:', input);
-                  input.addEventListener('click', function() {
-                    console.log('File input clicked directly');
-                  });
-                });
-                
-                const observer = new MutationObserver(mutations => {
-                  mutations.forEach(mutation => {
-                    if (mutation.type === 'childList') {
-                      mutation.addedNodes.forEach(node => {
-                        if (node.querySelectorAll) {
-                          node.querySelectorAll('input[type="file"]').forEach(input => {
-                            console.log('New file input added:', input);
-                            input.addEventListener('click', function() {
-                              console.log('New file input clicked');
-                            });
-                          });
-                        }
-                      });
-                    }
-                  });
-                });
-                
-                if (document.body) {
-                  observer.observe(document.body, { childList: true, subtree: true });
-                }
-                console.log('WebView JS initialization complete');
-              ''');
-            } catch (e, st) {
-              // На некоторых страницах (особенно iOS/WKWebView) инъекция JS может падать.
-              // Это не должно ломать показ WebView и закрытие экрана.
-              developer.log(
-                'runJavaScript failed: $e',
-                name: _logTag,
-                error: e,
-                stackTrace: st,
-              );
+            if (mounted) {
+              setState(() => _isLoading = false);
             }
-
-            setState(() {
-              _isLoading = false;
-            });
-            _updateNavigationState();
-
-            if (widget.isRootShowcase) {
-              // Веб-витрина: запоминаем стартовую страницу после редиректа для кнопки home
-              if (!_firstRedirectHandled &&
-                  _initialUrl.isNotEmpty &&
-                  url != _initialUrl) {
-                setState(() {
-                  _firstRedirectHandled = true;
-                  _firstRedirectUrl = url;
-                  _hideLeading = true;
-                });
-              } else if (_firstRedirectUrl != null) {
-                setState(() {
-                  _hideLeading = url == _firstRedirectUrl;
-                });
-              }
-            } else if (AppModeService().currentMode == AppMode.combat) {
-              // Нативная витрина → оффер: прежняя логика скрытия крестика
-              if (!_firstRedirectHandled &&
-                  _initialUrl.isNotEmpty &&
-                  url != _initialUrl) {
-                setState(() {
-                  _firstRedirectHandled = true;
-                  _hideLeading = true;
-                  _firstRedirectUrl = url;
-                });
-              }
-              if (url == _firstRedirectUrl) {
-                setState(() {
-                  _hideLeading = true;
-                });
-              } else {
-                setState(() {
-                  _hideLeading = false;
-                });
-              }
+            _syncNavButtons();
+            _updateLeadingVisibility(url);
+          },
+          onProgress: (int progress) {
+            // Повторная ранняя инъекция на старте загрузки документа.
+            if (progress > 0 && progress < 40) {
+              _injectComebackerBridge();
             }
           },
           onWebResourceError: (WebResourceError error) {
@@ -446,9 +443,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
             if (isAtsHttpBlock && errorUrl.startsWith('http://')) {
               final httpsUrl =
                   'https://${errorUrl.substring('http://'.length)}';
-              debugPrint(
-                '[$_logTag] ATS http block → retry https: $httpsUrl',
-              );
+              debugPrint('[$_logTag] ATS http block → retry https: $httpsUrl');
               Future.microtask(() async {
                 try {
                   await controller.loadRequest(Uri.parse(httpsUrl));
@@ -463,101 +458,104 @@ class _WebViewScreenState extends State<WebViewScreen> {
               return;
             }
 
-            final error_name = error.description;
-
-            if (error_name.contains('ERR_BLOCKED_BY_ORB') ||
-                error_name.contains('net::ERR_NAME_NOT_RESOLVED')
-                || error_name.contains('net::ERR_TIMED_OUT')) {
+            final errorName = error.description;
+            if (errorName.contains('ERR_BLOCKED_BY_ORB') ||
+                errorName.contains('net::ERR_NAME_NOT_RESOLVED') ||
+                errorName.contains('net::ERR_TIMED_OUT')) {
               return;
-            } else {
-              // При любой ошибке показываем единый диалог
-              setState(() {
-                _isLoading = false;
-                _isErrorState = true;
-              });
+            }
 
-              _controller.loadRequest(Uri.parse('about:blank'));
-              if (mounted) {
-                _showUnifiedLoadErrorDialog(errorMessage: error.description);
-              }
+            setState(() {
+              _isLoading = false;
+              _isErrorState = true;
+            });
+
+            _controller.loadRequest(Uri.parse('about:blank'));
+            if (mounted) {
+              _showUnifiedLoadErrorDialog(errorMessage: error.description);
             }
           },
         ),
       );
 
-    // Настройка для Android WebView с поддержкой выбора файлов
     if (controller.platform is AndroidWebViewController) {
-      developer.log("Configuring Android WebViewController", name: _logTag);
+      developer.log('Configuring Android WebViewController', name: _logTag);
       final androidController = controller.platform as AndroidWebViewController;
-
       androidController.setMediaPlaybackRequiresUserGesture(false);
-
       try {
-        developer.log("Setting file selector handler", name: _logTag);
         androidController.setOnShowFileSelector(_handleFileSelector);
-      } catch (e) {
-/*        developer.log(
-          "Error setting file selector: $e",
-          name: _logTag,
-          error: e,
-        );*/
-      }
+      } catch (_) {}
+    }
+
+    if (controller.platform is WebKitWebViewController) {
+      final wkController = controller.platform as WebKitWebViewController;
+      // Свайп «назад» использует нативную историю WKWebView и рассинхронизирует
+      // наш стек точек входа + защиту от подмены вкладки.
+      wkController.setAllowsBackForwardNavigationGestures(false);
     }
 
     _controller = controller;
     _loadInitialUrl();
   }
 
-  /// Печать текущего веб-адреса в консоль (Flutter / Xcode / Logcat)
+  void _updateLeadingVisibility(String url) {
+    if (!mounted || url.isEmpty || url.startsWith('about:')) return;
+
+    // Запоминаем первую «реальную» страницу после affiliate-редиректа
+    // (для home на веб-витрине и отладки).
+    if (!_firstRedirectHandled &&
+        _initialUrl.isNotEmpty &&
+        url != _initialUrl) {
+      setState(() {
+        _firstRedirectHandled = true;
+        _firstRedirectUrl = url;
+      });
+    } else if (widget.isRootShowcase && mounted) {
+      // Обновить leading (home) при SPA-переходах.
+      setState(() {});
+    }
+  }
+
   void _logCurrentUrl(String source, String url) {
     if (url.isEmpty) return;
     debugPrint('[$_logTag][$source] $url');
     developer.log('[$source] $url', name: _logTag);
   }
 
-  /// Загрузить начальный URL
   Future<void> _loadInitialUrl() async {
-    // Используем url_link если он передан, иначе используем offer.link
-    final urlToLoad = widget.url_link ?? widget.offer.link;
-    if (urlToLoad.isNotEmpty) {
-      try {
-        final uri = Uri.parse(urlToLoad);
-        if (uri.hasScheme) {
-          _initialUrl = urlToLoad;
-          _logCurrentUrl('initial', urlToLoad);
-          await _controller.loadRequest(uri);
-        } else {
-          developer.log(
-            "Invalid URL scheme: $urlToLoad",
-            name: _logTag,
-          );
-        }
-      } catch (e) {
-        developer.log(
-          "Error parsing URL: $urlToLoad, error: $e",
-          name: _logTag,
-        );
+    if (_initialUrl.isEmpty) return;
+    try {
+      final uri = Uri.parse(_initialUrl);
+      if (!uri.hasScheme) {
+        developer.log('Invalid URL scheme: $_initialUrl', name: _logTag);
+        return;
       }
+      _logCurrentUrl('initial', _initialUrl);
+      await _controller.loadRequest(uri);
+    } catch (e) {
+      developer.log(
+        'Error parsing URL: $_initialUrl, error: $e',
+        name: _logTag,
+      );
     }
   }
 
-  /// Единый диалог ошибок загрузки
   void _showUnifiedLoadErrorDialog({String? errorMessage}) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Ошибка соединения"),
-          content: Text(
-            "Извините, возникла ошибка интернет соединения. Проверьте подключение к интернету и попробуйте снова.",
+          title: const Text('Ошибка соединения'),
+          content: const Text(
+            'Извините, возникла ошибка интернет соединения. '
+            'Проверьте подключение к интернету и попробуйте снова.',
           ),
           actions: [
             TextButton(
-              child: Text("Попробовать снова"),
+              child: const Text('Попробовать снова'),
               onPressed: () async {
                 Navigator.of(context).pop();
-                // Перезагружаем страницу с ошибкой, если известна, иначе текущую/initial
                 final String urlToLoad = _currentUrl.isNotEmpty
                     ? _currentUrl
                     : _initialUrl;
@@ -565,7 +563,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
                   try {
                     await _controller.loadRequest(Uri.parse(urlToLoad));
                   } catch (e) {
-                    developer.log("Retry load failed: $e", name: _logTag);
+                    developer.log('Retry load failed: $e', name: _logTag);
                   }
                 } else {
                   _controller.reload();
@@ -578,49 +576,36 @@ class _WebViewScreenState extends State<WebViewScreen> {
     );
   }
 
-  /// Обработка выбора файлов
   Future<List<String>> _handleFileSelector(FileSelectorParams params) async {
     developer.log(
-      "File selector called with params: acceptTypes=${params.acceptTypes}, isCaptureEnabled=${params.isCaptureEnabled}",
+      'File selector called with params: acceptTypes=${params.acceptTypes}, '
+      'isCaptureEnabled=${params.isCaptureEnabled}',
       name: _logTag,
     );
 
-    if (!mounted) {
-      developer.log("Widget not mounted, cannot show file picker", name: _logTag);
-      return [];
-    }
+    if (!mounted) return [];
 
-    // Проверяем, является ли запрос только для изображений
     final bool isImageOnly = params.acceptTypes.isNotEmpty &&
         params.acceptTypes.every(
-          (type) => type.isEmpty || type == "*/*" || type.startsWith("image/"),
+          (type) => type.isEmpty || type == '*/*' || type.startsWith('image/'),
         );
 
-    // Проверяем, разрешены ли все типы файлов
     final bool acceptAll = params.acceptTypes.isEmpty ||
-        params.acceptTypes.any((type) => type.isEmpty || type == "*/*");
+        params.acceptTypes.any((type) => type.isEmpty || type == '*/*');
 
-    developer.log("isImageOnly=$isImageOnly, acceptAll=$acceptAll", name: _logTag);
-
-    // Если запрос только для изображений и включена камера - используем ImagePicker
     if (isImageOnly && params.isCaptureEnabled) {
-      developer.log("Direct camera capture requested", name: _logTag);
       try {
         final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
         if (photo != null) {
-          final String fileUri = Uri.file(photo.path).toString();
-          developer.log("Image captured: $fileUri", name: _logTag);
-          return [fileUri];
+          return [Uri.file(photo.path).toString()];
         }
       } catch (e) {
-        developer.log("Error capturing image: $e", name: _logTag, error: e);
+        developer.log('Error capturing image: $e', name: _logTag, error: e);
       }
       return [];
     }
 
-    // Если запрос только для изображений - используем ImagePicker с выбором источника
     if (isImageOnly) {
-      developer.log("Image file request, showing image picker", name: _logTag);
       ImageSource? source = await showModalBottomSheet<ImageSource>(
         context: context,
         builder: (BuildContext context) {
@@ -646,167 +631,115 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
       if (source != null) {
         try {
-          developer.log("Attempting to pick image from $source", name: _logTag);
           final XFile? photo = await _picker.pickImage(source: source);
           if (photo != null) {
-            final String fileUri = Uri.file(photo.path).toString();
-            developer.log("Image picked: $fileUri", name: _logTag);
-            return [fileUri];
+            return [Uri.file(photo.path).toString()];
           }
         } catch (e) {
-          developer.log("Error picking image: $e", name: _logTag, error: e);
+          developer.log('Error picking image: $e', name: _logTag, error: e);
         }
       }
       return [];
     }
 
-    // Для других типов файлов используем FilePicker
-    developer.log("Non-image file request, using FilePicker", name: _logTag);
     try {
-      // Преобразуем acceptTypes в формат FilePicker
       FileType fileType = FileType.any;
       List<String>? allowedExtensions;
 
       if (!acceptAll && params.acceptTypes.isNotEmpty) {
-        // Пытаемся определить тип файла из acceptTypes
-        final types = params.acceptTypes.where((type) => type.isNotEmpty && type != "*/*").toList();
-        
+        final types = params.acceptTypes
+            .where((type) => type.isNotEmpty && type != '*/*')
+            .toList();
+
         if (types.isNotEmpty) {
-          // Проверяем специфичные расширения
           final extensions = <String>[];
           for (final type in types) {
-            if (type.contains('/')) {
-              final parts = type.split('/');
-              if (parts.length == 2) {
-                final subtype = parts[1];
-                // Обрабатываем известные типы
-                if (subtype == 'pdf') {
-                  extensions.add('pdf');
-                } else if (subtype == 'msword' || subtype == 'vnd.openxmlformats-officedocument.wordprocessingml.document') {
-                  extensions.add('doc');
-                  extensions.add('docx');
-                } else if (subtype == 'vnd.ms-excel' || subtype == 'vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
-                  extensions.add('xls');
-                  extensions.add('xlsx');
-                } else if (subtype == 'jpeg' || subtype == 'jpg') {
-                  extensions.add('jpg');
-                  extensions.add('jpeg');
-                } else if (subtype == 'png') {
-                  extensions.add('png');
-                } else if (subtype == 'gif') {
-                  extensions.add('gif');
-                } else if (subtype == 'plain' || subtype == 'text') {
-                  extensions.add('txt');
-                }
-              }
+            if (!type.contains('/')) continue;
+            final parts = type.split('/');
+            if (parts.length != 2) continue;
+            final subtype = parts[1];
+            if (subtype == 'pdf') {
+              extensions.add('pdf');
+            } else if (subtype == 'msword' ||
+                subtype ==
+                    'vnd.openxmlformats-officedocument.wordprocessingml.document') {
+              extensions.addAll(['doc', 'docx']);
+            } else if (subtype == 'vnd.ms-excel' ||
+                subtype ==
+                    'vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+              extensions.addAll(['xls', 'xlsx']);
+            } else if (subtype == 'jpeg' || subtype == 'jpg') {
+              extensions.addAll(['jpg', 'jpeg']);
+            } else if (subtype == 'png') {
+              extensions.add('png');
+            } else if (subtype == 'gif') {
+              extensions.add('gif');
+            } else if (subtype == 'plain' || subtype == 'text') {
+              extensions.add('txt');
             }
           }
-          
+
           if (extensions.isNotEmpty) {
             allowedExtensions = extensions;
             fileType = FileType.custom;
-          } else {
-            fileType = FileType.any;
           }
         }
       }
 
-      developer.log("FilePicker params: fileType=$fileType, allowedExtensions=$allowedExtensions", name: _logTag);
-
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      final FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: fileType,
         allowedExtensions: allowedExtensions,
         allowMultiple: false,
       );
 
       if (result != null && result.files.single.path != null) {
-        final String filePath = result.files.single.path!;
-        final String fileUri = Uri.file(filePath).toString();
-        developer.log("File picked: $fileUri", name: _logTag);
-        return [fileUri];
-      } else {
-        developer.log("No file selected", name: _logTag);
+        return [Uri.file(result.files.single.path!).toString()];
       }
     } catch (e) {
-      developer.log("Error picking file: $e", name: _logTag, error: e);
+      developer.log('Error picking file: $e', name: _logTag, error: e);
     }
 
-    developer.log("Returning empty result", name: _logTag);
     return [];
   }
 
-  /// Обновить состояние навигации
-  Future<void> _updateNavigationState() async {
-    final canGoBack = await _controller.canGoBack();
-    final canGoForward = await _controller.canGoForward();
-
-    if (mounted) {
-      setState(() {
-        _canGoBack = canGoBack;
-        _canGoForward = canGoForward;
-      });
-    }
-  }
-
-  /// Навигация назад — обычный history back.
-  /// Пропускаем только промежуточные auth.* hop'ы между анкетой и промо.
+  /// Назад по стеку точек входа (не нативная история WebView).
+  /// На корне оффера — закрываем экран (как раньше при пустой history).
   Future<void> _goBack() async {
-    if (_skippingHistory) return;
-    if (!await _controller.canGoBack()) {
-      if (mounted) Navigator.of(context).pop();
+    if (!_navStack.canGoBack) {
+      if (!widget.isRootShowcase && mounted) {
+        Navigator.of(context).pop();
+      }
       return;
     }
-
-    final startedOnForm = _isOfferFormHost(_currentUrl);
-    _skippingHistory = true;
-    try {
-      await _controller.goBack();
-      await Future<void>.delayed(const Duration(milliseconds: 120));
-
-      for (var i = 0; i < 8; i++) {
-        final url = await _controller.currentUrl() ?? _currentUrl;
-        final skipAuth = _isAuthHistoryHop(url);
-        final skipFormHop = startedOnForm && _isOfferFormHost(url);
-        if (!skipAuth && !skipFormHop) break;
-        if (!await _controller.canGoBack()) break;
-        debugPrint('[$_logTag] goBack skip hop: $url');
-        await _controller.goBack();
-        await Future<void>.delayed(const Duration(milliseconds: 120));
-      }
-    } finally {
-      _skippingHistory = false;
-      await _updateNavigationState();
-    }
+    final target = _navStack.goToEntry(_navStack.index - 1);
+    if (target == null) return;
+    debugPrint('[$_logTag] goBack -> $target');
+    _syncNavButtons();
+    await _loadUrl(target);
   }
 
-  /// Навигация вперед — обычный history forward.
   Future<void> _goForward() async {
-    if (!await _controller.canGoForward()) return;
-    await _controller.goForward();
-    await _updateNavigationState();
+    if (!_navStack.canGoForward) return;
+    final target = _navStack.goToEntry(_navStack.index + 1);
+    if (target == null) return;
+    debugPrint('[$_logTag] goForward -> $target');
+    _syncNavButtons();
+    await _loadUrl(target);
   }
 
-  /// Вернуться на стартовую страницу после первого редиректа (только веб-витрина).
   Future<void> _goHome() async {
-    final home = _firstRedirectUrl;
-    if (home == null || home.isEmpty) return;
+    final home = _firstRedirectUrl ?? _initialUrl;
+    if (home.isEmpty) return;
     debugPrint('[$_logTag] goHome -> $home');
-    try {
-      await _controller.loadRequest(Uri.parse(home));
-    } catch (e) {
-      developer.log('goHome failed: $e', name: _logTag, error: e);
-    }
+    _navStack.reset(home);
+    _syncNavButtons();
+    await _loadUrl(home);
   }
 
-  /// Обновить страницу
   Future<void> _reload() async {
     await _controller.reload();
-    _updateNavigationState();
   }
 
-  /// Leading зависит от типа экрана:
-  /// - веб-витрина (`isRootShowcase`): домик → стартовая страница после редиректа
-  /// - оффер с нативной витрины: крестик → pop назад на LoansScreen
   Widget? _buildLeading() {
     if (widget.isRootShowcase) {
       final showHome = _firstRedirectHandled &&
@@ -820,8 +753,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
       );
     }
 
-    if (_hideLeading) return null;
-
+    // Оффер с нативной витрины: крестик всегда виден.
     return IconButton(
       icon: const Icon(Icons.close),
       onPressed: () => Navigator.of(context).pop(),
@@ -861,7 +793,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: _canGoBack ? _goBack : null,
+            // На корне оффера назад закрывает экран (escape hatch).
+            onPressed: (_canGoBack || !widget.isRootShowcase) ? _goBack : null,
           ),
           IconButton(
             icon: const Icon(Icons.arrow_forward),
@@ -872,10 +805,5 @@ class _WebViewScreenState extends State<WebViewScreen> {
       ),
       body: webViewBody,
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }
