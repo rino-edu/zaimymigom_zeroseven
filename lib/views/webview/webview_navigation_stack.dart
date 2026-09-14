@@ -45,6 +45,25 @@ class WebViewUrlUtils {
     if (nPrefix.isEmpty) return false;
     return nUrl.startsWith(nPrefix);
   }
+
+  static String hostOf(String? url) {
+    final uri = Uri.tryParse(_schemeAgnostic(url ?? ''));
+    if (uri == null || uri.host.isEmpty) return '';
+    var host = uri.host.toLowerCase();
+    if (host.startsWith('www.')) {
+      host = host.substring(4);
+    }
+    return host;
+  }
+
+  /// Другой host после «устаканившейся» страницы = клик по офферу
+  /// (в т.ч. из iframe, где GESTURE до main frame не доходит).
+  static bool differentHost(String? a, String? b) {
+    final ha = hostOf(a);
+    final hb = hostOf(b);
+    if (ha.isEmpty || hb.isEmpty) return false;
+    return ha != hb;
+  }
 }
 
 
@@ -202,8 +221,12 @@ class WebViewNavigationStack {
       final gestureFresh =
           DateTime.now().difference(lastGestureAt) < userGestureTtl;
       final chainActive = chainLoading;
+      // Клик по офферу с веб-витрины часто идёт через iframe → main frame,
+      // GESTURE на родителе нет. После pageFinished смена host = новая точка.
+      final crossHostAfterSettle = !chainActive &&
+          WebViewUrlUtils.differentHost(current.resolved, newUrl);
 
-      if (!chainActive && gestureFresh) {
+      if (!chainActive && (gestureFresh || crossHostAfterSettle)) {
         lastGestureAt = DateTime.fromMillisecondsSinceEpoch(0);
         pushEntry(newUrl);
       } else {

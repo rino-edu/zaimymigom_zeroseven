@@ -385,6 +385,12 @@ class _WebViewScreenState extends State<WebViewScreen> {
             if (url != 'about:blank') {
               _navStack.onLoadStart(url);
               _syncNavButtons();
+              if (_navStack.canGoBack) {
+                debugPrint(
+                  '[$_logTag] nav stack: index=${_navStack.index} '
+                  'back=${_navStack.canGoBack} entries=${_navStack.entries.length}',
+                );
+              }
               _updateLeadingVisibility(url);
               // Инжектим мост как можно раньше на каждом документе.
               _injectComebackerBridge();
