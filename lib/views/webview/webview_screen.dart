@@ -65,7 +65,6 @@ class _WebViewScreenState extends State<WebViewScreen> {
   bool _firstRedirectHandled = false;
   String? _firstRedirectUrl;
   String _currentUrl = '';
-  String _urlAtLastGesture = '';
   bool _bridgeInjecting = false;
 
   /// Только на время открытия анкеты (логирование / будущие нюансы).
@@ -232,7 +231,6 @@ class _WebViewScreenState extends State<WebViewScreen> {
       final type = data['type'];
       if (type == 'GESTURE') {
         _navStack.markGesture();
-        _urlAtLastGesture = _currentUrl;
         return;
       }
       if (type == 'OPEN_URL' && data['url'] is String) {
@@ -240,19 +238,8 @@ class _WebViewScreenState extends State<WebViewScreen> {
         debugPrint('[$_logTag] bridge OPEN_URL: $url');
         _navStack.openAsNewEntry(url, forceLoad: false);
         _syncNavButtons();
-
-        // JS уже делает location.replace — не дублируем загрузку.
-        // Reclaim только если рекламный URL уже успел подменить вкладку.
-        final current = _currentUrl;
-        final onTarget = WebViewUrlUtils.startsWith(current, url);
-        final stillOnOpener = WebViewUrlUtils.same(current, _urlAtLastGesture) ||
-            current.isEmpty ||
-            current.startsWith('about:');
-        if (!onTarget && !stillOnOpener) {
-          debugPrint('[$_logTag] reclaim after tab-replace: $url (was $current)');
-          _navStack.pendingNav = url;
-          _loadUrl(url);
-        }
+        // Не вызываем loadRequest: JS уже сделал один location.replace.
+        // Повторный load click-URL = второй клик в Keitaro.
       }
     } catch (_) {
       // чужое сообщение — игнорируем
@@ -717,7 +704,10 @@ class _WebViewScreenState extends State<WebViewScreen> {
       }
       return;
     }
-    final target = _navStack.goToEntry(_navStack.index - 1);
+    final target = _navStack.goToEntry(
+      _navStack.index - 1,
+      goingBack: true,
+    );
     if (target == null) return;
     debugPrint('[$_logTag] goBack -> $target');
     _syncNavButtons();
@@ -726,7 +716,10 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
   Future<void> _goForward() async {
     if (!_navStack.canGoForward) return;
-    final target = _navStack.goToEntry(_navStack.index + 1);
+    final target = _navStack.goToEntry(
+      _navStack.index + 1,
+      goingBack: false,
+    );
     if (target == null) return;
     debugPrint('[$_logTag] goForward -> $target');
     _syncNavButtons();

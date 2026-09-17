@@ -187,7 +187,7 @@ class WebLinkService {
   }
 
   /// Модифицирует ссылку веб-витрины: те же трекинг-параметры, что у офферов,
-  /// плюс `aff_sub4=boy` (боевой) / `aff_sub4=vpn` (небоевой).
+  /// плюс `aff_sub4=boy_showcase` (боевой) / `aff_sub4=vpn` (небоевой).
   Future<String> generateModifiedShowCaseLink(String? showCaseLink) async {
     final raw = (showCaseLink ?? '').trim();
     var link = _ensureHttpsScheme(raw.isNotEmpty ? raw : fallbackShowCaseLink);
@@ -200,7 +200,7 @@ class WebLinkService {
       debugPrint('WebLinkService: Режим определён как ${modeResult?.name}');
     }
 
-    final affSub4 = isBoyMode ? 'boy' : 'vpn';
+    final affSub4 = isBoyMode ? 'boy_showcase' : 'vpn';
     link = _upsertQueryParam(link, 'aff_sub4', affSub4);
     debugPrint('WebLinkService: Установлен aff_sub4=$affSub4');
 

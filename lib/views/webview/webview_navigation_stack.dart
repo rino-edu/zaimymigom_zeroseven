@@ -2,11 +2,15 @@
 class WebViewHistoryEntry {
   WebViewHistoryEntry({required this.requested, required this.resolved});
 
-  /// URL, который пользователь реально открыл.
+  /// URL, с которого открыли точку входа (часто Keitaro click-URL).
   final String requested;
 
-  /// Куда в итоге привела цепочка редиректов.
+  /// Последний URL цепочки редиректов / текущей страницы.
   String resolved;
+
+  /// Первый URL после ухода с host [requested] — лендинг оффера.
+  /// Именно его грузим при «назад», а не click-URL (иначе второй клик в Keitaro).
+  String? landing;
 }
 
 class PopupIntent {
@@ -66,7 +70,6 @@ class WebViewUrlUtils {
   }
 }
 
-
 /// Стек точек входа + защита от подмены вкладки после window.open.
 class WebViewNavigationStack {
   WebViewNavigationStack(String initialUrl) {
@@ -118,13 +121,22 @@ class WebViewNavigationStack {
     return entries.indexWhere(
       (e) =>
           WebViewUrlUtils.same(e.resolved, target) ||
-          WebViewUrlUtils.same(e.requested, target),
+          WebViewUrlUtils.same(e.requested, target) ||
+          (e.landing != null && WebViewUrlUtils.same(e.landing, target)),
     );
   }
 
   void updateResolved(String target) {
     if (target.isEmpty || target.startsWith('about:')) return;
-    current.resolved = WebViewUrlUtils.normalize(target);
+    final normalized = WebViewUrlUtils.normalize(target);
+    current.resolved = normalized;
+
+    // Фиксируем лендинг оффера: первый URL на другом host, чем click-URL.
+    // Его же используем при «назад», чтобы не бить Keitaro повторно.
+    if (current.landing == null &&
+        WebViewUrlUtils.differentHost(current.requested, normalized)) {
+      current.landing = normalized;
+    }
   }
 
   void pushEntry(String target) {
@@ -137,7 +149,7 @@ class WebViewNavigationStack {
     index = entries.length - 1;
 
     if (entries.length > maxEntries) {
-      // Нулевую запись (исходный оффер) не вытесняем.
+      // Нулевую запись (исходная витрина) не вытесняем.
       entries.removeAt(1);
       index -= 1;
     }
@@ -161,7 +173,9 @@ class WebViewNavigationStack {
     }
 
     final alreadyRecorded = WebViewUrlUtils.same(current.requested, nextUrl) ||
-        WebViewUrlUtils.same(current.resolved, nextUrl);
+        WebViewUrlUtils.same(current.resolved, nextUrl) ||
+        (current.landing != null &&
+            WebViewUrlUtils.same(current.landing, nextUrl));
 
     if (!alreadyRecorded) {
       lastGestureAt = DateTime.fromMillisecondsSinceEpoch(0);
@@ -199,10 +213,28 @@ class WebViewNavigationStack {
   }
 
   void onNavUrlSeen(String url) {
+    if (url.isEmpty || url.startsWith('about:')) return;
+
     final intent = popupIntent;
     if (intent != null && WebViewUrlUtils.startsWith(url, intent.url)) {
       clearPopupIntent();
     }
+
+    // iOS часто не шлёт pageStarted на каждый hop редиректа — обновляем
+    // resolved/landing здесь, иначе «назад» снова откроет click-URL.
+    updateResolved(url);
+  }
+
+  /// URL для стрелок назад/вперёд: лендинг оффера, никогда сырой click-URL.
+  String? _historyTargetFor(WebViewHistoryEntry entry) {
+    if (entry.landing != null && entry.landing!.isNotEmpty) {
+      return entry.landing;
+    }
+    if (WebViewUrlUtils.differentHost(entry.requested, entry.resolved)) {
+      return entry.resolved;
+    }
+    // Остались только на click-URL — повторно его не грузим.
+    return null;
   }
 
   /// Обработка начала загрузки top-level страницы.
@@ -233,7 +265,7 @@ class WebViewNavigationStack {
         final existing = findEntryIndex(newUrl);
         if (!chainActive && existing != -1 && existing != index) {
           index = existing;
-          entries[existing].resolved = WebViewUrlUtils.normalize(newUrl);
+          updateResolved(newUrl);
         } else {
           updateResolved(newUrl);
         }
@@ -248,14 +280,30 @@ class WebViewNavigationStack {
   }
 
   /// Цель для перехода по стеку (назад/вперёд).
-  String? goToEntry(int nextIndex) {
+  ///
+  /// Не возвращает Keitaro click-URL: только landing/resolved на другом host.
+  /// Если у записи ещё нет лендинга — пропускаем её к предыдущей/следующей.
+  String? goToEntry(int nextIndex, {required bool goingBack}) {
     if (nextIndex < 0 || nextIndex >= entries.length) return null;
     clearPopupIntent();
     lastGestureAt = DateTime.fromMillisecondsSinceEpoch(0);
-    index = nextIndex;
-    final entry = entries[nextIndex];
-    final target = entry.resolved.isNotEmpty ? entry.resolved : entry.requested;
-    pendingNav = target;
-    return target;
+
+    var i = nextIndex;
+    while (i >= 0 && i < entries.length) {
+      final target = _historyTargetFor(entries[i]);
+      if (target != null) {
+        index = i;
+        pendingNav = target;
+        return target;
+      }
+      // Запись = только click-URL без лендинга: как в Telegram WebView,
+      // возвращаемся на витрину / соседнюю «реальную» страницу.
+      i = goingBack ? i - 1 : i + 1;
+    }
+
+    index = 0;
+    final home = entries[0].landing ?? entries[0].resolved;
+    pendingNav = home;
+    return home;
   }
 }
